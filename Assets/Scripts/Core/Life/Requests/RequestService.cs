@@ -5,6 +5,7 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Family;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.Work;
 
@@ -121,9 +122,21 @@ namespace Thatchwick.Core.Life.Requests
         public Legacy Legacy { get; set; }
         public KeepsakeService Keepsakes { get; set; }
         public TimedDutyService Duties { get; set; }
-        public Action<int, string> AddReputation { get; set; }
-        public Action<string, int> Notify { get; set; }
-        public Action<string> Chronicle { get; set; }
+        public Action<int, LocText> AddReputation { get; set; }
+        public Action<LocText, int> Notify { get; set; }
+        public Action<LocText> Chronicle { get; set; }
+        /// <summary>Anahtarlı metni çözer: moodlet, hatıra yazısı ve mühür notu gibi düz metin bekleyen eski API'ler için (oyun katmanı verir).</summary>
+        public Func<LocText, string> Resolve { get; set; } = t => t.Literal ?? t.Key ?? "";
+
+        private static LocText L(string key, params (string name, object value)[] args) => LocText.Of(key, args);
+        private static LocText SkillText(SkillType s) => LocText.Of("skill." + s);
+        private static LocText RegionText(string id) => LocText.Of("region." + id);
+        /// <summary>
+        /// Kroniğe anahtarlı yazılan (SavedText) notta istek başlığı: anahtarlı başlık tablo anahtarı olarak saklanır ve
+        /// gösterilirken seçili dilde çözülür; anahtarsız (eski kayıt, argümanlı) başlık o anki metniyle yazılır.
+        /// </summary>
+        private object SavedTitle(LocText title) =>
+            title.Key != null && title.Args.Length == 0 && title.Count == null ? (object)SavedText.Key(title.Key) : Resolve(title);
         /// <summary>Teslim eden, verenin yanında mı? (oyun katmanı; null: her zaman yakın)</summary>
         public Func<Character, Character, bool> Near { get; set; }
 
@@ -206,53 +219,66 @@ namespace Thatchwick.Core.Life.Requests
 
         public static bool OnBoard(Request r) => r.Kind == RequestKind.Favor || r.Kind == RequestKind.Order || r.Kind == RequestKind.Call;
 
-        public string ItemName(string id) => id != null && _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
-
-        public string ObjectiveText(Objective o)
+        /// <summary>Hedefin satırı ("6 kömür getir (2/6; elde 3)"); eşya kimliği argümanı oyun katmanında ada çevrilir.</summary>
+        public LocText ObjectiveText(Objective o)
         {
-            if (!string.IsNullOrEmpty(o.Text)) return o.Text;
+            int prog = Math.Min(o.Progress, o.Count);
             switch (o.Kind)
             {
-                case ObjectiveKind.Deliver: return $"{o.Count} {ItemName(o.ItemId)} getir ({Math.Min(o.Progress, o.Count)}/{o.Count}; elde {_house.Count(o.ItemId)})";
-                case ObjectiveKind.Act: return $"{(o.Skill.HasValue ? SkillNames.Name(o.Skill.Value) : "İş")}: {o.Count} kez çalış ({Math.Min(o.Progress, o.Count)}/{o.Count})";
-                case ObjectiveKind.Visit: return $"{RegionName(o.Region)} bölgesine git";
-                case ObjectiveKind.Talk: return "Konuş";
-                case ObjectiveKind.Skill: return $"Hanede {(o.Skill.HasValue ? SkillNames.Name(o.Skill.Value) : "?")} {o.Level} olsun{(o.Done ? " ✓" : $" (en iyi {Best(o.Skill ?? SkillType.Farming)})")}";
-                case ObjectiveKind.Pay: return $"{o.Count} akçe ver{(o.Done ? " ✓" : "")}";
-                case ObjectiveKind.Duty: return $"{TimedDutyService.KindName(o.DutyKind)}: {o.Count} saat ({o.Progress}/{o.Count})";
-                default: return "?";
+                case ObjectiveKind.Deliver:
+                    return o.MinQuality > 0
+                        ? L("core.req.obj.deliver_q", ("n", o.Count), ("item", o.ItemId), ("quality", L(ItemQuality.NameKey(o.MinQuality))), ("done", prog), ("have", _house.Count(o.ItemId, o.MinQuality)))
+                        : L("core.req.obj.deliver", ("n", o.Count), ("item", o.ItemId), ("done", prog), ("have", _house.Count(o.ItemId)));
+                case ObjectiveKind.Act:
+                    if (o.ActId != null) return L("core.req.obj.act_id." + o.ActId, ("n", o.Count), ("done", prog));   // iş kimliği tutan hedef (belge 52: ağaç ev)
+                    return o.Skill.HasValue ? L("core.req.obj.act", ("skill", SkillText(o.Skill.Value)), ("n", o.Count), ("done", prog))
+                                            : L("core.req.obj.act_any", ("n", o.Count), ("done", prog));
+                case ObjectiveKind.Visit: return L("core.req.obj.visit", ("region", RegionText(o.Region)));
+                case ObjectiveKind.Talk: return L("core.req.obj.talk");
+                case ObjectiveKind.Skill:
+                    var sk = o.Skill ?? SkillType.Farming;
+                    return o.Done ? L("core.req.obj.skill_done", ("skill", SkillText(sk)), ("level", o.Level))
+                                  : L("core.req.obj.skill", ("skill", SkillText(sk)), ("level", o.Level), ("best", Best(sk)));
+                case ObjectiveKind.Pay: return o.Done ? L("core.req.obj.pay_done", ("n", o.Count)) : L("core.req.obj.pay", ("n", o.Count));
+                case ObjectiveKind.Duty: return L("core.req.obj.duty", ("kind", TimedDutyService.KindText(o.DutyKind)), ("n", o.Count), ("done", o.Progress));
+                default: return LocText.Plain("?");
             }
         }
 
-        private static string RegionName(string id)
+        /// <summary>Ödülün parçaları ("12 akçe", "yakınlık +30"); oyun katmanı virgülle birleştirir.</summary>
+        public List<LocText> RewardParts(Reward w)
         {
-            foreach (var r in Thatchwick.Core.World.Regions.All) if (r.Id == id) return r.Name;
-            return id;
+            var parts = new List<LocText>();
+            if (w.Akce > 0) parts.Add(L("core.req.reward.akce", ("n", w.Akce)));
+            if (w.Affinity > 0) parts.Add(L("core.req.reward.affinity", ("n", w.Affinity)));
+            if (w.Reputation > 0) parts.Add(L("core.req.reward.reputation", ("n", w.Reputation)));
+            if (w.Xp > 0 && w.XpSkill.HasValue) parts.Add(L("core.req.reward.xp", ("skill", SkillText(w.XpSkill.Value)), ("n", (int)Math.Round(w.Xp))));
+            foreach (var kv in w.Items) parts.Add(L("core.req.reward.item", ("n", kv.Value), ("item", kv.Key)));
+            if (w.Seals > 0) parts.Add(L("core.req.reward.seals", ("n", w.Seals)));
+            if (w.KeepsakeItem != null) parts.Add(L("core.req.reward.keepsake", ("label", w.KeepsakeLabel)));
+            return parts;
         }
 
-        public string RewardText(Reward w)
+        /// <summary>Ödül parçalarını tek metne bağlar ("12 akçe, yakınlık +30").</summary>
+        public LocText RewardSummary(Reward w)
         {
-            var parts = new List<string>();
-            if (w.Akce > 0) parts.Add($"{w.Akce} akçe");
-            if (w.Affinity > 0) parts.Add($"yakınlık +{w.Affinity}");
-            if (w.Reputation > 0) parts.Add($"itibar +{w.Reputation}");
-            if (w.Xp > 0 && w.XpSkill.HasValue) parts.Add($"{SkillNames.Name(w.XpSkill.Value)} +{w.Xp:0} XP");
-            foreach (var kv in w.Items) parts.Add($"{kv.Value} {ItemName(kv.Key)}");
-            if (w.Seals > 0) parts.Add($"Soy Mührü +{w.Seals}");
-            if (w.KeepsakeItem != null) parts.Add($"hatıra: {w.KeepsakeLabel}");
-            return parts.Count == 0 ? "—" : string.Join(", ", parts);
+            var parts = RewardParts(w);
+            if (parts.Count == 0) return LocText.Plain("—");
+            var acc = parts[0];
+            for (int i = 1; i < parts.Count; i++) acc = L("core.req.list", ("a", acc), ("b", parts[i]));
+            return acc;
         }
 
-        /// <summary>Kalan süre metni ("1 gün 6 saat").</summary>
-        public string TimeLeft(Request r)
+        /// <summary>Kalan süre ("1 gün 6 saat").</summary>
+        public LocText TimeLeft(Request r)
         {
-            if (!r.HasDeadline) return "süresiz";
+            if (!r.HasDeadline) return L("core.req.time.none");
             double left = r.Deadline - Now();
-            if (left <= 0) return "doldu";
+            if (left <= 0) return L("core.req.time.over");
             int days = (int)Math.Floor(left);
             int hours = (int)Math.Round((left - days) * 24);
             if (hours == 24) { days++; hours = 0; }
-            return days > 0 ? $"{days} gün {hours} saat" : $"{hours} saat";
+            return days > 0 ? L("core.req.time.days", ("days", days), ("hours", hours)) : L("core.req.time.hours", ("hours", hours));
         }
 
         /// <summary>Mevsim işinde köyün doluluğu (0-1): pencere ilerledikçe köy kendi payını yapar, hanenin payı %30.</summary>
@@ -272,7 +298,7 @@ namespace Thatchwick.Core.Life.Requests
         /// <summary>Hanenin ilan sıralaması (belge 46 §8.5): siparişlerden kazanılan puan.</summary>
         public List<HouseRank> Ranking(string playerHouseName)
         {
-            var list = new List<HouseRank> { new HouseRank { Name = playerHouseName ?? "Senin hanen", Points = PlayerScore, IsPlayer = true } };
+            var list = new List<HouseRank> { new HouseRank { Name = playerHouseName ?? "", Points = PlayerScore, IsPlayer = true } };
             if (_houses != null)
                 foreach (var h in _houses.Houses)
                 {
@@ -323,20 +349,20 @@ namespace Thatchwick.Core.Life.Requests
             if (r.State == RequestState.Accepted && r.Kind == RequestKind.Order)
             {
                 r.State = RequestState.Failed;
-                AddReputation?.Invoke(r.Penalty != 0 ? r.Penalty : FailedOrderRep, $"sipariş yetişmedi: {r.Title}");
+                AddReputation?.Invoke(r.Penalty != 0 ? r.Penalty : FailedOrderRep, L("core.req.rep.order_failed", ("title", r.Title)));
                 var giver = _population.Find(r.GiverId);
-                if (giver != null) Memory.Add(giver, HouseMemory.FailedOrder, $"{r.Title} yetişmedi");
-                Notify?.Invoke($"{r.GiverName}: \"{r.Title}\" siparişi yetişmedi. İtibar {r.Penalty}.", r.GiverId);
+                if (giver != null) Memory.Add(giver, HouseMemory.FailedOrder, "order_failed:" + r.TemplateId);
+                Notify?.Invoke(L("core.req.n.order_failed", ("giver", r.GiverName), ("title", r.Title), ("rep", r.Penalty)), r.GiverId);
                 return;
             }
             if (r.Kind == RequestKind.Call)
             {
                 r.State = RequestState.Expired;
-                if (!string.IsNullOrEmpty(r.IgnoreText)) Notify?.Invoke(r.IgnoreText, r.GiverId);
+                if (!r.IgnoreText.IsEmpty) Notify?.Invoke(r.IgnoreText, r.GiverId);
                 return;
             }
             r.State = r.State == RequestState.Accepted ? RequestState.Failed : RequestState.Expired;
-            if (r.Kind == RequestKind.Favor && r.State == RequestState.Failed) Notify?.Invoke($"{r.GiverName}: \"{r.Title}\" için geç kalındı (ceza yok).", r.GiverId);
+            if (r.Kind == RequestKind.Favor && r.State == RequestState.Failed) Notify?.Invoke(L("core.req.n.favor_late", ("giver", r.GiverName), ("title", r.Title)), r.GiverId);
         }
 
         /// <summary>Biten istekler defterde iki mevsim kalır, sonra silinir (kayıt büyümesin).</summary>
@@ -366,7 +392,7 @@ namespace Thatchwick.Core.Life.Requests
                 {
                     r.GiverId = heir.Id;
                     r.GiverName = heir.Name;
-                    Notify?.Invoke($"{heir.Name}, \"{r.Title}\" siparişini devraldı.", heir.Id);
+                    Notify?.Invoke(L("core.req.n.heir_order", ("name", heir.Name), ("title", r.Title)), heir.Id);
                 }
                 else r.State = RequestState.Dropped;
             }
@@ -387,7 +413,7 @@ namespace Thatchwick.Core.Life.Requests
                 r.State = RequestState.Rival;
                 r.HouseId = h.Id;
                 _rivalScore[h.Id] = RivalScore(h.Id) + (r.Master ? MasterRep : OrderRep);
-                Notify?.Invoke($"{h.Name}, panodaki \"{r.Title}\" siparişini üstlendi.", 0);
+                Notify?.Invoke(L("core.req.n.rival", ("house", h.Name), ("title", r.Title)), 0);
             }
         }
 
@@ -453,7 +479,7 @@ namespace Thatchwick.Core.Life.Requests
 
         public Request PostFavor(Character giver, FavorTemplate t)
         {
-            var r = NewRequest(RequestKind.Favor, t.Id, t.Title, t.Text, giver);
+            var r = NewRequest(RequestKind.Favor, t.Id, L(RequestKeys.Title(t.Id)), L(RequestKeys.Text(t.Id), ("giver", giver.Name)), giver);
             r.Days = FavorDays;
             r.Deadline = Now() + BoardDays;
             if (t.Kind == ObjectiveKind.Visit) r.Objectives.Add(new Objective { Kind = ObjectiveKind.Visit, Region = t.Region, Count = 1 });
@@ -464,7 +490,7 @@ namespace Thatchwick.Core.Life.Requests
         }
 
         /// <summary>Sistemik rica: komşu hanede bebek doğdu (beşik ya da battaniye), köylü öldü (cenaze helvası).</summary>
-        public Request PostSystemicFavor(Character giver, string id, string title, string text, string item, int count, double days = 3)
+        public Request PostSystemicFavor(Character giver, string id, LocText title, LocText text, string item, int count, double days = 3)
         {
             if (giver == null || giver.IsDead || !_content.Items.Contains(item) || HasOpenTemplate(id + ":" + giver.Id)) return null;
             var r = NewRequest(RequestKind.Favor, id + ":" + giver.Id, title, text, giver);
@@ -478,15 +504,16 @@ namespace Thatchwick.Core.Life.Requests
 
         /// <summary>
         /// Sistemik iş ricası (belge 52: "Bize ağaç ev yapar mısın?"): veren köylü, bir işi N kez yapmayı ister (ActId;
-        /// sayım OnWork ile). Aynı veren için açık rica varsa asılmaz.
+        /// sayım OnWork ile). Aynı veren için açık rica varsa asılmaz. Hedefin metni kayda yazılmaz: iş kimliğinden türeyen
+        /// anahtardan okunur (<c>core.req.obj.act_id.&lt;ActId&gt;</c>, bkz. <see cref="ObjectiveText"/>).
         /// </summary>
-        public Request PostActFavor(Character giver, string id, string title, string text, string actId, string objectiveText, int count, double days, int akce)
+        public Request PostActFavor(Character giver, string id, LocText title, LocText text, string actId, int count, double days, int akce)
         {
             if (giver == null || giver.IsDead || HasOpenTemplate(id + ":" + giver.Id)) return null;
             var r = NewRequest(RequestKind.Favor, id + ":" + giver.Id, title, text, giver);
             r.Days = days;
             r.Deadline = Now() + days;
-            r.Objectives.Add(new Objective { Kind = ObjectiveKind.Act, ActId = actId, Count = Math.Max(1, count), Text = objectiveText });
+            r.Objectives.Add(new Objective { Kind = ObjectiveKind.Act, ActId = actId, Count = Math.Max(1, count) });
             r.Reward = new Reward { Akce = Math.Max(3, Math.Min(FavorAkceMax, akce)), Affinity = FavorAffinity, Memory = HouseMemory.Favor * 2 };
             return Post(r);
         }
@@ -596,9 +623,9 @@ namespace Thatchwick.Core.Life.Requests
             var prod = _content.Items.Get(pid);
             int n = Math.Max(1, Math.Min(4, (int)Math.Ceiling(24.0 / Math.Max(1, prod.Price))));
             if (master) n = Math.Min(6, n * 2);
-            string title = master ? $"Usta siparişi: {prod.DisplayName}" : prod.DisplayName;
-            var r = NewRequest(RequestKind.Order, "order:" + pid, title,
-                $"{giver.Name}: \"{n} {prod.DisplayName.ToLowerInvariant()} lazım; {(master ? "usta elinden çıkmış olsun." : "zamanında getirirsen iyi öderim.")}\"", giver);
+            var title = master ? L("core.req.order.master_title", ("item", pid)) : L("core.req.order.title", ("item", pid));
+            var text = L(master ? "core.req.order.master_text" : "core.req.order.text", ("giver", giver.Name), ("n", n), ("item", pid));
+            var r = NewRequest(RequestKind.Order, "order:" + pid, title, text, giver);
             r.Days = OrderDays;
             r.Deadline = Now() + OrderDays;
             r.Skill = craft.Skill;
@@ -606,7 +633,10 @@ namespace Thatchwick.Core.Life.Requests
             r.Stretch = stretch;
             r.Master = master;
             r.Penalty = FailedOrderRep;
-            r.Objectives.Add(RequestCatalog.Del(pid, n));
+            var del = RequestCatalog.Del(pid, n);
+            // En az kalite (53): usta siparişi Has ister; zorlayıcı sipariş Seçme. Kalitesiz eşyada yok.
+            if (prod.HasQuality) del.MinQuality = master ? ItemQuality.Superior : stretch ? ItemQuality.Fine : ItemQuality.Common;
+            r.Objectives.Add(del);
             double factor = master ? MasterAkceFactor : OrderAkceFactor;
             r.Reward = new Reward
             {
@@ -637,48 +667,49 @@ namespace Thatchwick.Core.Life.Requests
             }
             if (options.Count == 0) return null;
             var (tpl, g) = options[_rng.Next(options.Count)];
-            var r = NewRequest(RequestKind.Call, tpl.Id, tpl.Title, tpl.Text, g);
+            var r = NewRequest(RequestKind.Call, tpl.Id, L(RequestKeys.Title(tpl.Id)), L(RequestKeys.Text(tpl.Id), ("giver", g.Name)), g);
             r.Days = CallDays;
             r.Deadline = Now() + CallDays;
-            r.IgnoreText = tpl.IgnoreText;
+            r.IgnoreText = L(RequestKeys.Ignore(tpl.Id), ("giver", g.Name));
             foreach (var p in tpl.Paths) r.Paths.Add(p);
             r.Reward = new Reward { Affinity = CallAffinity, Reputation = tpl.Hard ? HardCallRep : CallRep, Memory = HouseMemory.Call };
             return Post(r);
         }
 
-        /// <summary>Yol hanede açık mı (beceri, eşya, akçe)? Açık değilse nedeni.</summary>
-        public string PathBlocker(Request r, int index, Character solver)
+        /// <summary>Yol hanede açık mı (beceri, eşya, akçe)? Açık değilse nedeni; açıksa boş.</summary>
+        public LocText PathBlocker(Request r, int index, Character solver)
         {
-            if (r == null || index < 0 || index >= r.Paths.Count) return "Yol yok.";
+            if (r == null || index < 0 || index >= r.Paths.Count) return L("core.req.err.no_path");
             var p = r.Paths[index];
             if (p.Skill.HasValue)
             {
-                if (solver == null) return "Kimin gideceğini seç.";
-                if (solver.Skills.GetLevel(p.Skill.Value) < p.Level) return $"{SkillNames.Name(p.Skill.Value)} {p.Level} gerekli ({solver.Name}: {solver.Skills.GetLevel(p.Skill.Value)}).";
+                if (solver == null) return L("core.req.err.pick_solver");
+                int lv = solver.Skills.GetLevel(p.Skill.Value);
+                if (lv < p.Level) return L("core.req.err.skill_needed", ("skill", SkillText(p.Skill.Value)), ("level", p.Level), ("name", solver.Name), ("have", lv));
             }
-            if (p.ItemId != null && _house.Count(p.ItemId) < p.ItemCount) return $"{p.ItemCount} {ItemName(p.ItemId)} gerekli.";
-            if (p.Akce > 0 && _house.Akce < p.Akce) return $"{p.Akce} akçe gerekli.";
+            if (p.ItemId != null && _house.Count(p.ItemId) < p.ItemCount) return L("core.req.err.items_needed", ("n", p.ItemCount), ("item", p.ItemId));
+            if (p.Akce > 0 && _house.Akce < p.Akce) return L("core.req.err.akce_needed", ("n", p.Akce));
             if (p.Hours > 0 && solver != null && Duties != null)
             {
                 var why = Duties.CanStart(solver, ErrandOrder(r, p, solver));
-                if (why != null) return why;
+                if (!why.IsEmpty) return why;
             }
-            return null;
+            return default;
         }
 
         private static TimedDutyOrder ErrandOrder(Request r, CallPath p, Character solver) =>
             new TimedDutyOrder { CharacterId = solver.Id, Kind = TimedDutyKind.Errand, PlaceId = "errand:village", Hours = p.Hours, RequestId = r.Id, Label = r.Title };
 
         /// <summary>Çağrıyı bir yolla üstlenir: eşya ve akçe hemen gider; süreli yolda çözen köy işine çıkar, dönünce biter.</summary>
-        public bool ChoosePath(int requestId, int index, Character solver, out string message)
+        public bool ChoosePath(int requestId, int index, Character solver, out LocText message)
         {
             var r = Get(requestId);
             message = PathBlocker(r, index, solver);
-            if (message != null) return false;
-            if (!r.IsOpen || r.Kind != RequestKind.Call) { message = "Çağrı kapandı."; return false; }
+            if (!message.IsEmpty) return false;
+            if (!r.IsOpen || r.Kind != RequestKind.Call) { message = L("core.req.err.call_closed"); return false; }
             var p = r.Paths[index];
             if (p.ItemId != null) for (int i = 0; i < p.ItemCount; i++) _house.TryTakeItem(p.ItemId);
-            if (p.Akce > 0 && !_house.TrySpend(p.Akce)) { message = "Akçe yetmedi."; return false; }
+            if (p.Akce > 0 && !_house.TrySpend(p.Akce)) { message = L("core.req.err.akce_short"); return false; }
             r.ChosenPath = index;
             r.SolverId = solver?.Id ?? 0;
             r.State = RequestState.Accepted;
@@ -688,11 +719,11 @@ namespace Thatchwick.Core.Life.Requests
                 r.Deadline = double.MaxValue;   // çözen yolda; süre dolmaz
                 var d = Duties.Start(ErrandOrder(r, p, solver), out var why);
                 if (d == null) { message = why; r.ChosenPath = -1; r.State = RequestState.Posted; return false; }
-                message = $"{solver.Name} {p.Hours:0} saatliğine yola çıktı: {p.Label}.";
+                message = L("core.req.msg.path_left", ("name", solver.Name), ("hours", (int)Math.Round(p.Hours)), ("path", L(p.LabelKey)));
                 return true;
             }
             CompleteCall(r, solver);
-            message = p.Outcome;
+            message = L(p.OutcomeKey);
             return true;
         }
 
@@ -702,7 +733,7 @@ namespace Thatchwick.Core.Life.Requests
             var reward = r.Reward.Clone();
             if (p != null && p.Paid) { reward.Reputation /= 2; reward.Affinity /= 2; }
             if (p != null && p.Skill.HasValue && solver != null) { reward.Xp = 15; reward.XpSkill = p.Skill; }
-            if (p != null && !string.IsNullOrEmpty(p.Outcome)) Notify?.Invoke($"{r.Title}: {p.Outcome}", r.GiverId);
+            if (p != null && p.OutcomeKey != null) Notify?.Invoke(L("core.req.n.call_outcome", ("title", r.Title), ("outcome", L(p.OutcomeKey))), r.GiverId);
             Complete(r, solver, reward);
         }
 
@@ -725,8 +756,7 @@ namespace Thatchwick.Core.Life.Requests
             {
                 if (t.Season != season) continue;
                 if (t.Objective.ItemId != null && !_content.Items.Contains(t.Objective.ItemId)) continue;
-                var r = NewRequest(RequestKind.Seasonal, t.Id, t.Title, t.Text, null);
-                r.GiverName = "Köy";
+                var r = NewRequest(RequestKind.Seasonal, t.Id, L(RequestKeys.Title(t.Id)), L(RequestKeys.Text(t.Id)), null);
                 r.Season = (int)season;
                 r.DayFrom = Math.Max(1, (int)Math.Ceiling(t.From * scale));
                 r.DayTo = Math.Max(r.DayFrom, (int)Math.Ceiling(t.To * scale));
@@ -739,7 +769,7 @@ namespace Thatchwick.Core.Life.Requests
                 r.Reward = new Reward { Akce = Math.Max(2, Math.Min(15, value / 2)), Reputation = SeasonJobRep };
                 list.Add(Post(r, announce: false));
             }
-            if (list.Count > 0) Notify?.Invoke($"Mevsim Defteri açıldı: {list.Count} iş (İstekler → Mevsim).", 0);
+            if (list.Count > 0) Notify?.Invoke(L("core.req.n.book_open", ("n", list.Count)), 0);
             return list;
         }
 
@@ -768,10 +798,11 @@ namespace Thatchwick.Core.Life.Requests
                 foreach (var id in RequestCatalog.SeasonSet(season)) if (_content.Items.Contains(id)) { piece = id; break; }
             }
             if (piece != null) { _house.AddItem(piece); _setPieces.Add(piece); }
-            AddReputation?.Invoke(SeasonSetRep, "Mevsim Defteri");
-            foreach (var m in Household()) if (m.MoodEnabled) m.AddMoodlet(BountifulMood, "Bereketli mevsim", 4, 2.0);
-            Notify?.Invoke($"Mevsim Defteri: {done} iş bitti. {(piece != null ? $"Mevsim takımından {ItemName(piece)} kazanıldı. " : "")}Hane bereketli bir mevsim geçirdi.", 0);
-            Chronicle?.Invoke($"Mevsim Defteri: {done} iş");
+            AddReputation?.Invoke(SeasonSetRep, L("core.req.rep.book"));
+            string mood = Resolve(L("core.req.mood.bountiful"));
+            foreach (var m in Household()) if (m.MoodEnabled) m.AddMoodlet(BountifulMood, mood, 4, 2.0);
+            Notify?.Invoke(piece != null ? L("core.req.n.book_done_piece", ("n", done), ("item", piece)) : L("core.req.n.book_done", ("n", done)), 0);
+            Chronicle?.Invoke(L("core.req.chr.book", ("n", done)));
             return done;
         }
 
@@ -815,6 +846,21 @@ namespace Thatchwick.Core.Life.Requests
 
         public int StoryStepOf(string key) => _storySteps.TryGetValue(key, out int n) ? n : 0;
 
+        /// <summary>Hikâye ilerleme anahtarından metin anahtarı: adlı köylü kendi kimliği, halef mesleği, adsız köylü özelliği.</summary>
+        private string StoryTextKey(string key)
+        {
+            if (key.StartsWith("trait:", StringComparison.Ordinal))
+            {
+                var v = _population.Find(int.TryParse(key.Substring(6), out int id) ? id : 0);
+                if (v != null) foreach (var t in v.TraitIds) if (RequestCatalog.TraitStories.ContainsKey(t)) return t;
+                return key;
+            }
+            int colon = key.IndexOf(':');
+            if (colon < 0) return key;   // adlı köylünün ilk sahibi: "villager.orhan"
+            string defId = key.Substring(0, colon);
+            return _content.Villagers.TryGet(defId, out var def) && def.Role != null ? def.Role : key;
+        }
+
         private Request TryPostStory(Character v, string key, StoryStep[] steps)
         {
             int step = StoryStepOf(key);
@@ -822,7 +868,8 @@ namespace Thatchwick.Core.Life.Requests
             foreach (var r in _requests) if (r.IsOpen && r.StoryKey == key) return null;
             if (BestAffection(v) < StoryThresholds[step]) return null;
             var s = steps[step];
-            var req = NewRequest(RequestKind.Story, key + "#" + step, s.Title, s.Text, v);
+            string textKey = StoryTextKey(key);
+            var req = NewRequest(RequestKind.Story, key + "#" + step, L(RequestKeys.StoryTitle(textKey, step)), L(RequestKeys.StoryText(textKey, step), ("giver", v.Name)), v);
             req.StoryKey = key;
             req.StoryStep = step;
             req.State = RequestState.Accepted;
@@ -832,8 +879,9 @@ namespace Thatchwick.Core.Life.Requests
             if (o.Kind == ObjectiveKind.Talk && o.VillagerId == 0) o.VillagerId = v.Id;
             req.Objectives.Add(o);
             req.Reward = s.Reward.Clone();
+            if (req.Reward.KeepsakeItem != null) req.Reward.KeepsakeLabel = L(RequestKeys.StoryKeep(textKey, step));
             Post(req, announce: false);
-            Notify?.Invoke($"Hikâye ({v.Name}, {step + 1}/{steps.Length}): {s.Title}.", v.Id);
+            Notify?.Invoke(L("core.req.n.story", ("name", v.Name), ("step", step + 1), ("steps", steps.Length), ("title", req.Title)), v.Id);
             return req;
         }
 
@@ -863,7 +911,7 @@ namespace Thatchwick.Core.Life.Requests
                 foreach (var m in _houses.LivingMembers(house))
                     if (m != c && m.Stage >= AgeStage.Teen)
                     {
-                        PostSystemicFavor(m, "rica.funeral", "Cenaze helvası", $"{m.Name}: \"{c.Name} için helva kavuracağız; bir tepsi getirir misin?\"", "item.helva", 1, 2);
+                        PostSystemicFavor(m, "rica.funeral", L("core.req.sys.funeral.title"), L("core.req.sys.funeral.text", ("giver", m.Name), ("dead", c.Name)), "item.helva", 1, 2);
                         break;
                     }
             if (!story && BestAffection(c) < BequestAffection) return null;
@@ -876,16 +924,16 @@ namespace Thatchwick.Core.Life.Requests
                 foreach (var t in RequestCatalog.Bequests) if (t.Role == RequestCatalog.OddBequestRole) { options.Clear(); options.Add(t); break; }
             if (options.Count == 0) return null;
             var tpl = options[_rng.Next(options.Count)];
-            var req = NewRequest(RequestKind.Bequest, tpl.Id, tpl.Title, tpl.Text, c);
+            var req = NewRequest(RequestKind.Bequest, tpl.Id, L(RequestKeys.Title(tpl.Id)), L(RequestKeys.Text(tpl.Id), ("giver", c.Name)), c);
             req.State = RequestState.Accepted;
             req.AcceptedDay = Now();
             req.Read = true;
             req.Objectives.Add(tpl.Objective.Clone());
-            req.Reward = new Reward { Affinity = 0, Memory = HouseMemory.Bequest, KeepsakeItem = "item.elder_tin_cup", KeepsakeLabel = $"{c.Name}'in vasiyeti", Reputation = 3 };
+            req.Reward = new Reward { Affinity = 0, Memory = HouseMemory.Bequest, KeepsakeItem = "item.elder_tin_cup", KeepsakeLabel = L("core.req.keep.bequest", ("name", c.Name)), Reputation = 3 };
             if (!_content.Items.Contains(req.Reward.KeepsakeItem)) req.Reward.KeepsakeItem = null;
             Post(req, announce: false);
-            Notify?.Invoke($"{c.Name} bir vasiyet bıraktı: \"{tpl.Title}\" (İstekler → Hikâyeler).", c.Id);
-            Chronicle?.Invoke($"{c.Name}'in vasiyeti: {tpl.Title}");
+            Notify?.Invoke(L("core.req.n.bequest", ("name", c.Name), ("title", req.Title)), c.Id);
+            Chronicle?.Invoke(L("core.req.chr.bequest", ("name", c.Name), ("title", req.Title)));
             return req;
         }
 
@@ -903,9 +951,9 @@ namespace Thatchwick.Core.Life.Requests
             r2.State = RequestState.Posted;
             r2.Read = true;
             r2.VowedByName = c.Name;
-            r2.Text = $"{c.Name} ölmeden önce bunu dilemişti: {tpl.Text}";
+            r2.Text = L("core.req.vow.last_wish", ("name", c.Name), ("text", L(RequestKeys.Text(tpl.Id))));
             Post(r2, announce: false);
-            Notify?.Invoke($"{c.Name}'in son dileği bir adak olabilir: \"{tpl.Title}\" (İstekler → Adaklar).", c.Id);
+            Notify?.Invoke(L("core.req.n.last_wish", ("name", c.Name), ("title", r2.Title)), c.Id);
             return r2;
         }
 
@@ -921,30 +969,30 @@ namespace Thatchwick.Core.Life.Requests
             }
         }
 
-        public string CanVow(string templateId, Character vower)
+        public LocText CanVow(string templateId, Character vower)
         {
-            if (vower == null || vower.IsDead || vower.IsVillager) return "Hane üyesi seç.";
-            if (vower.Stage < AgeStage.YoungAdult) return "Adağı yetişkin biri adar.";
+            if (vower == null || vower.IsDead || vower.IsVillager) return L("core.req.err.pick_member");
+            if (vower.Stage < AgeStage.YoungAdult) return L("core.req.err.vow_adult");
             int open = 0;
             foreach (var r in _requests) if (r.Kind == RequestKind.Vow && r.State == RequestState.Accepted) open++;
-            if (open >= MaxVows) return $"Aynı anda en çok {MaxVows} adak.";
-            if (_vowsDone.Contains(templateId)) return "Bu adak yerine getirildi.";
-            foreach (var r in _requests) if (r.IsOpen && r.TemplateId == templateId && r.State == RequestState.Accepted) return "Bu adak zaten adandı.";
-            return null;
+            if (open >= MaxVows) return L("core.req.err.vow_max", ("n", MaxVows));
+            if (_vowsDone.Contains(templateId)) return L("core.req.err.vow_done");
+            foreach (var r in _requests) if (r.IsOpen && r.TemplateId == templateId && r.State == RequestState.Accepted) return L("core.req.err.vow_taken");
+            return default;
         }
 
         /// <summary>Hane reisi (ya da yetişkin biri) adak adar. Yaşlının son dileği olarak askıda duran adak da böyle kabul edilir.</summary>
-        public Request Vow(string templateId, Character vower, out string message)
+        public Request Vow(string templateId, Character vower, out LocText message)
         {
             message = CanVow(templateId, vower);
-            if (message != null) return null;
+            if (!message.IsEmpty) return null;
             Request r = null;
             foreach (var x in _requests) if (x.IsOpen && x.TemplateId == templateId && x.Kind == RequestKind.Vow) r = x;
             if (r == null)
             {
                 VowTemplate tpl = null;
                 foreach (var t in RequestCatalog.Vows) if (t.Id == templateId) tpl = t;
-                if (tpl == null) { message = "Adak bulunamadı."; return null; }
+                if (tpl == null) { message = L("core.req.err.vow_missing"); return null; }
                 r = Post(MakeVow(tpl, vower), announce: false);
             }
             r.State = RequestState.Accepted;
@@ -952,21 +1000,21 @@ namespace Thatchwick.Core.Life.Requests
             r.VowedBy = vower.Id;
             if (string.IsNullOrEmpty(r.VowedByName)) r.VowedByName = vower.Name;
             r.VowedDay = Now();
-            string note = $"{vower.Name} adak adadı: {r.Title}";
+            var note = L("core.req.chr.vowed", ("name", vower.Name), ("title", r.Title));
             Chronicle?.Invoke(note);
-            vower.AddChronicle(SavedText.Encode("core.chronicle.vow_made", ("name", vower.Name), ("title", r.Title)));
-            message = note + ".";
+            vower.AddChronicle(SavedText.Encode("core.chronicle.vow_made", ("name", vower.Name), ("title", SavedTitle(r.Title))));
+            message = note;
             return r;
         }
 
         private Request MakeVow(VowTemplate tpl, Character vower)
         {
-            var r = NewRequest(RequestKind.Vow, tpl.Id, tpl.Title, tpl.Text, null);
-            r.GiverName = vower?.Name ?? "Hane";
+            var r = NewRequest(RequestKind.Vow, tpl.Id, L(RequestKeys.Title(tpl.Id)), L(RequestKeys.Text(tpl.Id)), null);
+            r.GiverName = vower?.Name ?? "";
             r.Read = true;
             foreach (var st in tpl.Stages)
             {
-                var copy = new VowStage { Title = st.Title, Reward = st.Reward.Clone() };
+                var copy = new VowStage { TitleKey = st.TitleKey, Reward = st.Reward.Clone() };
                 foreach (var o in st.Objectives) copy.Objectives.Add(o.Clone());
                 r.Stages.Add(copy);
             }
@@ -985,64 +1033,64 @@ namespace Thatchwick.Core.Life.Requests
             return n;
         }
 
-        public string CanAccept(Request r)
+        public LocText CanAccept(Request r)
         {
-            if (r == null || r.State != RequestState.Posted) return "İlan kalktı.";
-            if (!r.Read) return "Önce panodaki ilanı oku (meydandaki ilan tahtası).";
+            if (r == null || r.State != RequestState.Posted) return L("core.req.err.gone");
+            if (!r.Read) return L("core.req.err.unread");
             if (r.Kind == RequestKind.Favor)
             {
                 int n = 0;
                 foreach (var x in _requests) if (x.Kind == RequestKind.Favor && x.State == RequestState.Accepted) n++;
-                if (n >= MaxFavorsAccepted) return $"En çok {MaxFavorsAccepted} rica birden üstlenilir.";
+                if (n >= MaxFavorsAccepted) return L("core.req.err.favor_max", ("n", MaxFavorsAccepted));
             }
             if (r.Kind == RequestKind.Order)
             {
                 int n = 0;
                 foreach (var x in _requests) if (x.Kind == RequestKind.Order && x.State == RequestState.Accepted) n++;
-                if (n >= MaxOrders) return $"En çok {MaxOrders} sipariş birden (Kâhyalık {StewardOrderLevel}'le +1).";
+                if (n >= MaxOrders) return L("core.req.err.order_max", ("n", MaxOrders), ("level", StewardOrderLevel));
             }
-            if (r.Kind == RequestKind.Call) return "Çağrıda bir yol seç.";
-            if (r.Kind == RequestKind.Vow) return "Adağı bir yetişkin adar.";
-            return null;
+            if (r.Kind == RequestKind.Call) return L("core.req.err.pick_path");
+            if (r.Kind == RequestKind.Vow) return L("core.req.err.vow_adult");
+            return default;
         }
 
-        public bool Accept(int id, out string message)
+        public bool Accept(int id, out LocText message)
         {
             var r = Get(id);
             message = CanAccept(r);
-            if (message != null) return false;
+            if (!message.IsEmpty) return false;
             r.State = RequestState.Accepted;
             r.AcceptedDay = Now();
             if (r.Days > 0) r.Deadline = Now() + r.Days;
-            message = $"Üstlenildi: {r.Title} ({TimeLeft(r)}).";
+            message = L("core.req.msg.accepted", ("title", r.Title), ("time", TimeLeft(r)));
             return true;
         }
 
         /// <summary>Bırak: rica, mevsim işi ve hikâye cezasız; kabul edilmiş sipariş itibar −2; adak kronikte "yarım kaldı".</summary>
-        public bool Drop(int id, out string message)
+        public bool Drop(int id, out LocText message)
         {
             var r = Get(id);
-            message = null;
-            if (r == null || !r.IsOpen) { message = "İstek yok."; return false; }
+            message = default;
+            if (r == null || !r.IsOpen) { message = L("core.req.err.none"); return false; }
             if (r.Kind == RequestKind.Order && r.State == RequestState.Accepted)
             {
                 r.State = RequestState.Failed;
-                AddReputation?.Invoke(FailedOrderRep, $"sipariş bırakıldı: {r.Title}");
+                AddReputation?.Invoke(FailedOrderRep, L("core.req.rep.order_dropped", ("title", r.Title)));
                 var giver = _population.Find(r.GiverId);
-                if (giver != null) Memory.Add(giver, HouseMemory.FailedOrder, $"{r.Title} bırakıldı");
-                message = $"Sipariş bırakıldı; itibar {FailedOrderRep}.";
+                if (giver != null) Memory.Add(giver, HouseMemory.FailedOrder, "order_dropped:" + r.TemplateId);
+                message = L("core.req.msg.order_dropped", ("rep", FailedOrderRep));
                 return true;
             }
             if (r.Kind == RequestKind.Vow)
             {
-                string note = $"Adak yarım kaldı: {r.Title} ({r.Stage}/{r.Stages.Count} aşama)";
+                var note = L("core.req.chr.vow_dropped", ("title", r.Title), ("stage", r.Stage), ("stages", r.Stages.Count));
                 Chronicle?.Invoke(note);
                 r.State = RequestState.Dropped;
-                message = note + ".";
+                message = note;
                 return true;
             }
             r.State = RequestState.Dropped;
-            message = $"Bırakıldı: {r.Title}.";
+            message = L("core.req.msg.dropped", ("title", r.Title));
             return true;
         }
 
@@ -1050,12 +1098,12 @@ namespace Thatchwick.Core.Life.Requests
         /// Teslim et: elde olan eşyalar ve akçe hedeflere gider (kısmi teslim olur). Verenin yanında olunmalı; ulakla 2 akçeye
         /// uzaktan gönderilir (belge 46 §10). Vasiyet ve adakta yanında olmak gerekmez.
         /// </summary>
-        public bool Deliver(int id, Character by, bool courier, out string message)
+        public bool Deliver(int id, Character by, bool courier, out LocText message)
         {
             var r = Get(id);
-            message = null;
-            if (r == null || !r.IsOpen) { message = "İstek yok."; return false; }
-            if (!InWindow(r)) { message = $"Mevsimin {r.DayFrom}-{r.DayTo}. günleri arasında."; return false; }
+            message = default;
+            if (r == null || !r.IsOpen) { message = L("core.req.err.none"); return false; }
+            if (!InWindow(r)) { message = L("core.req.err.window", ("from", r.DayFrom), ("to", r.DayTo)); return false; }
             if (r.State == RequestState.Posted)
             {
                 if (!Accept(id, out message)) return false;
@@ -1064,7 +1112,7 @@ namespace Thatchwick.Core.Life.Requests
             bool needPresence = giver != null && !giver.IsDead && r.Kind != RequestKind.Vow && r.Kind != RequestKind.Bequest && r.Kind != RequestKind.Seasonal;
             if (needPresence && !courier && by != null && Near != null && !Near(by, giver))
             {
-                message = $"{giver.Name}'in yanına git ya da ulakla gönder ({CourierFee} akçe).";
+                message = L("core.req.err.go_to", ("name", giver.Name), ("fee", CourierFee));
                 return false;
             }
             bool any = false;
@@ -1073,18 +1121,25 @@ namespace Thatchwick.Core.Life.Requests
                 if (o.Done) continue;
                 if (o.Kind == ObjectiveKind.Deliver)
                 {
-                    int give = Math.Min(o.Left, _house.Count(o.ItemId));
-                    for (int i = 0; i < give; i++) if (_house.TryTakeItem(o.ItemId)) { o.Progress++; any = true; }
+                    // Hedefi karşılayan en düşük kalite önce (53 §4.7); siparişin derecesi teslim edilenlerin en düşüğü.
+                    bool graded = _content.Items.TryGet(o.ItemId, out var od) && od.HasQuality;
+                    int give = Math.Min(o.Left, _house.Count(o.ItemId, o.MinQuality));
+                    for (int i = 0; i < give; i++)
+                        if (_house.TryTake(o.ItemId, TakePolicy.Lowest, out var taken, o.MinQuality))
+                        {
+                            o.Progress++; any = true;
+                            if (graded) r.DeliveredQuality = r.DeliveredQuality < 0 ? taken.Quality : Math.Min(r.DeliveredQuality, taken.Quality);
+                        }
                 }
                 else if (o.Kind == ObjectiveKind.Pay && _house.Akce >= o.Left)
                 {
                     if (_house.TrySpend(o.Left)) { o.Progress = o.Count; any = true; }
                 }
             }
-            if (!any) { message = "Teslim edecek bir şey yok."; return false; }
-            if (needPresence && courier && !_house.TrySpend(CourierFee)) { message = $"Ulak için {CourierFee} akçe gerekli."; return false; }
-            if (!CheckComplete(r, by)) message = "Kısmen teslim edildi.";
-            else message = r.State == RequestState.Done ? $"Teslim edildi: {r.Title}." : $"Aşama tamam: {r.Title}.";
+            if (!any) { message = L("core.req.err.nothing"); return false; }
+            if (needPresence && courier && !_house.TrySpend(CourierFee)) { message = L("core.req.err.courier_fee", ("fee", CourierFee)); return false; }
+            if (!CheckComplete(r, by)) message = L("core.req.msg.partial");
+            else message = r.State == RequestState.Done ? L("core.req.msg.delivered", ("title", r.Title)) : L("core.req.msg.stage_done", ("title", r.Title));
             return true;
         }
 
@@ -1093,16 +1148,16 @@ namespace Thatchwick.Core.Life.Requests
         /// hedef eşya ile çevrilir; görev dönünce eşya elde yeterliyse istek kendiliğinden teslim edilir. Uygun yer yoksa kişi
         /// yalnızca işaretlenir (elle yapılır).
         /// </summary>
-        public bool Assign(int id, Character c, out string message)
+        public bool Assign(int id, Character c, out LocText message)
         {
             var r = Get(id);
-            message = null;
-            if (r == null || !r.IsOpen) { message = "İstek yok."; return false; }
-            if (c == null || c.IsDead || c.IsVillager) { message = "Hane üyesi seç."; return false; }
-            if (r.Kind == RequestKind.Order && c.Stage <= AgeStage.Child) { message = "Çocuk siparişe atanamaz."; return false; }
-            if (r.Kind == RequestKind.Call) { message = "Çağrıda bir yol seç."; return false; }
+            message = default;
+            if (r == null || !r.IsOpen) { message = L("core.req.err.none"); return false; }
+            if (c == null || c.IsDead || c.IsVillager) { message = L("core.req.err.pick_member"); return false; }
+            if (r.Kind == RequestKind.Order && c.Stage <= AgeStage.Child) { message = L("core.req.err.child_order"); return false; }
+            if (r.Kind == RequestKind.Call) { message = L("core.req.err.pick_path"); return false; }
             if (r.State == RequestState.Posted && !Accept(id, out message)) return false;
-            message = null;
+            message = default;
             r.AssignedTo = c.Id;
             if (Duties != null)
                 foreach (var o in r.CurrentObjectives)
@@ -1113,13 +1168,12 @@ namespace Thatchwick.Core.Life.Requests
                     var d = Duties.Start(order, out var why);
                     if (d != null)
                     {
-                        var place = TimedDutyService.Place(order.PlaceId);
-                        message = $"{c.Name} {place?.Name.ToLowerInvariant()} görevine çıktı ({r.Title}).";
+                        message = L("core.req.msg.assigned_duty", ("name", c.Name), ("place", TimedDutyService.PlaceText(order.PlaceId)), ("title", r.Title));
                         return true;
                     }
                     message = why;
                 }
-            message = message != null ? $"{c.Name} atandı; göreve çıkamadı: {message}" : $"{c.Name} bu işe atandı (elle yapılır).";
+            message = !message.IsEmpty ? L("core.req.msg.assigned_failed", ("name", c.Name), ("why", message)) : L("core.req.msg.assigned_manual", ("name", c.Name));
             return true;
         }
 
@@ -1147,7 +1201,7 @@ namespace Thatchwick.Core.Life.Requests
                     double left = Duties.HoursFor(order);   // akşama kadar; yaş tavanını aşmasın
                     if (left >= 0.5) order.Hours = Math.Min(left, TimedDutyService.MaxHours(c, place.Kind));
                 }
-                if (Duties.CanStart(c, order) == null) return order;
+                if (Duties.CanStart(c, order).IsEmpty) return order;
             }
             return null;
         }
@@ -1211,7 +1265,7 @@ namespace Thatchwick.Core.Life.Requests
                 }
                 if (moved)
                 {
-                    if (r.TemplateId == "rica.shepherd.lamb") Notify?.Invoke($"{c.Name} kaybolan kuzuyu buldu; {r.GiverName}'a götürmeli.", c.Id);
+                    if (r.TemplateId == "rica.shepherd.lamb") Notify?.Invoke(L("core.req.n.lamb_found", ("name", c.Name), ("giver", r.GiverName)), c.Id);
                     CheckComplete(r, c);
                 }
             }
@@ -1232,7 +1286,7 @@ namespace Thatchwick.Core.Life.Requests
                     r.ChosenPath = -1;
                     r.State = RequestState.Posted;
                     r.Deadline = Now() + 0.25;
-                    Notify?.Invoke($"{res.CharacterName} işi yarım bırakıp döndü; \"{r.Title}\" hâlâ bekliyor.", res.CharacterId);
+                    Notify?.Invoke(L("core.req.n.call_half", ("name", res.CharacterName), ("title", r.Title)), res.CharacterId);
                 }
                 return;
             }
@@ -1256,16 +1310,12 @@ namespace Thatchwick.Core.Life.Requests
                 r.AssignedTo = 0;
                 bool enough = true;
                 foreach (var o in r.CurrentObjectives) if (o.Kind == ObjectiveKind.Deliver && !o.Done && _house.Count(o.ItemId) < o.Left) enough = false;
-                if (enough && Deliver(r.Id, c, courier: true, out var msg)) Notify?.Invoke($"{res.CharacterName} döndü; {r.Title}: {msg}", res.CharacterId);
-                else if (!enough) Notify?.Invoke($"{res.CharacterName} döndü ama \"{r.Title}\" için yetmedi.", res.CharacterId);
+                if (enough && Deliver(r.Id, c, courier: true, out var msg)) Notify?.Invoke(L("core.req.n.duty_delivered", ("name", res.CharacterName), ("msg", msg)), res.CharacterId);
+                else if (!enough) Notify?.Invoke(L("core.req.n.duty_short", ("name", res.CharacterName), ("title", r.Title)), res.CharacterId);
             }
         }
 
-        private static string FindPlaceId(TimedDutyResult res)
-        {
-            foreach (var p in TimedDutyService.Places) if (p.Kind == res.Kind && p.Name == res.PlaceName) return p.Id;
-            return null;
-        }
+        private static string FindPlaceId(TimedDutyResult res) => res.PlaceId;
 
         /// <summary>Komşu hanede bebek doğdu: beşik ya da battaniye ricası; hane hafızası yeni kuşağa %25 başlangıç yakınlığı verir.</summary>
         public void OnBabyBorn(Character baby, Character mother)
@@ -1277,8 +1327,8 @@ namespace Thatchwick.Core.Life.Requests
                 int init = Memory.InitialAffection(key);
                 if (init > 0) foreach (var m in Household()) Family.SetAffection(m.Id, baby.Id, Math.Max(Family.Affection(m.Id, baby.Id), init));
                 bool cradle = _rng.NextDouble() < 0.5;
-                PostSystemicFavor(mother, cradle ? "rica.cradle" : "rica.blanket", cradle ? "Beşik" : "Bebek battaniyesi",
-                    $"{mother.Name}: \"Bebek geldi ama {(cradle ? "beşiğimiz yok" : "battaniye yetmiyor")}; yardım eder misin?\"",
+                string sys = cradle ? "cradle" : "blanket";
+                PostSystemicFavor(mother, "rica." + sys, L("core.req.sys." + sys + ".title"), L("core.req.sys." + sys + ".text", ("giver", mother.Name)),
                     cradle ? "item.cradle" : "item.blanket", 1, 4);
                 return;
             }
@@ -1297,7 +1347,7 @@ namespace Thatchwick.Core.Life.Requests
         {
             var giver = a != null && !a.IsDead ? a : b;
             if (giver == null) return null;
-            var r = NewRequest(RequestKind.Order, "order.wedding:" + giver.Id, "Düğün sofrası", $"{giver.Name}: \"Düğünümüz var; sofraya ekmek ve mum lazım.\"", giver);
+            var r = NewRequest(RequestKind.Order, "order.wedding:" + giver.Id, L("core.req.sys.wedding.title"), L("core.req.sys.wedding.text", ("giver", giver.Name)), giver);
             r.Days = OrderDays;
             r.Deadline = Now() + OrderDays;
             r.Penalty = FailedOrderRep;
@@ -1335,21 +1385,21 @@ namespace Thatchwick.Core.Life.Requests
                 var stage = r.Stages[r.Stage];
                 Apply(stage.Reward, r, by);
                 string who = by?.Name ?? HeadName();
-                Chronicle?.Invoke($"Adak \"{r.Title}\": {stage.Title} ({who})");
+                Chronicle?.Invoke(L("core.req.chr.stage", ("title", r.Title), ("stage", L(stage.TitleKey)), ("name", who)));
                 r.Stage++;
                 if (r.Stage < r.Stages.Count)
                 {
-                    Notify?.Invoke($"Adak \"{r.Title}\": {stage.Title} tamam. Sıradaki: {r.Stages[r.Stage].Title}.", 0);
+                    Notify?.Invoke(L("core.req.n.stage", ("title", r.Title), ("stage", L(stage.TitleKey)), ("next", L(r.Stages[r.Stage].TitleKey))), 0);
                     return true;
                 }
                 _vowsDone.Add(r.TemplateId);
-                string note = r.VowedByName != null && who != r.VowedByName
-                    ? $"{r.Title}: {r.VowedByName} başlattı, {who} bitirdi."
-                    : $"{r.Title}: adak yerine geldi.";
+                var note = r.VowedByName != null && who != r.VowedByName
+                    ? L("core.req.chr.vow_done_by", ("title", r.Title), ("first", r.VowedByName), ("last", who))
+                    : L("core.req.chr.vow_done", ("title", r.Title));
                 Chronicle?.Invoke(note);
                 string savedNote = r.VowedByName != null && who != r.VowedByName
-                    ? SavedText.Encode("core.chronicle.vow_finished_by", ("title", r.Title), ("starter", r.VowedByName), ("finisher", who))
-                    : SavedText.Encode("core.chronicle.vow_done", ("title", r.Title));
+                    ? SavedText.Encode("core.chronicle.vow_finished_by", ("title", SavedTitle(r.Title)), ("starter", r.VowedByName), ("finisher", who))
+                    : SavedText.Encode("core.chronicle.vow_done", ("title", SavedTitle(r.Title)));
                 foreach (var m in Household()) m.AddChronicle(savedNote);
             }
             Complete(r, by, r.Reward);
@@ -1359,17 +1409,45 @@ namespace Thatchwick.Core.Life.Requests
         private string HeadName()
         {
             foreach (var m in Household()) if (m.Stage >= AgeStage.YoungAdult) return m.Name;
-            return "hane";
+            return "";
         }
+
+        /// <summary>
+        /// Sipariş ödülü kaliteye göre (46 §11, 53 §4.5): akçe ×1 / 1,5 / 2 / 3, itibar +0 / 2 / 4 / 6. Has ve üstünde %10 usta sözü
+        /// (kronik). Derece teslim edilenlerin en düşük kalitesidir.
+        /// </summary>
+        public Reward QualityReward(Request r, Reward reward)
+        {
+            if (r == null || reward == null || r.Kind != RequestKind.Order || r.DeliveredQuality <= 0) return reward;
+            int q = r.DeliveredQuality;
+            var w = reward.Clone();
+            w.Akce = (int)Math.Round(reward.Akce * ItemQuality.OrderAkceFactor(q));
+            w.Reputation = reward.Reputation + ItemQuality.OrderReputation(q);
+            return w;
+        }
+
+        /// <summary>Has ve üstü siparişte usta sözü şansı.</summary>
+        public const double MasterWordChance = 0.10;
 
         private void Complete(Request r, Character by, Reward reward)
         {
+            reward = QualityReward(r, reward);
+            if (r.Kind == RequestKind.Order && r.DeliveredQuality >= ItemQuality.Superior && _rng.NextDouble() < MasterWordChance)
+            {
+                var giverName = _population.Find(r.GiverId)?.Name ?? r.GiverName;
+                var word = L("core.req.chr.master_word", ("giver", giverName), ("title", r.Title));
+                Chronicle?.Invoke(word);
+                string wordText = Resolve(word);
+                foreach (var m in Household()) m.AddChronicle(wordText);
+            }
             r.State = RequestState.Done;
             r.AssignedTo = 0;
             Apply(reward, r, by);
             if (r.Kind == RequestKind.Story && r.StoryKey != null) _storySteps[r.StoryKey] = Math.Max(StoryStepOf(r.StoryKey), r.StoryStep + 1);
             if (r.Kind == RequestKind.Order) PlayerScore += reward.Reputation;
-            string text = r.Kind == RequestKind.Vow ? $"Adak yerine geldi: {r.Title}! {RewardText(reward)}." : $"{Request.KindName(r.Kind)} bitti: {r.Title}. {RewardText(reward)}.";
+            var text = r.Kind == RequestKind.Vow
+                ? L("core.req.n.vow_fulfilled", ("title", r.Title), ("reward", RewardSummary(reward)))
+                : L("core.req.n.done", ("kind", L(Request.KindKey(r.Kind))), ("title", r.Title), ("reward", RewardSummary(reward)));
             Notify?.Invoke(text, by?.Id ?? 0);
             Completed?.Invoke(r);
         }
@@ -1389,23 +1467,21 @@ namespace Thatchwick.Core.Life.Requests
             if (w.Reputation != 0) AddReputation?.Invoke(w.Reputation, r.Title);
             var xpTo = by ?? Find(r.AssignedTo);
             if (w.Xp > 0 && w.XpSkill.HasValue && xpTo != null) xpTo.GainSkillXp(w.XpSkill.Value, w.Xp);
-            if (w.Seals > 0 && Legacy != null) Legacy.Award(SealSource.Other, w.Seals, Now(), "Adak: " + r.Title);
-            if (w.KeepsakeItem != null && Keepsakes != null) Keepsakes.Grant(w.KeepsakeItem, w.KeepsakeLabel ?? r.Title, by?.Id ?? 0);
-            if (w.Memory != 0 && giver != null) Memory.Add(giver, w.Memory, r.Title);
-            if (!string.IsNullOrEmpty(w.MoodText) && by != null && by.MoodEnabled) by.AddMoodlet("mood.request_" + r.Kind.ToString().ToLowerInvariant(), w.MoodText, w.MoodValue, 1.0);
+            if (w.Seals > 0 && Legacy != null) Legacy.Award(SealSource.Other, w.Seals, Now(), Resolve(L("core.req.seal_note", ("title", r.Title))));
+            if (w.KeepsakeItem != null && Keepsakes != null) Keepsakes.Grant(w.KeepsakeItem, Resolve(w.KeepsakeLabel.IsEmpty ? r.Title : w.KeepsakeLabel), by?.Id ?? 0);
+            if (w.Memory != 0 && giver != null) Memory.Add(giver, w.Memory, r.TemplateId);
         }
 
         private Character Find(int id) => id != 0 ? _population.Find(id) : null;
 
         // ================================================================== yardımcılar
 
-        private Request NewRequest(RequestKind kind, string template, string title, string text, Character giver)
+        private Request NewRequest(RequestKind kind, string template, LocText title, LocText text, Character giver)
         {
             var r = new Request
             {
-                Id = _nextId++, Kind = kind, TemplateId = template, Title = title, PostedDay = Now(),
-                GiverId = giver?.Id ?? 0, GiverName = giver?.Name ?? "Köy",
-                Text = text != null && giver != null ? text.Replace("{giver}", giver.Name) : text
+                Id = _nextId++, Kind = kind, TemplateId = template, Title = title, Text = text, PostedDay = Now(),
+                GiverId = giver?.Id ?? 0, GiverName = giver?.Name ?? ""
             };
             if (giver != null)
             {
@@ -1423,7 +1499,7 @@ namespace Thatchwick.Core.Life.Requests
             _requests.Add(r);
             Posted?.Invoke(r);
             if (announce && OnBoard(r))
-                Notify?.Invoke(r.Read ? $"Panoda yeni {Request.KindName(r.Kind).ToLowerInvariant()}: {r.Title} ({r.GiverName})." : "İlan tahtasına yeni bir kâğıt asıldı.", r.GiverId);
+                Notify?.Invoke(r.Read ? L("core.req.n.posted", ("kind", L(Request.KindKey(r.Kind))), ("title", r.Title), ("giver", r.GiverName)) : L("core.req.n.posted_unread"), r.GiverId);
             return r;
         }
 

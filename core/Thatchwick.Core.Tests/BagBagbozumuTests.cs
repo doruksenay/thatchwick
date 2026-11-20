@@ -21,7 +21,8 @@ namespace Thatchwick.Core.Tests
             var barrel = db.Items.Get("item.brew_barrel");
             Assert.Contains(barrel.Interactions, i => i.Id == "craft:vinegar_grape" && !i.AdultPack);
             Assert.True(barrel.Interactions.First(i => i.Id == "craft:wine").AdultPack);
-            Assert.True(barrel.Interactions.First(i => i.Id == "craft:wine_age").AdultPack);
+            Assert.DoesNotContain(barrel.Interactions, i => i.Id == "craft:wine_age");   // şarap artık mahzende kendiliğinden yıllanır (belge 53)
+            Assert.True(db.Items.Get("item.wine_new").AgeStepDays > 0f);
             var pot = db.Items.Get("item.cooking_pot");
             Assert.Contains(pot.Interactions, i => i.Id == "make_pekmez_grape" && !i.AdultPack);
             Assert.True(pot.Interactions.First(i => i.Id == "drink_wine").AdultPack);

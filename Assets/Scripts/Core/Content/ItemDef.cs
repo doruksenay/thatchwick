@@ -328,6 +328,13 @@ namespace Thatchwick.Core.Content
         public int Comfort { get; set; }
         /// <summary>Taze yiyecek bozulma süresi (oyun günü); 0 = çürümez.</summary>
         public float SpoilDays { get; set; }
+        /// <summary>Kalite sınıfı (53 §4.2): içerikten ("quality") ya da etiket ve tariften (<see cref="ContentMapper"/>).</summary>
+        public ItemQualityClass QualityClass { get; set; }
+        /// <summary>İçerikte açıkça yazılan sınıf adı (none, goods, crafted); null ise türetilir.</summary>
+        public string QualityClassName { get; set; }
+        public bool HasQuality => QualityClass != ItemQualityClass.None;
+        /// <summary>Mahzende olgunlaşma: bu kadar günde bir kalite basamağı (peynir, pastırma, şarap, sirke, bal şarabı). 0 = olgunlaşmaz.</summary>
+        public float AgeStepDays { get; set; }
         /// <summary>Kiler eşyası: yiyecek bozulmasını bu çarpanla yavaşlatır (0 = kiler değil).</summary>
         public float Preserves { get; set; }
         public List<string> Variants { get; set; } = new List<string>();

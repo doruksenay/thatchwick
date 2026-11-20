@@ -5,18 +5,16 @@ using Thatchwick.Core.Content;
 namespace Thatchwick.Core.Build
 {
     /// <summary>
-    /// Hanenin ortak kasası: akçe ve envanter (yerleştirilmemiş eşyalar, tanım kimliğine göre sayı).
+    /// Hanenin ortak kasası: akçe ve envanter (yerleştirilmemiş eşyalar; kimlik, kalite, durum ve kaynağa göre yığınlar).
     /// Yapı modunda satın alınanlar buraya girer, buradan yerleştirilir.
     /// </summary>
     public sealed class Household
     {
-        private readonly Dictionary<string, int> _inventory = new Dictionary<string, int>(StringComparer.Ordinal);
-        // Envanterdeki hasarlı ve onarılmış adetler (kalan sağlamdır). Çöken raftan düşen eşya hasarlı gelir (27-ev-dekorasyonu).
-        private readonly Dictionary<string, int> _damaged = new Dictionary<string, int>(StringComparer.Ordinal);
-        private readonly Dictionary<string, int> _repaired = new Dictionary<string, int>(StringComparer.Ordinal);
-        // Pazardan alınmış adetler (D2: doldurulan dekorda "Kendi emeğimiz" eki yalnızca hanenin kendi ürününe).
-        // Tüketimde hangisinin gittiği izlenmez; alınmış sayısı envanteri aşamaz (Bought ≤ Count).
-        private readonly Dictionary<string, int> _bought = new Dictionary<string, int>(StringComparer.Ordinal);
+        // Yığınlar (Project belgesi 53 §5.1): kimlik → (anahtar, adet) listesi. Anahtar kalite, durum (27: hasarlı, onarılmış),
+        // pazardan alınmış mı (D2: "Kendi emeğimiz" yalnızca hanenin kendi ürününe) ve ustayı taşır. Kimlik başına toplam önbellekte.
+        private sealed class Stack { public ItemKey Key; public int Count; }
+        private readonly Dictionary<string, List<Stack>> _stacks = new Dictionary<string, List<Stack>>(StringComparer.Ordinal);
+        private readonly Dictionary<string, int> _totals = new Dictionary<string, int>(StringComparer.Ordinal);
         private readonly HashSet<string> _shopUnlocks = new HashSet<string>(StringComparer.Ordinal);
 
         /// <summary>Köyde açılan satış (ör. "glassworks": çömlekçi cam eşya satar). Yeni açıldıysa true.</summary>
@@ -75,131 +73,277 @@ namespace Thatchwick.Core.Build
             return true;
         }
 
-        public int Count(string itemId) => itemId != null && _inventory.TryGetValue(itemId, out int n) ? n : 0;
+        public int Count(string itemId) => itemId != null && _totals.TryGetValue(itemId, out int n) ? n : 0;
+
+        /// <summary>En az bu kalitedeki adet.</summary>
+        public int Count(string itemId, int minQuality)
+        {
+            if (minQuality <= 0) return Count(itemId);
+            int n = 0;
+            if (itemId != null && _stacks.TryGetValue(itemId, out var list))
+                foreach (var st in list) if (st.Key.Quality >= minQuality) n += st.Count;
+            return n;
+        }
+
+        /// <summary>Kalite başına adet (indeks = kalite, 0..4).</summary>
+        public int[] QualityCounts(string itemId)
+        {
+            var a = new int[ItemQuality.Max + 1];
+            if (itemId != null && _stacks.TryGetValue(itemId, out var list))
+                foreach (var st in list) a[st.Key.Quality] += st.Count;
+            return a;
+        }
+
+        /// <summary>En iyi kalite (eşya yoksa -1).</summary>
+        public int BestQuality(string itemId)
+        {
+            int best = -1;
+            if (itemId != null && _stacks.TryGetValue(itemId, out var list))
+                foreach (var st in list) if (st.Count > 0 && st.Key.Quality > best) best = st.Key.Quality;
+            return best;
+        }
+
+        /// <summary>Bir eşyanın yığınları (kaliteye, sonra duruma göre sıralı).</summary>
+        public List<KeyValuePair<ItemKey, int>> Stacks(string itemId)
+        {
+            var result = new List<KeyValuePair<ItemKey, int>>();
+            if (itemId != null && _stacks.TryGetValue(itemId, out var list))
+                foreach (var st in list) if (st.Count > 0) result.Add(new KeyValuePair<ItemKey, int>(st.Key, st.Count));
+            result.Sort((a, b) => a.Key.Quality != b.Key.Quality ? a.Key.Quality.CompareTo(b.Key.Quality)
+                : a.Key.Condition != b.Key.Condition ? a.Key.Condition.CompareTo(b.Key.Condition)
+                : a.Key.Bought != b.Key.Bought ? a.Key.Bought.CompareTo(b.Key.Bought) : a.Key.Maker.CompareTo(b.Key.Maker));
+            return result;
+        }
+
+        /// <summary>Bütün yığınlar (kayıt), kimliğe göre sıralı.</summary>
+        public List<KeyValuePair<ItemKey, int>> AllStacks()
+        {
+            var ids = new List<string>(_stacks.Keys);
+            ids.Sort(string.CompareOrdinal);
+            var result = new List<KeyValuePair<ItemKey, int>>();
+            foreach (var id in ids) result.AddRange(Stacks(id));
+            return result;
+        }
 
         public void AddItem(string itemId, int count = 1) => AddItem(itemId, count, ItemCondition.Sound);
 
-        public void AddItem(string itemId, int count, ItemCondition condition)
+        public void AddItem(string itemId, int count, ItemCondition condition) => Add(new ItemKey(itemId, 0, condition), count);
+
+        /// <summary>Kaliteli ekleme (53): kalite taşımayan eşyada da anahtar olduğu gibi tutulur; kalitesizliği içerik belirler.</summary>
+        public void AddItem(string itemId, int count, int quality) => Add(new ItemKey(itemId, quality), count);
+
+        public void Add(ItemKey key, int count)
         {
-            if (string.IsNullOrWhiteSpace(itemId)) throw new ArgumentException("Eşya kimliği boş.", nameof(itemId));
+            if (string.IsNullOrWhiteSpace(key.Id)) throw new ArgumentException("Eşya kimliği boş.", nameof(key));
             if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count));
-            _inventory[itemId] = Count(itemId) + count;
-            if (condition == ItemCondition.Damaged) Bump(_damaged, itemId, count);
-            else if (condition == ItemCondition.Repaired) Bump(_repaired, itemId, count);
+            Bump(key, count);
             Changed?.Invoke();
         }
 
-        /// <summary>Bir adet alır (önce sağlam, sonra onarılmış, en son hasarlı).</summary>
-        public bool TryTakeItem(string itemId) => TryTakeItem(itemId, out _);
-
-        public bool TryTakeItem(string itemId, out ItemCondition taken)
+        private void Bump(ItemKey key, int delta)
         {
-            taken = ItemCondition.Sound;
-            int n = Count(itemId);
-            if (n <= 0) return false;
-            if (SoundCount(itemId) > 0) taken = ItemCondition.Sound;
-            else if (RepairedCount(itemId) > 0) taken = ItemCondition.Repaired;
-            else taken = ItemCondition.Damaged;
-            return TakeCondition(itemId, taken);
+            if (!_stacks.TryGetValue(key.Id, out var list)) { list = new List<Stack>(2); _stacks[key.Id] = list; }
+            Stack found = null;
+            foreach (var st in list) if (st.Key.Equals(key)) { found = st; break; }
+            if (found == null) { if (delta <= 0) return; found = new Stack { Key = key }; list.Add(found); }
+            found.Count += delta;
+            if (found.Count <= 0) list.Remove(found);
+            int total = Count(key.Id) + delta;
+            if (total <= 0 || list.Count == 0) { _totals.Remove(key.Id); if (list.Count == 0) _stacks.Remove(key.Id); }
+            else _totals[key.Id] = total;
         }
 
-        /// <summary>Belirli durumdaki bir adedi alır.</summary>
-        public bool TakeCondition(string itemId, ItemCondition condition)
+        // Harcama sırası: önce sağlam, sonra onarılmış, en son hasarlı; içinde önce hanenin kendi ürünü, sonra kalite politikası.
+        private Stack Pick(string itemId, TakePolicy policy, int minQuality, ItemCondition? condition, bool? bought)
         {
-            int n = Count(itemId);
-            if (n <= 0) return false;
-            if (condition == ItemCondition.Sound && SoundCount(itemId) <= 0) return false;
-            if (condition == ItemCondition.Damaged && DamagedCount(itemId) <= 0) return false;
-            if (condition == ItemCondition.Repaired && RepairedCount(itemId) <= 0) return false;
-            if (n == 1) _inventory.Remove(itemId); else _inventory[itemId] = n - 1;
-            if (condition == ItemCondition.Damaged) Bump(_damaged, itemId, -1);
-            else if (condition == ItemCondition.Repaired) Bump(_repaired, itemId, -1);
+            if (itemId == null || !_stacks.TryGetValue(itemId, out var list)) return null;
+            Stack best = null;
+            foreach (var st in list)
+            {
+                if (st.Count <= 0 || st.Key.Quality < minQuality) continue;
+                if (condition.HasValue && st.Key.Condition != condition.Value) continue;
+                if (bought.HasValue && st.Key.Bought != bought.Value) continue;
+                if (best == null || Better(st.Key, best.Key, policy)) best = st;
+            }
+            return best;
+        }
+
+        private static int ConditionRank(ItemCondition c) => c == ItemCondition.Sound ? 0 : c == ItemCondition.Repaired ? 1 : 2;
+
+        private static bool Better(ItemKey a, ItemKey b, TakePolicy policy)
+        {
+            int ca = ConditionRank(a.Condition), cb = ConditionRank(b.Condition);
+            if (ca != cb) return ca < cb;
+            if (a.Bought != b.Bought) return !a.Bought;
+            if (a.Quality != b.Quality) return policy == TakePolicy.Highest ? a.Quality > b.Quality : a.Quality < b.Quality;
+            return a.Maker < b.Maker;
+        }
+
+        private bool TakeFrom(Stack st, out ItemKey taken)
+        {
+            taken = default;
+            if (st == null) return false;
+            taken = st.Key;
+            Bump(st.Key, -1);
             Changed?.Invoke();
             return true;
         }
 
-        public int DamagedCount(string itemId) => itemId != null && _damaged.TryGetValue(itemId, out int n) ? n : 0;
-        public int RepairedCount(string itemId) => itemId != null && _repaired.TryGetValue(itemId, out int n) ? n : 0;
-        public int SoundCount(string itemId) => Math.Max(0, Count(itemId) - DamagedCount(itemId) - RepairedCount(itemId));
+        /// <summary>Bir adet alır (önce sağlam, sonra onarılmış, en son hasarlı; en düşük kalite önce).</summary>
+        public bool TryTakeItem(string itemId) => TryTake(itemId, TakePolicy.Lowest, out _);
 
-        /// <summary>Hasarlı bir adedi onarılmış yapar.</summary>
+        public bool TryTakeItem(string itemId, out ItemCondition taken)
+        {
+            bool ok = TryTake(itemId, TakePolicy.Lowest, out var key);
+            taken = ok ? key.Condition : ItemCondition.Sound;
+            return ok;
+        }
+
+        /// <summary>Politikayla bir adet alır; alınan yığının anahtarı döner (kalite, usta).</summary>
+        public bool TryTake(string itemId, TakePolicy policy, out ItemKey taken, int minQuality = 0) =>
+            TakeFrom(Pick(itemId, policy, minQuality, null, null), out taken);
+
+        /// <summary>Tam olarak bu anahtardan bir adet alır.</summary>
+        public bool TryTakeKey(ItemKey key)
+        {
+            if (key.Id == null || !_stacks.TryGetValue(key.Id, out var list)) return false;
+            foreach (var st in list) if (st.Key.Equals(key) && st.Count > 0) return TakeFrom(st, out _);
+            return false;
+        }
+
+        /// <summary>Tam olarak bu kalitedeki bir adedi alır (bozulma partisi, olgunlaşma).</summary>
+        public bool TryTakeQuality(string itemId, int quality)
+        {
+            if (itemId == null || !_stacks.TryGetValue(itemId, out var list)) return false;
+            Stack best = null;
+            foreach (var st in list)
+                if (st.Count > 0 && st.Key.Quality == quality && (best == null || Better(st.Key, best.Key, TakePolicy.Lowest))) best = st;
+            return TakeFrom(best, out _);
+        }
+
+        /// <summary>Belirli durumdaki bir adedi alır.</summary>
+        public bool TakeCondition(string itemId, ItemCondition condition) =>
+            TakeFrom(Pick(itemId, TakePolicy.Lowest, 0, condition, null), out _);
+
+        /// <summary>
+        /// Olgunlaşma ya da yükseltme: <paramref name="from"/> kalitesindeki en çok <paramref name="count"/> adedi
+        /// <paramref name="to"/> kalitesine taşır (durum ve kaynak korunur). Taşınan adet döner.
+        /// </summary>
+        public int Requalify(string itemId, int from, int to, int count)
+        {
+            if (count <= 0 || from == to || itemId == null || !_stacks.TryGetValue(itemId, out var list)) return 0;
+            int moved = 0;
+            foreach (var st in new List<Stack>(list))
+            {
+                if (moved >= count) break;
+                if (st.Key.Quality != from || st.Count <= 0) continue;
+                int n = Math.Min(count - moved, st.Count);
+                var key = st.Key;
+                Bump(key, -n);
+                Bump(key.WithQuality(to), n);
+                moved += n;
+            }
+            if (moved > 0) Changed?.Invoke();
+            return moved;
+        }
+
+        private int CountWhere(string itemId, Func<ItemKey, bool> pred)
+        {
+            int n = 0;
+            if (itemId != null && _stacks.TryGetValue(itemId, out var list))
+                foreach (var st in list) if (pred(st.Key)) n += st.Count;
+            return n;
+        }
+
+        public int DamagedCount(string itemId) => CountWhere(itemId, k => k.Condition == ItemCondition.Damaged);
+        public int RepairedCount(string itemId) => CountWhere(itemId, k => k.Condition == ItemCondition.Repaired);
+        public int SoundCount(string itemId) => CountWhere(itemId, k => k.Condition == ItemCondition.Sound);
+
+        /// <summary>Hasarlı bir adedi onarılmış yapar (en iyi kalitedeki önce).</summary>
         public bool RepairOne(string itemId)
         {
-            if (DamagedCount(itemId) <= 0) return false;
-            Bump(_damaged, itemId, -1);
-            Bump(_repaired, itemId, 1);
+            var st = Pick(itemId, TakePolicy.Highest, 0, ItemCondition.Damaged, null);
+            if (st == null) return false;
+            var key = st.Key;
+            Bump(key, -1);
+            Bump(key.WithCondition(ItemCondition.Repaired), 1);
             Changed?.Invoke();
             return true;
         }
 
         /// <summary>Hasarlı eşyaların (kimlik, adet) listesi, kimliğe göre sıralı.</summary>
-        public List<KeyValuePair<string, int>> DamagedList() => Sorted(_damaged);
-        public List<KeyValuePair<string, int>> RepairedList() => Sorted(_repaired);
+        public List<KeyValuePair<string, int>> DamagedList() => ListWhere(k => k.Condition == ItemCondition.Damaged);
+        public List<KeyValuePair<string, int>> RepairedList() => ListWhere(k => k.Condition == ItemCondition.Repaired);
 
-        private static List<KeyValuePair<string, int>> Sorted(Dictionary<string, int> d)
+        private List<KeyValuePair<string, int>> ListWhere(Func<ItemKey, bool> pred)
         {
-            var list = new List<KeyValuePair<string, int>>(d);
+            var list = new List<KeyValuePair<string, int>>();
+            foreach (var id in _stacks.Keys) { int n = CountWhere(id, pred); if (n > 0) list.Add(new KeyValuePair<string, int>(id, n)); }
             list.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
             return list;
         }
 
-        private static void Bump(Dictionary<string, int> d, string id, int delta)
+        // Bir durumdan ötekine (ya da alınmışa) en çok n adet taşır; kaynak yığınlar politikaya göre seçilir.
+        private int Convert(string itemId, int count, Func<ItemKey, bool> from, Func<ItemKey, ItemKey> to)
         {
-            d.TryGetValue(id, out int n);
-            n += delta;
-            if (n <= 0) d.Remove(id); else d[id] = n;
+            if (count <= 0 || itemId == null || !_stacks.TryGetValue(itemId, out var list)) return 0;
+            int moved = 0;
+            var sources = new List<Stack>(list);
+            sources.Sort((a, b) => a.Key.Quality.CompareTo(b.Key.Quality));
+            foreach (var st in sources)
+            {
+                if (moved >= count) break;
+                if (st.Count <= 0 || !from(st.Key)) continue;
+                int n = Math.Min(count - moved, st.Count);
+                var key = st.Key;
+                Bump(key, -n);
+                Bump(to(key), n);
+                moved += n;
+            }
+            return moved;
         }
 
-        /// <summary>Kayıttan yükleme: envanterdeki adetlerin bir kısmını hasarlı ya da onarılmış işaretler (adet aşılmaz).</summary>
+        /// <summary>Kayıttan yükleme: envanterdeki sağlam adetlerin bir kısmını hasarlı ya da onarılmış işaretler (adet aşılmaz).</summary>
         public void RestoreCondition(string itemId, int count, ItemCondition condition)
         {
             if (count <= 0 || condition == ItemCondition.Sound) return;
-            int room = SoundCount(itemId);
-            int n = Math.Min(room, count);
-            if (n <= 0) return;
-            Bump(condition == ItemCondition.Damaged ? _damaged : _repaired, itemId, n);
+            Convert(itemId, count, k => k.Condition == ItemCondition.Sound, k => k.WithCondition(condition));
         }
 
         // ---- pazardan alınan ve hanenin kendi ürünü (D2) ----
 
-        /// <summary>Envantere pazardan alınarak giren adetleri işaretler (AddItem'dan sonra çağrılır).</summary>
+        /// <summary>Envantere pazardan alınarak giren adetleri işaretler (AddItem'dan sonra çağrılır; en düşük kalite önce).</summary>
         public void MarkBought(string itemId, int count)
         {
             if (string.IsNullOrEmpty(itemId) || count <= 0) return;
-            Bump(_bought, itemId, count);
-            if (_bought[itemId] > Count(itemId)) _bought[itemId] = Count(itemId);
+            if (Convert(itemId, count, k => !k.Bought, k => k.WithBought(true)) > 0) Changed?.Invoke();
         }
 
-        /// <summary>Envanterdeki pazardan alınmış adet (envanteri aşmaz).</summary>
-        public int BoughtCount(string itemId) => itemId != null && _bought.TryGetValue(itemId, out int n) ? Math.Min(n, Count(itemId)) : 0;
+        /// <summary>Envanterdeki pazardan alınmış adet.</summary>
+        public int BoughtCount(string itemId) => CountWhere(itemId, k => k.Bought);
         /// <summary>Envanterdeki hanenin kendi ürünü (toplam − alınmış).</summary>
         public int OwnCount(string itemId) => Count(itemId) - BoughtCount(itemId);
 
         /// <summary>Bir adet alır; önce hanenin kendi ürününden. own: alınan adet kendi ürünü mü.</summary>
-        public bool TryTakePreferOwn(string itemId, out bool own)
+        public bool TryTakePreferOwn(string itemId, out bool own) => TryTakePreferOwn(itemId, out own, out _);
+
+        /// <summary>Kendi ürünü önce; içinde politikaya göre kalite (doldurulan dekor en iyisini sergiler). Alınan anahtar döner.</summary>
+        public bool TryTakePreferOwn(string itemId, out bool own, out ItemKey taken, TakePolicy policy = TakePolicy.Lowest)
         {
             own = false;
-            if (Count(itemId) <= 0) return false;
-            own = OwnCount(itemId) > 0;
-            if (!own) Bump(_bought, itemId, -1);
-            if (!TryTakeItem(itemId)) return false;
-            if (_bought.TryGetValue(itemId, out int b) && b > Count(itemId)) { if (Count(itemId) <= 0) _bought.Remove(itemId); else _bought[itemId] = Count(itemId); }
+            var st = Pick(itemId, policy, 0, null, null);   // Better() kendi ürününü önce seçer
+            if (!TakeFrom(st, out taken)) return false;
+            own = !taken.Bought;
             return true;
         }
 
         /// <summary>Alınmış adetler (kayıt).</summary>
-        public List<KeyValuePair<string, int>> BoughtList()
-        {
-            var list = new List<KeyValuePair<string, int>>();
-            foreach (var kv in _bought) { int n = BoughtCount(kv.Key); if (n > 0) list.Add(new KeyValuePair<string, int>(kv.Key, n)); }
-            list.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
-            return list;
-        }
+        public List<KeyValuePair<string, int>> BoughtList() => ListWhere(k => k.Bought);
 
         /// <summary>Envanterdeki (kimlik, adet) çiftleri, kimliğe göre sıralı.</summary>
         public List<KeyValuePair<string, int>> InventoryList()
         {
-            var list = new List<KeyValuePair<string, int>>(_inventory);
+            var list = new List<KeyValuePair<string, int>>(_totals);
             list.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
             return list;
         }

@@ -404,10 +404,13 @@ namespace Thatchwick.Core.Animals
                         if (home.StockTotal >= cap) { a.ProduceProgress = 0; break; }
                         int units = 1;
                         if (a.Friendship >= BondedFriendship && _rng.NextDouble() < BondedExtraChance) units++;
-                        // Kalite: seçme ürün %25, birinci sınıf %50 daha fazla (ekin kalitesiyle aynı çarpan).
+                        // Kalite (53): hayvanın puanı ürünün kalitesi olur (birim başına %70 / %20 / %10 dağılım);
+                        // fazladan adet yarıya indi (Seçme %10, Has %20). Barınak yığını kaliteyi "kimlik#kalite" anahtarıyla tutar.
+                        bool graded = _content.Items.TryGet(a.Species.Produces, out var pdef) && pdef.HasQuality;
+                        int q = graded ? ItemQuality.Spread(QualityOf(a), _rng) : 0;
                         double extra = QualityYield(QualityOf(a)) - 1.0;
                         if (extra > 0 && _rng.NextDouble() < extra) units++;
-                        home.AddStock(a.Species.Produces, units);
+                        home.AddStock(ItemKey.StockKey(a.Species.Produces, q), units);
                         AnimalProgress.AddXp(a, AnimalProgress.XpProduce);
                         Produced?.Invoke(a, a.Species.Produces);
                     }

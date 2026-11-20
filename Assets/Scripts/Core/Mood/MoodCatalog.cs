@@ -23,6 +23,7 @@ namespace Thatchwick.Core.Mood
         // Olay moodlet'leri.
         public const string GoodMeal = "good_meal", Rested = "rested", Clean = "clean", Inspired = "inspired", HadFun = "had_fun",
             NiceChat = "nice_chat", Newlywed = "newlywed", NewBaby = "new_baby", Grief = "grief", Harmony = "harmony",
+            MealFine = "meal_fine", MealSuperior = "meal_superior", MealMasterwork = "meal_masterwork", MealHeirloom = "meal_heirloom",
             BrightRoom = "bright_room", GoodHarvest = "good_harvest", Proud = "proud", PetLove = "pet_love",
             AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools", Slaughtered = "slaughtered",
             PotionVigor = "potion_vigor", PotionFocus = "potion_focus", PotionCalm = "potion_calm", NewFoal = "new_foal",
@@ -120,6 +121,11 @@ namespace Thatchwick.Core.Mood
             c.Register(M(GotLetter, "Mektup aldı", 6, 1.0, "Bir mektup geldi."));
             c.Register(M(MasterWork, "Ustalık eseri", 15, 2.0, "Adını taşıyan bir ustalık eseri yaptı."));
             c.Register(M(Feast, "Ziyafet", 12, 1.0, "Hane birlikte bol bir sofraya oturdu."));
+            // Kaliteli yemek (Project belgesi 53 §4.5): yalnızca pişmiş yemekte.
+            c.Register(M(MealFine, "Lezzetli yemek", 3, 0.5, "Seçme malzemeyle pişmiş bir yemek yedi."));
+            c.Register(M(MealSuperior, "Nefis yemek", 5, 1.0, "Has bir yemek yedi."));
+            c.Register(M(MealMasterwork, "Ustalık eseri sofra", 8, 1.5, "Bir ustanın elinden çıkmış yemeği yedi."));
+            c.Register(M(MealHeirloom, "Aile sofrası", 10, 2.0, "Kuşaklardır süren aile tarifiyle yapılmış yemeği yedi."));
             c.Register(M(SkillShowcase, "Ustayı seyretti", 5, 0.5, "Bir ustanın işini seyretti."));
             // Easter egg'ler (belge 55 §3.3, §4). Ortak kural: olumsuz olan kısa sürer, kalıcı kayıp yok.
             c.Register(M(AnimalSpoke, "Hayvan benimle konuştu!", 10, 3.0, "Bir hayvan derdini insan gibi anlattı. Kime anlatsa inanmaz."));

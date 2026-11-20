@@ -35,9 +35,18 @@ namespace Thatchwick.Core.Work
         public event Action<Character, ItemInstance, string, int> FishBite;
 
         /// <summary>Mini oyunda tutulan balık envantere (depoya) girer.</summary>
-        public void GrantFish(Character character, string fishId, int count)
+        public void GrantFish(Character character, string fishId, int count, bool perfect = false)
         {
-            int added = Storage != null ? Storage.AddUpTo(fishId, count) : AddAll(fishId, count);
+            // Kalite (53 §4.3): Balıkçılık tablosu; kusursuz tutuş +1; efsane balık her zaman Has.
+            int level = character?.Skills.GetLevel(SkillType.Fishing) ?? 1;
+            bool graded = _content.Items.TryGet(fishId, out var fd) && fd.HasQuality;
+            int added = 0;
+            for (int i = 0; i < count; i++)
+            {
+                int q = !graded ? 0 : CreatureBook.IsLegendary(fishId) ? ItemQuality.Superior
+                    : Math.Min(ItemQuality.NormalMax, ItemQuality.Gathered(level, _rng) + (perfect ? 1 : 0));
+                added += AddKeyed(new ItemKey(fishId, q), 1);
+            }
             if (added > 0) FishCaught?.Invoke(character, fishId);
         }
         /// <summary>Boş cam şişe (D3 tamamlama): iksir yapılırken biri harcanır, bir iksir fazla çıkar. null ise kapalı.</summary>
@@ -56,6 +65,7 @@ namespace Thatchwick.Core.Work
         public Func<IEnumerable<Character>> Household { get; set; }
         /// <summary>Etkilerin işlediği hane envanteri (görev planlayıcı odun sayısını buradan okur).</summary>
         public Household House => _house;
+        public ContentDatabase Content => _content;
 
         /// <summary>Şu anki mevsim (balık türleri); null ise her mevsimin ürünü çıkabilir.</summary>
         public Func<Time.Season> Season { get; set; }
@@ -93,6 +103,39 @@ namespace Thatchwick.Core.Work
         {
             _house.AddItem(id, count);
             return count;
+        }
+
+        private int AddKeyed(ItemKey key, int count)
+        {
+            if (count <= 0) return 0;
+            if (Storage != null) return Storage.AddUpTo(key, count);
+            _house.Add(key, count);
+            return count;
+        }
+
+        // ---- kalite (Project belgesi 53) ----
+
+        /// <summary>Kalite defteri: tezgâhta "En iyi malzeme", "Ustalık eseri dene", eser kaydı. Null ise kalite seçimleri yok.</summary>
+        public Life.QualityBook Quality { get; set; }
+        /// <summary>Bugünün gün indeksi ve yılı (ustalık eseri günde bir; eser yazısındaki yıl).</summary>
+        public Func<long> DayIndex { get; set; }
+        public Func<int> Year { get; set; }
+        public Func<double> Today { get; set; }
+        /// <summary>Aşçının bildiği aile tarifinin kuşak sayısı ve adı (yadigâr sofra: 3 kuşaklık tarifle ustalık eseri). Null: yok.</summary>
+        public Func<Character, SkillType, (int generations, string name)> FamilyRecipe { get; set; }
+        /// <summary>Son işte harcanan kaliteli girdinin en yüksek kalitesi (yeme: doyum ve sofra ruh hali; JobRunner okur).</summary>
+        public int LastConsumedQuality { get; private set; }
+        /// <summary>Ustalık eseri yapıldı (karakter, eşya, kalite).</summary>
+        public event Action<Character, string, int> MasterworkMade;
+
+        private static readonly SkillType[] GatherSkills = { SkillType.Foraging, SkillType.Fishing, SkillType.Hunting, SkillType.Horticulture, SkillType.Farming };
+
+        // Rozet dökümü (dilden bağımsız): "★2 ★★1".
+        private static string Breakdown(int[] byQuality)
+        {
+            var parts = new List<string>();
+            for (int q = 1; q < byQuality.Length; q++) if (byQuality[q] > 0) parts.Add(ItemQuality.Badge(q) + byQuality[q]);
+            return parts.Count > 0 ? " (" + string.Join(" ", parts) + ")" : "";
         }
 
         public string CanStart(Character character, ItemInstance item, InteractionDef interaction)
@@ -137,6 +180,7 @@ namespace Thatchwick.Core.Work
             if (interaction.RequiresFruit && !item.FruitReady)
                 return item.IsGrown ? "Meyve henüz olgunlaşmadı." : $"{item.Def.DisplayName} henüz büyümedi.";
             if (interaction.Polish && !item.IsTarnished) return "Ayna zaten parlak.";
+            if (interaction.Embellish && (item.Embellished || item.Quality >= ItemQuality.NormalMax)) return item.Embellished ? "Bu eşya zaten süslendi." : "Bu eşya zaten has.";
             if (interaction.CollectContents && !item.HasContents) return item.Def.IsFillDecor ? $"{item.Def.DisplayName} zaten boş." : "Toplanacak bir şey yok.";
             if (interaction.FillDecor) { var why = DecorSystem.FillBlocker(item, _house, _content); if (why != null) return why; }
             if (interaction.EatContents && DecorSystem.EdibleCount(item, _content) == 0)
@@ -173,8 +217,18 @@ namespace Thatchwick.Core.Work
             var consumed = interaction.AllConsumed();
             foreach (var c in consumed)
                 if (_house.Count(c.ItemId) < c.Count) return; // bu arada harcanmış: ürün yok
+            // Harcama sırası (53 §4.7): en düşük kalite önce; tezgâhta "En iyi malzemeyi kullan" seçiliyse en iyisi.
+            string recipeKey = item != null ? Life.QualityBook.RecipeKey(item.Def, interaction) : null;
+            var takePolicy = Quality != null && Quality.BestIngredients(recipeKey) ? TakePolicy.Highest : TakePolicy.Lowest;
+            var inputQualities = new List<int>();
+            LastConsumedQuality = 0;
             foreach (var c in consumed)
-                for (int k = 0; k < c.Count; k++) _house.TryTakeItem(c.ItemId);
+                for (int k = 0; k < c.Count; k++)
+                    if (_house.TryTake(c.ItemId, takePolicy, out var took) && _content.Items.TryGet(c.ItemId, out var inDef) && inDef.HasQuality)
+                    {
+                        inputQualities.Add(took.Quality);
+                        LastConsumedQuality = Math.Max(LastConsumedQuality, took.Quality);
+                    }
 
             if (interaction.AddFeed > 0) AnimalSystem.AddFeed(item, interaction.AddFeed);
             if (interaction.AddIce > 0f) item.FuelDays = Math.Min(MaxIceDays, item.FuelDays + interaction.AddIce);
@@ -194,8 +248,10 @@ namespace Thatchwick.Core.Work
             }
             string slaughterId = null; int slaughterCount = 0;
             string hideId = null; int hideCount = 0;
+            int slaughterTier = 0;
             if (interaction.Slaughter && Animals != null && Animals.Slaughter(item.Id, out var killed, out slaughterId, out slaughterCount))
             {
+                slaughterTier = Animals.QualityOf(killed);   // bakımlı hayvanın eti ve derisi kaliteli (53 §4.3)
                 farmNotes.Add($"{killed.Species.DisplayName} kesildi");
                 hideId = killed.Species.Hide;            // büyükbaş ve küçükbaş deri de verir (tabakhane → saraç)
                 hideCount = hideId != null ? Math.Max(1, killed.Species.HideCount) : 0;
@@ -222,6 +278,13 @@ namespace Thatchwick.Core.Work
             if (interaction.Wets > 0f) character.Soak(interaction.Wets);
             if (interaction.Dries && character.Wetness > 0f) { character.Dry(); farmNotes.Add("kurulandı"); }
             if (interaction.Polish && item.TarnishDays > 0) { item.TarnishDays = 0; farmNotes.Add($"{item.Def.DisplayName} parladı"); }
+            if (interaction.Embellish && !item.Embellished && item.Def.HasQuality)
+            {
+                item.Quality = Math.Min(ItemQuality.NormalMax, item.Quality + 1);
+                item.Embellished = true;
+                _world.NotifyChanged();
+                farmNotes.Add($"{item.Def.DisplayName} süslendi ({ItemQuality.Badge(item.Quality)})");
+            }
             if (interaction.RepairMaterial != null)
             {
                 string target = FindRepairTarget(interaction.RepairMaterial, out var placedTarget, out var targetDef);
@@ -281,6 +344,44 @@ namespace Thatchwick.Core.Work
             bool cropHarvest = interaction.RequiresGrown && item.IsPlant && item.Def.IsCrop;
             int tier = cropHarvest && Plants != null ? Plants.QualityOf(item, level) : 0;
             float yieldMult = PlantSystem.QualityYield(tier);
+            // Kalite kaynağı (53 §4.3-4.6): ekin puanı (birim başına dağılım), toplama/balık/av/meyve (toplayanın becerisi),
+            // işleme (girdilerin ortalaması + usta), yapım (beceri tablosu); "Ustalık eseri dene" bütün partiyi belirler.
+            int rawLevel = interaction.Skill.HasValue ? character.Skills.GetLevel(interaction.Skill.Value) : 0;
+            bool processing = consumed.Count > 0 && interaction.Skill.HasValue;
+            bool gathering = !processing && !cropHarvest && interaction.Skill.HasValue && Array.IndexOf(GatherSkills, interaction.Skill.Value) >= 0
+                && (interaction.RemovesItem || interaction.TakesFruit || interaction.RequiresGrown || interaction.Skill == SkillType.Fishing || interaction.Skill == SkillType.Hunting);
+            int levelAboveGate = level - Math.Max(1, interaction.MinSkillLevel);
+            int? batchQuality = null;
+            int batchMaker = 0;
+            if (processing || (interaction.IsCraft && interaction.Skill.HasValue))
+            {
+                long day = DayIndex?.Invoke() ?? 0;
+                if (Quality != null && Quality.WillAttempt(character, item, interaction, day) && ItemQuality.CanAttemptMasterwork(rawLevel, inputQualities))
+                {
+                    Quality.MarkAttempted(character, item, interaction, day);
+                    if (_rng.NextDouble() < ItemQuality.MasterworkChance)
+                    {
+                        // Yadigâr sofra: yemek, ekmek ve içecekte 3 kuşaklık aile tarifiyle yapılan eser (karar 1).
+                        var fam = interaction.Skill == SkillType.Cooking || interaction.Skill == SkillType.Baking || interaction.Skill == SkillType.Brewing
+                            ? FamilyRecipe?.Invoke(character, interaction.Skill.Value) : null;
+                        bool heirloom = fam.HasValue && fam.Value.generations >= ItemQuality.HeirloomGenerations;
+                        batchQuality = heirloom ? ItemQuality.Heirloom : ItemQuality.Masterwork;
+                        string mainId = null;
+                        foreach (var p0 in interaction.Produce) if (_content.Items.TryGet(p0.ItemId, out var md) && md.HasQuality) { mainId = p0.ItemId; break; }
+                        if (mainId != null && Quality != null)
+                            batchMaker = Quality.Register(mainId, character, Today?.Invoke() ?? 0, Year?.Invoke() ?? 1, heirloom ? fam.Value.name : null, heirloom).Serial;
+                        farmNotes.Add(heirloom ? "✦ yadigâr sofra" : "✦ ustalık eseri");
+                        if (mainId != null) MasterworkMade?.Invoke(character, mainId, batchQuality.Value);
+                    }
+                    else { batchQuality = ItemQuality.Superior; farmNotes.Add("eser tutmadı (★★)"); }
+                }
+                else
+                {
+                    if (Quality != null && Quality.WillAttempt(character, item, interaction, day)) farmNotes.Add("malzeme has değil, eser denenmedi");
+                    batchQuality = ItemQuality.Processed(inputQualities, levelAboveGate, rawLevel, _rng);
+                }
+            }
+            var qualityTotals = new Dictionary<string, int[]>();
             foreach (var p in interaction.Produce)
             {
                 if (p.MinLevel > 0 && level < p.MinLevel) continue;
@@ -312,7 +413,17 @@ namespace Thatchwick.Core.Work
                     if (bite == null && _content.Items.TryGet(p.ItemId, out var bd) && bd.HasTag("fish")) { bite = p.ItemId; biteCount = count; }
                     continue;
                 }
-                int added = Storage != null ? Storage.AddUpTo(p.ItemId, count) : AddAll(p.ItemId, count);
+                bool graded = _content.Items.TryGet(p.ItemId, out var outDef) && outDef.HasQuality;
+                int added = 0;
+                if (!graded) added = AddKeyed(new ItemKey(p.ItemId), count);
+                else if (batchQuality.HasValue)
+                    added = AddQ(p.ItemId, Math.Max(p.MinQuality, batchQuality.Value), batchQuality.Value >= ItemQuality.Masterwork ? batchMaker : 0, count, qualityTotals);
+                else
+                    for (int u = 0; u < count; u++)
+                    {
+                        int q = cropHarvest ? ItemQuality.Spread(tier, _rng) : gathering ? ItemQuality.Gathered(rawLevel, _rng) : 0;
+                        added += AddQ(p.ItemId, Math.Max(p.MinQuality, q), 0, 1, qualityTotals);
+                    }
                 lost += count - added;
                 if (added <= 0) continue;
                 if (!totals.ContainsKey(p.ItemId)) { totals[p.ItemId] = 0; order.Add(p.ItemId); }
@@ -325,7 +436,8 @@ namespace Thatchwick.Core.Work
                 foreach (var id in order) if (_content.Items.TryGet(id, out var pd) && pd.HasTag("potion")) { potion = id; break; }
                 if (potion != null && _house.TryTakeItem(BottleItemId))
                 {
-                    int extra = Storage != null ? Storage.AddUpTo(potion, 1) : AddAll(potion, 1);
+                    int pq = batchQuality.HasValue ? Math.Min(batchQuality.Value, ItemQuality.Superior) : 0;
+                    int extra = AddQ(potion, pq, 0, 1, qualityTotals);
                     if (extra > 0) { totals[potion] += extra; farmNotes.Add("şişelendi (+1, 1 cam şişe)"); }
                     else _house.AddItem(BottleItemId);
                 }
@@ -333,7 +445,9 @@ namespace Thatchwick.Core.Work
             foreach (var (gotId, gotCount) in new[] { (slaughterId, slaughterCount), (hideId, hideCount) })
             {
                 if (gotId == null || gotCount <= 0) continue;
-                int added = Storage != null ? Storage.AddUpTo(gotId, gotCount) : AddAll(gotId, gotCount);
+                bool gradedMeat = _content.Items.TryGet(gotId, out var meatDef) && meatDef.HasQuality;
+                int added = 0;
+                for (int u = 0; u < gotCount; u++) added += AddQ(gotId, gradedMeat ? ItemQuality.Spread(slaughterTier, _rng) : 0, 0, 1, qualityTotals);
                 lost += gotCount - added;
                 if (added > 0)
                 {
@@ -347,20 +461,28 @@ namespace Thatchwick.Core.Work
                 double extraChance = 0.03 * Math.Max(0, husbandry - 1) + character.Modifiers.YieldChance;
                 foreach (var kv0 in AnimalSystem.TakeStock(item))
                 {
+                    // Barınak yığını kaliteyi taşır ("kimlik#kalite"); toplayanın Hayvancılığı birim başına +1 şansı verir (karar 4).
+                    var stockKey = ItemKey.FromStockKey(kv0.Key);
+                    bool gradedStock = _content.Items.TryGet(stockKey.Id, out var sd) && sd.HasQuality;
                     int bonus = 0;
                     if (extraChance > 0) for (int u = 0; u < kv0.Value; u++) if (_rng.NextDouble() < extraChance) bonus++;
-                    var kv = new KeyValuePair<string, int>(kv0.Key, kv0.Value + bonus);
-                    int added = Storage != null ? Storage.AddUpTo(kv.Key, kv.Value) : AddAll(kv.Key, kv.Value);
-                    AnimalSystem.PutStock(item, kv.Key, kv.Value - added);   // sığmayan barınakta kalır
+                    int units = kv0.Value + bonus, added = 0;
+                    for (int u = 0; u < units; u++)
+                    {
+                        int q = gradedStock ? ItemQuality.CollectorBonus(stockKey.Quality, husbandry, _rng) : 0;
+                        int got = AddQ(stockKey.Id, q, 0, 1, qualityTotals);
+                        if (got <= 0) { AnimalSystem.PutStock(item, ItemKey.StockKey(stockKey.Id, q), units - u); break; }   // sığmayan barınakta kalır
+                        added += got;
+                    }
                     if (added <= 0) continue;
-                    if (!totals.ContainsKey(kv.Key)) { totals[kv.Key] = 0; order.Add(kv.Key); }
-                    totals[kv.Key] += added;
+                    if (!totals.ContainsKey(stockKey.Id)) { totals[stockKey.Id] = 0; order.Add(stockKey.Id); }
+                    totals[stockKey.Id] += added;
                 }
                 if (item.StockTotal > 0) parts0 = "depo dolu, kalanı barınakta";
             }
 
             var parts = new List<string>();
-            foreach (var id in order) parts.Add($"+{totals[id]} {Name(id)}");
+            foreach (var id in order) parts.Add($"+{totals[id]} {Name(id)}" + (qualityTotals.TryGetValue(id, out var qt) ? Breakdown(qt) : ""));
             if (interaction.AddFeed > 0) parts.Add($"yem +{interaction.AddFeed} (stok {item.FeedStock:0.#})");
             if (interaction.AddIce > 0f) parts.Add($"buz {item.FuelDays:0.#} gün");
             if (parts0 != null) parts.Add(parts0);
@@ -374,7 +496,6 @@ namespace Thatchwick.Core.Work
             if (interaction.Skill == SkillType.Fishing)
                 foreach (var id in order)
                     if (_content.Items.TryGet(id, out var fishDef) && fishDef.HasTag("fish")) { FishCaught?.Invoke(character, id); break; }
-            if (tier > 0) parts.Add($"kalite: {PlantSystem.QualityName(tier)}");
             parts.AddRange(farmNotes);
 
             if (interaction.RemovesItem && _world.GetItem(item.Id) != null)
@@ -382,6 +503,17 @@ namespace Thatchwick.Core.Work
 
             AppliedOn?.Invoke(character, item, interaction);
             Applied?.Invoke(character, interaction, parts.Count > 0 ? string.Join(", ", parts) : interaction.DisplayName);
+        }
+
+        private int AddQ(string id, int quality, int maker, int count, Dictionary<string, int[]> totals)
+        {
+            int added = AddKeyed(new ItemKey(id, quality, ItemCondition.Sound, false, maker), count);
+            if (added > 0)
+            {
+                if (!totals.TryGetValue(id, out var a)) { a = new int[ItemQuality.Max + 1]; totals[id] = a; }
+                a[ItemQuality.Clamp(quality)] += added;
+            }
+            return added;
         }
 
         // ---- öğretmenlik ----

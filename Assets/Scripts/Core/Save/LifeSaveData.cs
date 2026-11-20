@@ -17,6 +17,7 @@ namespace Thatchwick.Core.Save
     public sealed class SpoilBatchSave
     {
         public string item;
+        public int quality;   // 53: parti kalitesi (eski kayıtta 0)
         public int count;
         public double age;
     }
@@ -50,6 +51,10 @@ namespace Thatchwick.Core.Save
         public int ailmentSetting;
         /// <summary>Süreli görevler ve "her gün tekrarla" planları (belge 47 §3). Eski kayıtta null.</summary>
         public Thatchwick.Core.Work.TimedDutyServiceSave timedDuties;
+        /// <summary>Kalite defteri: tezgâh seçimleri, ustalık eserleri, mahzen partileri (belge 53). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Life.QualityBookSave quality;
+        /// <summary>Şenlik ürün yarışmaları: seçilen ürünler, katılmama, birincilikler (belge 57). Eski kayıtta null.</summary>
+        public Thatchwick.Core.Life.ProduceShowSave produceShows;
         /// <summary>Çocukların gezme izni (belge 47 §7.2). Eski kayıtta null.</summary>
         public Thatchwick.Core.Upbringing.ChildRoamingSave roaming;
         /// <summary>İstekler, hane hafızası, adaklar ve rakip hane itibarı (belge 46). Eski kayıtta null.</summary>

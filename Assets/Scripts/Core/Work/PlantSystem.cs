@@ -60,7 +60,7 @@ namespace Thatchwick.Core.Work
     /// </summary>
     public sealed class PlantSystem
     {
-        public const string QualityNormal = "Sıradan", QualityFine = "Seçme", QualityFinest = "Birinci sınıf";
+        public const string QualityNormal = "Sıradan", QualityFine = "Seçme", QualityFinest = "Has";
 
         private readonly WorldState _world;
         private readonly Dictionary<GridPos, SoilPlot> _soil = new Dictionary<GridPos, SoilPlot>();
@@ -231,8 +231,8 @@ namespace Thatchwick.Core.Work
 
         public static string QualityName(int tier) => tier >= 2 ? QualityFinest : (tier == 1 ? QualityFine : QualityNormal);
 
-        /// <summary>Verim çarpanı: seçme +%25, birinci sınıf +%50.</summary>
-        public static float QualityYield(int tier) => tier >= 2 ? 1.5f : (tier == 1 ? 1.25f : 1f);
+        /// <summary>Verim çarpanı (53, karar 2: yarıya indi): Seçme +%10, Has +%20. Değerin kalanı kaliteye (fiyat, doyum) geçti.</summary>
+        public static float QualityYield(int tier) => (float)(1.0 + Content.ItemQuality.CountBonus(tier));
 
         // ---------- günlük döngü ----------
 

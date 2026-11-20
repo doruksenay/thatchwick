@@ -213,7 +213,7 @@ namespace Thatchwick.Core.Tests
             Assert.True(db.Items.Get("item.salted_meat").SpoilDays > 0f);
 
             var all = db.Items.All.SelectMany(i => i.Interactions).ToList();
-            foreach (var f in foods)
+            foreach (var f in foods.Where(i => !i.IsRetired))   // eski ayrı kalite kimlikleri emekli (belge 53, karar 3)
                 Assert.True(all.Any(i => i.AllConsumed().Any(c => c.ItemId == f.Id)), f.Id + " yenmiyor ve hiçbir tarifte kullanılmıyor");
             Assert.True(db.Items.Get("item.pastirma").Price >= 15);
         }

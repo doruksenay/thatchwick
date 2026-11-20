@@ -15,6 +15,8 @@ namespace Thatchwick.Core.Content
         public int MaxLevel { get; set; }
         /// <summary>Yalnızca bu mevsimlerde çıkar (null = her mevsim): balık türleri.</summary>
         public List<Time.Season> Seasons { get; set; }
+        /// <summary>Ürünün en az kalitesi (53): elle toplanan zeytin Seçme doğar. 0 = kurala göre.</summary>
+        public int MinQuality { get; set; }
     }
 
     public sealed class NeedRestoreDef
@@ -129,6 +131,8 @@ namespace Thatchwick.Core.Content
         public string RepairMaterial { get; set; }
         /// <summary>Kararmış metal aynayı cilalar.</summary>
         public bool Polish { get; set; }
+        /// <summary>Oyma süsle / İşle (belge 53 §4.6): yerleşik eşyanın kalitesi bir basamak artar, en çok Has; eşya başına bir kez.</summary>
+        public bool Embellish { get; set; }
         /// <summary>İçindekileri (döküntü yığını) durumlarıyla envantere alır.</summary>
         public bool CollectContents { get; set; }
         /// <summary>Doldurulan dekoru envanterdeki gerçek ürünle doldurur (D2).</summary>
@@ -179,7 +183,7 @@ namespace Thatchwick.Core.Content
         public bool HasEffects => !string.IsNullOrEmpty(ConsumeItem) || Consume.Count > 0 || Produce.Count > 0 || RemovesItem
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter
-            || RepairMaterial != null || Polish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null;
+            || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null;
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
 

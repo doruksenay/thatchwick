@@ -49,6 +49,12 @@ namespace Thatchwick.Core.World
         // ---- ev dekorasyonu (Project belgesi 27) ----
         /// <summary>Durum: çöken raftan düşen eşya hasar alır; onarılan eşya "Onarılmış" kalır.</summary>
         public ItemCondition Condition { get; set; }
+        /// <summary>Kalite (53): yapılan eşya yapanın becerisiyle doğar; Oyma süsle +1; kalitesiz eşyada 0.</summary>
+        public int Quality { get; set; }
+        /// <summary>Ustalık eserinin defter kimliği (yazı, yapan, yıl; yadigâr adayı). 0 = eser değil.</summary>
+        public int Maker { get; set; }
+        /// <summary>Oyma süsle / İşle bir kez yapılır (53 §4.6).</summary>
+        public bool Embellished { get; set; }
         /// <summary>Halı sırası: büyük olan üstte (halılar sınırsız üst üste serilir).</summary>
         public int LayerOrder { get; internal set; }
         /// <summary>Metal aynanın son cilasından beri geçen gün.</summary>
@@ -236,8 +242,13 @@ namespace Thatchwick.Core.World
         public double Age;
         /// <summary>Hanenin kendi ürünü ("Kendi emeğimiz" güzellik eki); pazardan alınmışsa false.</summary>
         public bool Own;
-        public StoredItem(string id, ItemCondition c) { ItemId = id; Condition = c; Age = 0; Own = false; }
-        public StoredItem(string id, double age, bool own) { ItemId = id; Condition = ItemCondition.Sound; Age = age; Own = own; }
+        /// <summary>Kalite (53) ve ustalık eserinin defter kimliği; kalitesiz eşyada 0.</summary>
+        public int Quality;
+        public int Maker;
+        public StoredItem(string id, ItemCondition c) { ItemId = id; Condition = c; Age = 0; Own = false; Quality = 0; Maker = 0; }
+        public StoredItem(string id, double age, bool own) { ItemId = id; Condition = ItemCondition.Sound; Age = age; Own = own; Quality = 0; Maker = 0; }
+        public StoredItem(ItemKey key, double age = 0) { ItemId = key.Id; Condition = key.Condition; Age = age; Own = !key.Bought; Quality = key.Quality; Maker = key.Maker; }
+
     }
 
     /// <summary>Kaplama alanı ve dönüş hesapları.</summary>

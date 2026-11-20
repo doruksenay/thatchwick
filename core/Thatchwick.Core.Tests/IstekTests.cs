@@ -6,6 +6,7 @@ using Thatchwick.Core.Content;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Life;
 using Thatchwick.Core.Life.Requests;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.Work;
 using Thatchwick.Core.World;
@@ -65,20 +66,20 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(RequestKind.Favor, r.Kind);
             Assert.False(r.Read);                                            // okuryazar yok: panoya gidilmeli
             Assert.False(k.Req.Accept(r.Id, out var why));
-            Assert.Contains("pano", why);
+            Assert.Equal("core.req.err.unread", why.Key);
             Assert.Equal(1, k.Life.ReadBoard(k.Ali));
             var o = r.Objectives[0];
             if (o.Kind == ObjectiveKind.Deliver) k.House.AddItem(o.ItemId, o.Count);
             else k.Req.OnVisit(k.Ali, o.Region);
-            Assert.True(k.Req.Accept(r.Id, out why), why);
+            Assert.True(k.Req.Accept(r.Id, out why), why.ToString());
             int akce = k.House.Akce;
             var giver = k.Pop.Find(r.GiverId);
             k.Req.Near = (a, b) => false;                                    // uzakta
             if (o.Kind == ObjectiveKind.Deliver)
             {
                 Assert.False(k.Req.Deliver(r.Id, k.Ali, courier: false, out why));
-                Assert.Contains("ulak", why);
-                Assert.True(k.Req.Deliver(r.Id, k.Ali, courier: true, out why), why);
+                Assert.Equal("core.req.err.go_to", why.Key);
+                Assert.True(k.Req.Deliver(r.Id, k.Ali, courier: true, out why), why.ToString());
                 Assert.Equal(akce + r.Reward.Akce - RequestService.CourierFee, k.House.Akce);
             }
             Assert.Equal(RequestState.Done, r.State);
@@ -135,7 +136,7 @@ namespace Thatchwick.Core.Tests
             Level(k.Ali, SkillType.Smithing, 5);
             var o = k.Req.GenerateOrders().First(x => !x.Stretch);
             k.Req.ReadBoard();
-            Assert.True(k.Req.Accept(o.Id, out var why), why);
+            Assert.True(k.Req.Accept(o.Id, out var why), why.ToString());
             int rep = k.Life.Upbringing.Reputation.Points;
             k.Now += RequestService.OrderDays + 0.1;
             k.Req.Tick();
@@ -202,19 +203,19 @@ namespace Thatchwick.Core.Tests
             var c = k.Req.GenerateCall("cagri.storm_roof");
             Assert.NotNull(c);
             int paid = c.Paths.FindIndex(p => p.Paid);
-            Assert.Null(k.Req.PathBlocker(c, paid, k.Ali));
+            Assert.True(k.Req.PathBlocker(c, paid, k.Ali).IsEmpty);
             int rep = k.Life.Upbringing.Reputation.Points;
-            Assert.True(k.Req.ChoosePath(c.Id, paid, k.Ali, out var msg), msg);
+            Assert.True(k.Req.ChoosePath(c.Id, paid, k.Ali, out var msg), msg.ToString());
             Assert.Equal(RequestState.Done, c.State);
             Assert.Equal(rep + RequestService.CallRep / 2, k.Life.Upbringing.Reputation.Points);
 
             var c2 = k.Req.GenerateCall("cagri.storm_roof");
             int carp = c2.Paths.FindIndex(p => p.Skill == SkillType.Carpentry);
-            Assert.Contains("Marangozluk", k.Req.PathBlocker(c2, carp, k.Ali));
+            Assert.Equal("core.req.err.skill_needed", k.Req.PathBlocker(c2, carp, k.Ali).Key);
             Level(k.Ali, SkillType.Carpentry, 3);
             k.House.AddItem("item.plank", 4);
             k.Now = 0.3;
-            Assert.True(k.Req.ChoosePath(c2.Id, carp, k.Ali, out msg), msg);
+            Assert.True(k.Req.ChoosePath(c2.Id, carp, k.Ali, out msg), msg.ToString());
             Assert.True(k.Ali.Away);
             Assert.Equal(0, k.House.Count("item.plank"));
             for (int i = 0; i < 40 && c2.IsOpen; i++) { k.Now += 0.25 / 24; k.Life.Duties.Tick(0.25 / 24); }
@@ -234,7 +235,7 @@ namespace Thatchwick.Core.Tests
             var s = k.Req.All.First(r => r.Kind == RequestKind.Story && r.GiverId == orhan.Id);
             Assert.Equal("villager.orhan", s.StoryKey);
             k.House.AddItem("item.charcoal", 4);
-            Assert.True(k.Req.Deliver(s.Id, k.Ali, false, out var msg), msg);
+            Assert.True(k.Req.Deliver(s.Id, k.Ali, false, out var msg), msg.ToString());
             Assert.Equal(RequestState.Done, s.State);
             Assert.Equal(1, k.Req.StoryStepOf("villager.orhan"));
             Assert.Equal(50, k.Family.Affection(k.Ali.Id, orhan.Id));      // 30 + adım ödülü 20
@@ -262,7 +263,7 @@ namespace Thatchwick.Core.Tests
             Assert.False(b.HasDeadline);
             Assert.Equal("vas.miller", b.TemplateId);
             k.House.AddItem("item.bread", 6);
-            Assert.True(k.Req.Deliver(b.Id, k.Ali, false, out var msg), msg);
+            Assert.True(k.Req.Deliver(b.Id, k.Ali, false, out var msg), msg.ToString());
             Assert.Equal(RequestState.Done, b.State);
             Assert.Equal(1, k.House.Count("item.elder_tin_cup"));
             // Uzak köylü vasiyet bırakmaz.
@@ -277,13 +278,13 @@ namespace Thatchwick.Core.Tests
             var child = new Character(2, "Can", new GridPos(0, 0), true) { CanStarve = false };
             child.SetAge(child.AgeConfig.ChildStartDay + 1);
             k.Pop.Add(child);
-            Assert.NotNull(k.Req.CanVow("adak.fountain", child));
+            Assert.False(k.Req.CanVow("adak.fountain", child).IsEmpty);
             var v = k.Req.Vow("adak.fountain", k.Ali, out var msg);
             Assert.NotNull(v);
-            Assert.Contains(k.Ali.Chronicle, n => n.StartsWith("@@core.chronicle.vow_made"));
+            Assert.Contains(k.Ali.Chronicle, n => n.StartsWith("@@core.chronicle.vow_made"));   // kroniğe anahtarlı yazılır (SavedText)
             k.House.AddItem("item.stone", 10);
             k.House.AddItem("item.limestone", 6);
-            Assert.True(k.Req.Deliver(v.Id, k.Ali, false, out msg), msg);
+            Assert.True(k.Req.Deliver(v.Id, k.Ali, false, out msg), msg.ToString());
             Assert.Equal(1, v.Stage);
             Level(k.Ali, SkillType.Masonry, 6);
             k.Now += 0.1;
@@ -291,7 +292,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(2, v.Stage);
             int seals = k.Life.Legacy.Seals;
             k.House.AddAkce(40);
-            Assert.True(k.Req.Deliver(v.Id, k.Ali, false, out msg), msg);
+            Assert.True(k.Req.Deliver(v.Id, k.Ali, false, out msg), msg.ToString());
             Assert.Equal(RequestState.Done, v.State);
             Assert.Equal(seals + 2, k.Life.Legacy.Seals);
             Assert.DoesNotContain(k.Req.AvailableVows(), t => t.Id == "adak.fountain");
@@ -307,8 +308,8 @@ namespace Thatchwick.Core.Tests
             k.Req.ReadBoard();
             k.Now = 0.3;
             k.House.AddItem("item.bread", 3);
-            Assert.True(k.Req.Assign(r.Id, k.Ali, out var msg), msg);
-            Assert.True(k.Ali.Away, msg);
+            Assert.True(k.Req.Assign(r.Id, k.Ali, out var msg), msg.ToString());
+            Assert.True(k.Ali.Away, msg.ToString());
             var duty = k.Life.Duties.Find(k.Ali.Id);
             Assert.Equal("item.clay", duty.Order.TargetItem);
             Assert.Equal(r.Id, duty.Order.RequestId);
@@ -347,7 +348,7 @@ namespace Thatchwick.Core.Tests
             for (int i = 0; i < k.Req.All.Count; i++)
             {
                 var a = k.Req.All[i]; var b = k2.Req.All[i];
-                Assert.Equal(a.Id, b.Id); Assert.Equal(a.Kind, b.Kind); Assert.Equal(a.State, b.State); Assert.Equal(a.Title, b.Title);
+                Assert.Equal(a.Id, b.Id); Assert.Equal(a.Kind, b.Kind); Assert.Equal(a.State, b.State); Assert.Equal(LocCodec.Encode(a.Title), LocCodec.Encode(b.Title));
                 Assert.Equal(a.Objectives.Count, b.Objectives.Count); Assert.Equal(a.Stages.Count, b.Stages.Count); Assert.Equal(a.Paths.Count, b.Paths.Count);
                 Assert.Equal(a.HasDeadline, b.HasDeadline); Assert.Equal(a.Reward.Akce, b.Reward.Akce);
             }
