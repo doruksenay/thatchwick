@@ -194,7 +194,7 @@ namespace Thatchwick.Core.Tests
             cow.Comfort = 70f;
             k.Life.AnimalTalk.OnNewDay();
             Assert.True(c.Mood.Has(MoodCatalog.Confidant));
-            Assert.Equal(before + AnimalTalkService.ConfidantFriendship, cow.Friendship, 3);
+            Assert.Equal((double)(before + AnimalTalkService.ConfidantFriendship), (double)cow.Friendship, 3);
             Assert.True(k.Life.AnimalTalk.RecordOf(c.Id).Closed);
         }
 
