@@ -1,7 +1,7 @@
 ---
 id: "498"
 title: "Easter egg: Kılıçtan Saban masa üstü dekoru (1)"
-status: running
+status: failed
 claimed_at: 2026-11-20T11:42Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("ekle kodu"), Project belgesi 55 §4, kod PR #89
 priority: 50
@@ -33,6 +33,9 @@ Masa üstü **383 ile aynı yöntem** (yuva K).
 
 ## Notlar
 - Kod görseli adla bulur (`items.json` `art.alongX`); dosya adı değişmesin.
+
+## Sorular
+- 2 deneme de tutmadı (kaya benzeri leke; dikey kılıç silüeti). Ayrıntı ve öneri: `art/results/498-kilictan-saban-dekoru.md`.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
