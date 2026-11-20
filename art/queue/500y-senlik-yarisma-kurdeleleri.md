@@ -1,7 +1,7 @@
 ---
 id: "500y"
 title: "Şenlik ürün yarışması kurdeleleri (2 hatıra eşyası)"
-status: running
+status: failed
 claimed_at: 2026-11-20T11:35Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerini uygula"), Project belgesi 57
 priority: 30
