@@ -1,7 +1,8 @@
 ---
 id: "487"
 title: "Yeni çiftlik hayvanları: kaz, ada tavşanı, güvercin"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:09Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (hayvan genetiği ve tür genişletme, tek PR), Project belgeleri 48 ve 48b
 priority: 30
 family: hayvan
