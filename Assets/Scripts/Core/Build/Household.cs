@@ -75,6 +75,9 @@ namespace Thatchwick.Core.Build
             return true;
         }
 
+        /// <summary>Envanter adetleri her değiştiğinde artar; dinleyiciler (bozulma partileri) yalnızca değişince eşitler.</summary>
+        public int InventoryVersion { get; private set; }
+
         public int Count(string itemId) => itemId != null && _inventory.TryGetValue(itemId, out int n) ? n : 0;
 
         public void AddItem(string itemId, int count = 1) => AddItem(itemId, count, ItemCondition.Sound);
@@ -84,6 +87,7 @@ namespace Thatchwick.Core.Build
             if (string.IsNullOrWhiteSpace(itemId)) throw new ArgumentException("Eşya kimliği boş.", nameof(itemId));
             if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count));
             _inventory[itemId] = Count(itemId) + count;
+            InventoryVersion++;
             if (condition == ItemCondition.Damaged) Bump(_damaged, itemId, count);
             else if (condition == ItemCondition.Repaired) Bump(_repaired, itemId, count);
             Changed?.Invoke();
@@ -112,6 +116,7 @@ namespace Thatchwick.Core.Build
             if (condition == ItemCondition.Damaged && DamagedCount(itemId) <= 0) return false;
             if (condition == ItemCondition.Repaired && RepairedCount(itemId) <= 0) return false;
             if (n == 1) _inventory.Remove(itemId); else _inventory[itemId] = n - 1;
+            InventoryVersion++;
             if (condition == ItemCondition.Damaged) Bump(_damaged, itemId, -1);
             else if (condition == ItemCondition.Repaired) Bump(_repaired, itemId, -1);
             Changed?.Invoke();

@@ -34,7 +34,6 @@ namespace Thatchwick.Game
         private bool _regional;
         private Thatchwick.Core.World.Region _region;
         private float _fadeUntil;
-        private const float MaxFrameSeconds = 0.1f;
 
         private sealed class Actor
         {
@@ -62,6 +61,8 @@ namespace Thatchwick.Game
             public SpriteRenderer Held;
             public string HeldItem;
             public bool HeldBehind;
+            // Sabit adımlı simülasyon: son iki adımın konumu (karede ara değer).
+            public SmoothPosition Sim;
         }
 
         /// <summary>Elde tutulan nesnenin ikona göre boyu: 32 px ikon yaklaşık 11 px görünür (84 px karakterde).</summary>
@@ -278,8 +279,7 @@ namespace Thatchwick.Game
         private Vector2 _hudScroll;
         private AnimalSystem _animals;
         private RoomMoodSystem _roomMood;
-        private sealed class AnimalView { public Transform T; public SpriteRenderer R; public SpriteRenderer Shadow; public int Dir = IsoArt.DefaultDirection; }
-        private readonly Dictionary<int, AnimalView> _animalViews = new Dictionary<int, AnimalView>();
+        private AnimalViews _animalViews;   // hayvan ve yaban görünümleri (adımda eşitlenir, karede ara değerlenir)
 
         // Etkileşim menüsü (Sims'teki pasta menüsü gibi): eşyaya dokununca seçenekler listelenir.
         // Eşya etkileşimi ya da özel seçenek (hayvan işi, çapalama, çan): Label/Run doluysa özel seçenektir.
@@ -808,6 +808,7 @@ namespace Thatchwick.Game
             _input.SetBounds(Iso.RectBounds(r.X, r.Y, r.W, r.H));
             if (a.View != null) _input.JumpTo(a.View.position);
             _itemsDirty = true;
+            ResetSmoothing();
             _fadeUntil = Time.unscaledTime + RegionFadeSeconds;
             ShowMessage(r.Name);
         }
@@ -1202,23 +1203,9 @@ namespace Thatchwick.Game
         // ---------------- gölgeler (görsel analiz, 18.11.2026) ----------------
 
         /// <summary>Gölgenin saydamlığı. Gölgeler zeminin ve halıların üstünde, eşyaların altında çizilir.</summary>
-        private const float ShadowAlpha = 0.26f;
-        private static int ShadowOrder(int level) => -9980 + level * Iso.LevelSortStep;
-
-        /// <summary>Karakter ve hayvanın altındaki gölge: onunla birlikte hareket eden çocuk nesne.</summary>
-        private static SpriteRenderer NewShadow(Transform parent, Vector3 local, float size)
-        {
-            var go = new GameObject("Shadow");
-            go.transform.SetParent(parent, false);
-            go.transform.localPosition = local;
-            go.transform.localScale = new Vector3(size, size, 1f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteMaterials.Shadow;
-            sr.sharedMaterial = SpriteMaterials.Unlit;
-            sr.color = new Color(0f, 0f, 0f, ShadowAlpha);
-            sr.sortingOrder = ShadowOrder(0);
-            return sr;
-        }
+        private const float ShadowAlpha = Shadows.Alpha;
+        private static int ShadowOrder(int level) => Shadows.Order(level);
+        private static SpriteRenderer NewShadow(Transform parent, Vector3 local, float size) => Shadows.Attach(parent, local, size);
 
         /// <summary>Eşyanın ayak izi kadar gölge (halılar ayrı çizilir, gölgesizdir).</summary>
         private void AddItemShadow(ItemInstance item, Vector3 footprintCenter, int level)
@@ -2527,148 +2514,12 @@ namespace Thatchwick.Game
                 });
         }
 
-        private sealed class WildView { public Transform T; public SpriteRenderer R; public int Dir = IsoArt.DefaultDirection; }
-        private readonly Dictionary<int, WildView> _wildViews = new Dictionary<int, WildView>();
-
-        // Yaban ziyaretçileri: görseli gelene kadar renkli yer tutucu küp.
-        private void UpdateWildViews()
-        {
-            var roam = _life?.Roamers;
-            if (roam == null) return;
-            var alive = new HashSet<int>();
-            foreach (var v in roam.Visitors)
-            {
-                alive.Add(v.Id);
-                if (!_wildViews.TryGetValue(v.Id, out var w))
-                {
-                    var go = new GameObject(v.Species.Name);
-                    go.transform.SetParent(transform, false);
-                    w = new WildView { T = go.transform, R = go.AddComponent<SpriteRenderer>() };
-                    w.R.sharedMaterial = SpriteMaterials.Unlit;
-                    _wildViews[v.Id] = w;
-                }
-                Vector3 pos = _view.TileToWorld(v.Position);
-                if (v.NextTile.HasValue)
-                {
-                    var to = _view.TileToWorld(v.NextTile.Value);
-                    w.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
-                    pos = Vector3.Lerp(pos, to, (float)v.StepProgress);
-                }
-                w.T.position = pos;
-                w.R.enabled = _view.IsLevelVisible(v.Position.Z);
-                var real = IsoArt.Animal(v.Species.Id, w.Dir);
-                float scale = v.Young ? 0.7f : 1f;
-                if (real != null) w.R.sprite = real;
-                else { w.R.sprite = SpriteMaterials.Cube(AnimalColor(v.Species.Id)); scale *= AnimalScale(v.Species.Id); }
-                w.T.localScale = new Vector3(scale, scale, 1f);
-                w.R.sortingOrder = Iso.SortOrder(pos.y, 1, v.Position.Z);
-            }
-            var gone = new List<int>();
-            foreach (var kv in _wildViews) if (!alive.Contains(kv.Key)) gone.Add(kv.Key);
-            foreach (var id in gone) { if (_wildViews[id].T != null) Destroy(_wildViews[id].T.gameObject); _wildViews.Remove(id); }
-        }
-
         private void OnAnimalDied(Animal a)
         {
             ShowMessage(a.CauseOfDeath == AnimalDeath.Starvation ? $"{a.Name} açlıktan öldü (barınağa yem koy)"
                 : a.CauseOfDeath == AnimalDeath.Sickness ? $"{a.Name} hastalıktan öldü (merhem sürülmedi)"
                 : $"{a.Name} yaşlılıktan öldü");
             foreach (var c in _population.Members) if (!c.IsVillager) c.AddMoodlet(MoodCatalog.AnimalDied);
-        }
-
-        private static Color AnimalColor(string id)
-        {
-            switch (id)
-            {
-                case "animal.chicken": return new Color(0.95f, 0.92f, 0.85f);
-                case "animal.duck": return new Color(0.55f, 0.7f, 0.45f);
-                case "animal.goat": return new Color(0.75f, 0.68f, 0.55f);
-                case "animal.sheep": return new Color(0.92f, 0.9f, 0.86f);
-                case "animal.cow": return new Color(0.55f, 0.4f, 0.3f);
-                case "animal.ox": return new Color(0.42f, 0.32f, 0.25f);
-                case "wild.rabbit": case "wild.squirrel": case "wild.roe_deer": return new Color(0.6f, 0.45f, 0.3f);
-                case "wild.fox": return new Color(0.85f, 0.45f, 0.15f);
-                case "wild.boar": case "wild.hedgehog": case "wild.rat": return new Color(0.35f, 0.3f, 0.27f);
-                case "wild.crow": case "wild.owl": case "wild.sparrow": case "wild.stork": return new Color(0.2f, 0.2f, 0.22f);
-                case "wild.frog": return new Color(0.4f, 0.6f, 0.3f);
-                case "wild.butterfly": return new Color(0.95f, 0.85f, 0.3f);
-                case "wild.firefly": return new Color(1f, 1f, 0.5f);
-                case "animal.horse": return new Color(0.45f, 0.3f, 0.2f);
-                case "animal.donkey": case "animal.mule": case "animal.hinny": return new Color(0.55f, 0.5f, 0.45f);
-                case "animal.goose": return new Color(0.93f, 0.93f, 0.9f);
-                case "animal.rabbit": return new Color(0.58f, 0.5f, 0.42f);
-                case "animal.pigeon": return new Color(0.55f, 0.57f, 0.62f);
-                case "animal.dog": return new Color(0.6f, 0.45f, 0.3f);
-                case "animal.cat": return new Color(0.85f, 0.55f, 0.25f);
-                default: return new Color(0.95f, 0.8f, 0.2f);
-            }
-        }
-
-        private static float AnimalScale(string id)
-        {
-            switch (id)
-            {
-                case "animal.chicken": case "animal.duck": case "animal.bees": return 0.22f;
-                case "animal.cat": return 0.26f;
-                case "animal.dog": return 0.3f;
-                case "animal.cow": case "animal.ox": return 0.5f;
-                case "wild.butterfly": case "wild.firefly": case "wild.sparrow": case "wild.frog": return 0.12f;
-                case "wild.rabbit": case "wild.squirrel": case "wild.hedgehog": case "wild.rat": case "wild.crow": return 0.18f;
-                case "wild.owl": case "wild.fox": case "wild.stork": return 0.26f;
-                case "wild.roe_deer": case "wild.boar": return 0.38f;
-                case "animal.horse": return 0.55f;
-                default: return 0.4f;
-            }
-        }
-
-        // Hayvan görünümleri: canlı hayvanlarla eşitlenir, yürüyüş ara değerlenir.
-        private void UpdateAnimalViews()
-        {
-            var alive = new HashSet<int>();
-            foreach (var a in _animals.Animals)
-            {
-                alive.Add(a.Id);
-                if (!_animalViews.TryGetValue(a.Id, out var v))
-                {
-                    var go = new GameObject(a.Name);
-                    go.transform.SetParent(transform, false);
-                    v = new AnimalView { T = go.transform, R = go.AddComponent<SpriteRenderer>() };
-                    v.R.sharedMaterial = SpriteMaterials.Unlit;
-                    v.Shadow = NewShadow(go.transform, new Vector3(0.06f, -0.03f, 0f), 0.6f);
-                    _animalViews[a.Id] = v;
-                }
-                Vector3 pos = _view.TileToWorld(a.Position);
-                var rider = a.RiderId != 0 ? _actors.Find(x => x.Character.Id == a.RiderId) : null;
-                if (rider != null && rider.View != null) pos = rider.View.position - new Vector3(0f, 0.02f, 0f);   // binicinin altında, onunla birlikte
-                else if (a.NextTile.HasValue)
-                {
-                    var to = _view.TileToWorld(a.NextTile.Value);
-                    v.Dir = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
-                    pos = Vector3.Lerp(pos, to, a.StepProgress);
-                }
-                v.T.position = pos;
-                v.R.enabled = _view.IsLevelVisible(a.Position.Z);
-                // Genetik (belge 48): tipin gövdesi + genden renk; gövde görseli yoksa türün görseli, o da yoksa genden renkli küp.
-                var look = LookOf(a);
-                Sprite real = look != null && look.Layers.Count > 0 ? IsoArt.AnimalBody(look.Layers[0], look.LongCoat, v.Dir) : null;
-                Color tint = Color.white;
-                if (real != null && look.TintHex != null && ColorUtility.TryParseHtmlString(look.TintHex, out var gene)) tint = Color.Lerp(Color.white, gene, 0.8f);
-                if (real == null) real = IsoArt.Animal(a.Species.Id, v.Dir);
-                float scale = a.IsMature ? 1f : 0.7f;
-                if (real != null) { v.R.sprite = real; v.R.color = tint; }
-                else
-                {
-                    Color cube = AnimalColor(a.Species.Id);
-                    if (look?.TintHex != null && ColorUtility.TryParseHtmlString(look.TintHex, out var gc)) cube = gc;
-                    v.R.sprite = SpriteMaterials.Cube(cube); v.R.color = Color.white; scale *= AnimalScale(a.Species.Id);
-                }
-                v.T.localScale = new Vector3(scale, scale, 1f);
-                v.R.sortingOrder = Iso.SortOrder(pos.y, 1, a.Position.Z);
-                if (v.Shadow != null) { v.Shadow.enabled = v.R.enabled && rider == null; v.Shadow.sortingOrder = ShadowOrder(a.Position.Z); }
-            }
-            var gone = new List<int>();
-            foreach (var kv in _animalViews) if (!alive.Contains(kv.Key)) gone.Add(kv.Key);
-            foreach (var id in gone) { if (_animalViews[id].T != null) Destroy(_animalViews[id].T.gameObject); _animalViews.Remove(id); }
         }
 
         // Play modundayken kod yeniden derlenirse (ör. git pull) private alanlar sıfırlanır
@@ -2719,17 +2570,24 @@ namespace Thatchwick.Game
             // Canlı modda görünen kat, komut alan kişinin bulunduğu kata uyar; yapı modunda oyuncu seçer.
             if (_buildMode != null && !_buildMode.Active && Commander != null) _view.ViewLevel = Commander.Character.Position.Z;
 
-            float dt = Mathf.Min(Time.deltaTime, MaxFrameSeconds);
-
             // Belge 47: yapı modu, katalog ve menüler açıkken zaman durur; hanede uyanık kimse yokken gece ×4 akar.
             _clock.Paused = MenuOpen();
             _clock.FastNight = HouseholdAsleep();
 
-            // Biyoloji ve iş ilerlemesi oyun saatinde işler; hız çarpanı GameClock'ta uygulanır.
-            double gameDays = _clock.Advance(dt);
-            if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
-            Simulate(gameDays);
+            // Sabit adımlı simülasyon (performans incelemesi 20.11.2026): mantık saniyede 10 adım işler, kare hızından
+            // bağımsızdır; görünüm iki adım arasını ara değerler. Hız çarpanı GameClock'ta uygulanır.
+            int steps = _stepper.Accumulate(Time.deltaTime);
+            for (int i = 0; i < steps; i++)
+            {
+                double gameDays = _clock.Advance(_stepper.StepSeconds);
+                if (_clock.DayIndex != _lastSavedDay) { _lastSavedDay = _clock.DayIndex; SaveNow(quiet: true, background: true); }
+                SimulateTick(gameDays);
+                if (_creator != null || _player == null) break;   // adım içinde oyun bitti ya da yeniden kuruldu
+            }
+            RenderFrame(_stepper.Alpha);
         }
+
+        private readonly Thatchwick.Core.Time.FixedStepper _stepper = new Thatchwick.Core.Time.FixedStepper();
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
@@ -2848,8 +2706,9 @@ namespace Thatchwick.Game
             for (double t = 0; t < days && !_dynastyEnded; t += step)
             {
                 _clock.Restore(_clock.TotalDays + step, _clock.RequestedSpeed);
-                Simulate(step);
+                SimulateTick(step);
             }
+            ResetSmoothing();
             _ambienceSnap = true;
             ShowMessage($"{days:0} gün ileri sarıldı");
         }
@@ -2860,7 +2719,8 @@ namespace Thatchwick.Game
         /// <summary>Yağmurda açık havada gün başına ıslaklık (yaklaşık iki saatte sırılsıklam).</summary>
         private const double RainSoakPerDay = 10.0;
 
-        private void Simulate(double gameDays)
+        /// <summary>Bir simülasyon adımı (sabit adım; görünüm çizmez). Görünüm <see cref="RenderFrame"/>'de.</summary>
+        private void SimulateTick(double gameDays)
         {
             _heat.Tick(gameDays, _clock.TotalDays);
             _plants.Tick(gameDays, _clock.Season);
@@ -2868,8 +2728,6 @@ namespace Thatchwick.Game
             _animals.Tick(gameDays);
             _mines.Tick(gameDays);
             _roomMood.Tick(gameDays, _population.Members);
-            UpdateAnimalViews();
-            UpdateWildViews();
             foreach (var (plant, view, psr) in _plantViews)
             {
                 if (view == null) continue;
@@ -2923,8 +2781,10 @@ namespace Thatchwick.Game
                     actor.View.gameObject.SetActive(true);
                 if (actor.Character.Stage != AgeStage.Baby) actor.Runner.Tick(gameDays);   // bebek iş yapmaz; büyükler besler
                 TickIdleShow(actor, gameDays);
-                UpdateView(actor);
+                PushSimPosition(actor);
             }
+            if (_animalViews == null) _animalViews = new AnimalViews(transform, _view, LookOf, RiderView);
+            _animalViews.Sync(_animals, _life?.Roamers);
 
             if (Commander == null) return;
             var failure = Commander.Runner.LastFailure;
@@ -2935,8 +2795,32 @@ namespace Thatchwick.Game
             }
         }
 
-        // Karakteri bulunduğu karodan sonraki karoya doğru ara değerler (düzgün yürüme).
-        private void UpdateView(Actor actor)
+        /// <summary>Kare: karakterler ve hayvanlar iki simülasyon adımı arasında ara değerlenir.</summary>
+        private void RenderFrame(float alpha)
+        {
+            foreach (var actor in _actors)
+            {
+                if (actor.Character.IsDead || actor.Character.Away || actor.View == null) continue;
+                UpdateView(actor, alpha);
+            }
+            _animalViews?.Frame(alpha);
+        }
+
+        /// <summary>Bölge değişimi ya da ileri sarmada eski konumdan kayarak gelinmesin.</summary>
+        private void ResetSmoothing()
+        {
+            foreach (var actor in _actors) actor.Sim.Reset();
+            _animalViews?.ResetSmoothing();
+        }
+
+        private Transform RiderView(int characterId)
+        {
+            foreach (var a in _actors) if (a.Character.Id == characterId) return a.View;
+            return null;
+        }
+
+        // Adım: karakterin bulunduğu karodan sonraki karoya doğru konumu (düzgün yürüme) ve yönü.
+        private void PushSimPosition(Actor actor)
         {
             Vector3 pos = _view.TileToWorld(actor.Character.Position);
             var next = actor.Runner.NextTile;
@@ -2947,6 +2831,15 @@ namespace Thatchwick.Game
                 pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
             }
             if (_animals != null && _animals.MountOf(actor.Character.Id) != null) pos += new Vector3(0f, 0.35f, 0f);   // at sırtında
+            actor.Sim.Push(pos);
+        }
+
+        // Kare: karakterin görünümü (ara değerli konum, adım sallantısı, kareler, gölge).
+        private void UpdateView(Actor actor, float alpha)
+        {
+            if (!actor.Sim.HasValue) PushSimPosition(actor);
+            Vector3 pos = actor.Sim.At(alpha);
+            var next = actor.Runner.NextTile;
             // Yürürken adım sallantısı: gövde iki piksel iner çıkar, gölge yerde kalır (gerçek yürüme animasyonu gelene kadar).
             bool moving = next.HasValue;
             float mdx = pos.x - actor.LastPos.x, mdy = pos.y - actor.LastPos.y;
