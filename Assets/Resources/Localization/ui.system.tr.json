@@ -1,3 +1,16 @@
 {
+  "ui.error.copied": "Hata raporu panoya kopyalandı.",
+  "ui.error.copy": "Hata raporunu kopyala",
+  "ui.error.count": "Bu oturumdaki hata: {count} ({distinct} farklı)",
+  "ui.error.notice": "Bir şeyler ters gitti ama oyun sürüyor. Ayrıntılar hata günlüğüne yazıldı (Ayarlar).",
+  "ui.error.open_folder": "Günlük klasörünü aç",
+  "ui.error.prev_session": "Oyun geçen sefer düzgün kapanmadı. Bir şey yanlış görünüyorsa Ayarlar'dan hata raporunu kopyala.",
+  "ui.save.done": "Kaydedildi",
+  "ui.save.failed": "Kaydedilemedi. Boş disk alanını denetle; oyun yeniden deneyecek.",
+  "ui.settings.display": "Görüntü",
+  "ui.settings.fullscreen": "Tam ekran",
+  "ui.settings.resolution": "Çözünürlük",
+  "ui.settings.vsync": "Dikey eşitleme",
+  "ui.settings.windowed": "Pencere",
   "ui.sim.error": "Simülasyonda bir hata oluştu ({system}); oyun sürüyor. Ayrıntı thatchwick_errors.log dosyasında."
 }

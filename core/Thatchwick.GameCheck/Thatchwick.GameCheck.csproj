@@ -11,11 +11,14 @@
     <OutputType>Library</OutputType>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <IsPackable>false</IsPackable>
+    <!-- STEAMWORKS_NET: Steam kodu da (SteamPlatform.cs) sahte tiplerle derlenir. -->
+    <DefineConstants>$(DefineConstants);STEAMWORKS_NET</DefineConstants>
     <NoWarn>CS0649;CS0169;CS0414;CS0067;CS0162;CS0168;CS0219</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\Assets\Scripts\Core\**\*.cs" />
     <Compile Include="..\..\Assets\Scripts\Game\**\*.cs" />
     <Compile Include="UnityStubs.cs" />
+    <Compile Include="SteamStubs.cs" />
   </ItemGroup>
 </Project>
