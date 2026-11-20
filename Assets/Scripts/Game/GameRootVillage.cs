@@ -43,6 +43,7 @@ namespace Thatchwick.Game
             // Ölen ustanın halefi ailesiyle gelebilir (belge 66g karar 1): eş ve çocuklar da sahneye çıkar.
             _life.Villagers.FamilyMemberArrived += (member, head) => { GiveRandomLook(member); CreateActorFor(member); };
             _villagePanel.Door = (v, action) => VillageDoor(v, action);
+            lv.MealEaten += OnVillagerMeal;   // evde pişen öğün: ocağın başına yürür, orada pişirir (belge 66g)
         }
 
         /// <summary>Yer anahtarının karosu: ağaç ev, aşevi ve ulu ağaç Treehouses'tan; ev, işyeri, meydan Places'ten.</summary>
@@ -131,6 +132,60 @@ namespace Thatchwick.Game
             var room = _world.Map.Rooms.RoomAt(c.Position);
             float t = _heat.TemperatureAt(c.Position);
             return room != null && room.IsIndoor ? Mathf.Max(15f, t) : t;
+        }
+
+        // ---- gerçek ocakta pişirme (belge 66g) ----
+
+        // Ocağa yürüyen köylü → ocak başındaki karo; varınca öğün sahnesi oradan başlar.
+        private readonly Dictionary<int, GridPos> _mealWalk = new Dictionary<int, GridPos>();
+
+        /// <summary>
+        /// Köylü evde öğün pişiriyor: oyuncunun bölgesindeyse evinin ocağına yürür, pişirme pozları ocak başında, sonra sofrada
+        /// yeme pozları oynar. Ocak yoksa ya da başka bölgedeyse sahne yerinde oynar.
+        /// </summary>
+        private void OnVillagerMeal(Character c, VillageMeal meal)
+        {
+            if (meal == null || meal.Where != "home" || meal.Chain == "eat") return;
+            if (_region == null || !_region.Contains(c.Position)) return;
+            var actor = _actors.Find(a => a.Character == c);
+            var home = VillagePlaceTile(_life.Living.HomeOf(c));
+            if (actor == null || !home.HasValue) return;
+            var anchors = new List<GridPos>(1) { home.Value };
+            ItemInstance best = null; int bestD = int.MaxValue;
+            foreach (var item in _world.NeedItemsFor(NeedType.Warmth))
+            {
+                if (!IsCookingStation(item) || !VillagerFreeWill.MayUse(_world, item, anchors)) continue;
+                int d = System.Math.Abs(item.Position.X - c.Position.X) + System.Math.Abs(item.Position.Y - c.Position.Y) + System.Math.Abs(item.Position.Z - c.Position.Z) * 12;
+                if (d < bestD) { bestD = d; best = item; }
+            }
+            if (best == null) return;
+            var spot = NearestWalkable(best.Position, 2);
+            actor.Runner.Command(Job.MoveTo(spot));
+            _mealWalk[c.Id] = spot;
+        }
+
+        private static bool IsCookingStation(ItemInstance item)
+        {
+            foreach (var i in item.Def.Interactions) if (i.Skill == SkillType.Cooking) return true;
+            return false;
+        }
+
+        /// <summary>Ocağa varan köylünün sahnesi şimdi başlar; sahne bitti ya da köylü başka yere gittiyse bırakılır.</summary>
+        private void CheckMealWalks()
+        {
+            if (_mealWalk.Count == 0) return;
+            var done = new List<int>();
+            foreach (var kv in _mealWalk)
+            {
+                var c = _population.Find(kv.Key);
+                var actor = c != null ? _actors.Find(a => a.Character == c) : null;
+                if (actor == null || c.IsDead || !_life.Living.InScene(c)) { done.Add(kv.Key); continue; }
+                if (!actor.Runner.IsIdle) continue;
+                if (c.Position.Z == kv.Value.Z && System.Math.Abs(c.Position.X - kv.Value.X) + System.Math.Abs(c.Position.Y - kv.Value.Y) <= 1)
+                    _life.Living.RestartScene(c);
+                done.Add(kv.Key);
+            }
+            foreach (var id in done) _mealWalk.Remove(id);
         }
 
         // ---- pozlar (belge 66f §C.11) ----

@@ -82,8 +82,13 @@ namespace Thatchwick.Core.Life
 
         public const string ConsoledMood = "mood.village.consoled";
         public const string SharedLossMood = "mood.village.shared_loss";
-        /// <summary>67a'daki "Yası ortak" hissinin kimliği. His sistemi kodda yok: kanca (<see cref="SharedGrief"/>) bırakıldı.</summary>
-        public const string SharedGriefFeeling = "feeling.shared_grief";
+        /// <summary>Köylü hastalığı (belge 66g): günde temel olasılık, aç ya da üşümüşse ek; 1-2 gün evde yatar, dükkân kapalı.</summary>
+        public const double SickChance = 0.006, SickHardshipChance = 0.08, SickMinDays = 1.0, SickMaxDays = 2.0;
+        public const string SickMood = "mood.village.sick";
+        /// <summary>Köydeki doğumda ebenin lohusa ziyareti (gün).</summary>
+        public const double MidwifeVisitDays = 0.12;
+        /// <summary>Evde pişen öğün sahnesi (ocak başında pişirme, sonra sofrada yeme).</summary>
+        public const double CookedMealSceneDays = 0.05;
 
         private sealed class DayState
         {
@@ -140,7 +145,7 @@ namespace Thatchwick.Core.Life
         public event Action<Character, LocText> Bubble;
         /// <summary>Bildirim (dükkân kapandı, açıldı, çağrı).</summary>
         public event Action<LocText, int> Notice;
-        /// <summary>67a "Yası ortak" hissi için kanca (oyuncu karakteri, köylü). His sistemi gelince buraya bağlanır.</summary>
+        /// <summary>Ortak kayıp (oyuncu karakteri, köylü): ilişki sistemi ikisine "Yası ortak" hissini verir (LifeSystems.Village).</summary>
         public event Action<Character, Character> SharedGrief;
         /// <summary>Köylü bir öğün yedi (kişi, öğün): oyun katmanı sahneyi oynatır.</summary>
         public event Action<Character, VillageMeal> MealEaten;
@@ -252,7 +257,7 @@ namespace Thatchwick.Core.Life
         {
             if (c == null || c.IsDead || !c.IsVillager) return null;
             string home = HomeOf(c);
-            if (c.InBreakdown || InMourning(c)) return home;         // bunalım ve yas günü: evde, dükkân kapalı
+            if (c.InBreakdown || InMourning(c) || IsSick(c)) return home;   // bunalım, hastalık ve yas günü: evde, dükkân kapalı
             var st = S(c);
             if (st.CalledTo != null && _clock.TotalDays < st.CalledUntil) return st.CalledTo;
             var tree = TreePlace?.Invoke(c);
@@ -361,7 +366,7 @@ namespace Thatchwick.Core.Life
             if (owner != null && !owner.IsDead)
             {
                 if (owner.InBreakdown) return ShopClosure.Breakdown;
-                if (owner.Injury != null) return ShopClosure.Sick;
+                if (owner.Injury != null || IsSick(owner)) return ShopClosure.Sick;
                 if (_mourningUntil.TryGetValue(owner.Id, out var until) && _clock.TotalDays < until) return ShopClosure.Mourning;
             }
             if (ShopDef.IsRestDay(_clock.DayIndex) && !shop.OpenOnRestDay && !IsCalled(owner)) return ShopClosure.RestDay;
@@ -562,7 +567,7 @@ namespace Thatchwick.Core.Life
                 c.AddMoodlet(SharedLossMood, Text(LocText.Of("village.mood.shared_loss")), 8, 2.0);
             if (Family != null) Family.SetAffection(player.Id, villager.Id, Math.Min(100, Family.Affection(player.Id, villager.Id) + 15));
             Requests?.Memory.Add(villager, Thatchwick.Core.Life.Requests.HouseMemory.Story, "village.memory.shared_loss");
-            SharedGrief?.Invoke(player, villager);   // 67a "Yası ortak" hissi: his sistemi gelince bağlanır
+            SharedGrief?.Invoke(player, villager);   // 67a "Yası ortak" hissi (RelationService.AddFeeling)
             talk.Add((player, LocText.Of("village.loss.1", ("name", lost))));
             talk.Add((villager, LocText.Of("village.loss.2")));
             talk.Add((player, LocText.Of("village.loss.3")));
@@ -600,6 +605,84 @@ namespace Thatchwick.Core.Life
             return s.Scene[Math.Min(s.Scene.Length - 1, (int)(f * s.Scene.Length))];
         }
 
+        /// <summary>
+        /// Öğün sahnesini yeniden başlatır: köylü ocağın başına yürüyüp varınca pişirme oradan başlar (oyun katmanı çağırır).
+        /// </summary>
+        public void RestartScene(Character c)
+        {
+            if (c == null || !_state.TryGetValue(c.Id, out var s) || s.Scene == null) return;
+            double len = s.SceneUntil - s.SceneFrom;
+            s.SceneFrom = _clock.TotalDays;
+            s.SceneUntil = _clock.TotalDays + len;
+        }
+
+        /// <summary>Öğün sahnesi sürüyor mu.</summary>
+        public bool InScene(Character c) => c != null && _state.TryGetValue(c.Id, out var s) && s.Scene != null && _clock.TotalDays < s.SceneUntil;
+
+        // ---- hastalık (belge 66g) ----
+
+        private readonly Dictionary<int, double> _sickUntil = new Dictionary<int, double>();
+        private long _sickRollDay = -1;
+
+        public bool IsSick(Character c) => c != null && _sickUntil.TryGetValue(c.Id, out var u) && _clock.TotalDays < u;
+
+        /// <summary>Köylüyü hasta yapar (testler ve olaylar): evde yatar, dükkân kapanır, iç ses, rica.</summary>
+        public void MakeSick(Character c, double days)
+        {
+            if (c == null || c.IsDead || !c.IsVillager || days <= 0) return;
+            _sickUntil[c.Id] = _clock.TotalDays + days;
+            c.AddMoodlet(SickMood, Text(LocText.Of("village.mood.sick")), -10, days);
+            if (ShopOf(c) != null)
+            {
+                Notice?.Invoke(LocText.Of("village.n.closed_sick", ("name", c.Name)), c.Id);
+                Bubble?.Invoke(c, LocText.Of("village.closed.sick"));
+            }
+            if (Requests != null && _content.Items.Contains("item.tea_linden") && _clock.TotalDays - _lastHardshipAny >= HardshipVillageGapDays)
+            {
+                _lastHardshipAny = _clock.TotalDays;
+                Requests.PostSystemicFavor(c, "village.sick", LocText.Of("village.req.sick.title"), LocText.Of("village.req.sick.text", ("name", c.Name)), "item.tea_linden", 1, 2);
+            }
+        }
+
+        /// <summary>Hastaya şifa veren hediye (çay, şurup, iksir, merhem): hastalık hemen geçer.</summary>
+        public static bool Heals(Content.ItemDef item) =>
+            item != null && (item.HasTag("potion") || item.Id.StartsWith("item.tea_", StringComparison.Ordinal) || item.Id.Contains("syrup") || item.Id.Contains("remedy"));
+
+        /// <summary>Köylüye hediye verildi: hastaysa ve hediye şifalıysa iyileşir.</summary>
+        public bool OnGift(Character villager, Content.ItemDef item)
+        {
+            if (!IsSick(villager) || !Heals(item)) return false;
+            _sickUntil.Remove(villager.Id);
+            villager.Mood.Remove(SickMood);
+            Bubble?.Invoke(villager, LocText.Of("village.sick.thanks"));
+            if (ShopOf(villager) != null) Notice?.Invoke(LocText.Of("village.n.reopened", ("name", villager.Name)), villager.Id);
+            return true;
+        }
+
+        /// <summary>Günde bir zar: aç ya da üşümüş köylü daha kolay hastalanır.</summary>
+        private void RollSickness()
+        {
+            long day = _clock.DayIndex;
+            if (_sickRollDay == day) return;
+            _sickRollDay = day;
+            var done = new List<int>();
+            foreach (var kv in _sickUntil) if (_clock.TotalDays >= kv.Value) done.Add(kv.Key);
+            foreach (var id in done)
+            {
+                _sickUntil.Remove(id);
+                var c = _population.Find(id);
+                if (c != null && !c.IsDead && ShopOf(c) != null) Notice?.Invoke(LocText.Of("village.n.reopened", ("name", c.Name)), c.Id);
+            }
+            foreach (var c in _scratch)
+            {
+                if (c.Stage < AgeStage.Child || IsSick(c)) continue;
+                double p = SickChance;
+                if (_state.TryGetValue(c.Id, out var st) && st.HardshipDays > 0.1) p += SickHardshipChance;
+                if (c.Needs.Get(NeedType.Warmth) < 30f || c.Needs.Get(NeedType.Hunger) < 20f) p += 0.03;
+                if (_rng.NextDouble() < p) MakeSick(c, SickMinDays + _rng.NextDouble() * (SickMaxDays - SickMinDays));
+            }
+        }
+
         /// <summary>Öğün sahnesinin süresi (oyun günü, ≈40 dakika).</summary>
         public const double MealSceneDays = 0.028;
 
@@ -613,9 +696,17 @@ namespace Thatchwick.Core.Life
                 foreach (var step in chain.Steps) if (!string.IsNullOrEmpty(step.Pose)) list.Add(step.Pose);
                 poses = list.ToArray();
             }
+            bool cooked = meal.Where == "home" && meal.Chain != "eat";
+            if (cooked && _content.Chains.TryGet("eat_serving", out var serve) && poses != null)
+            {
+                // Ocakta pişirdikten sonra sofrada yer (belge 66g: gerçek ocakta pişirme).
+                var list = new List<string>(poses);
+                foreach (var step in serve.Steps) if (!string.IsNullOrEmpty(step.Pose)) list.Add(step.Pose);
+                poses = list.ToArray();
+            }
             st.Scene = poses;
             st.SceneFrom = _clock.TotalDays;
-            st.SceneUntil = _clock.TotalDays + MealSceneDays;
+            st.SceneUntil = _clock.TotalDays + (cooked ? CookedMealSceneDays : MealSceneDays);
         }
 
         // ---- kiler ----
@@ -741,6 +832,7 @@ namespace Thatchwick.Core.Life
                 Hardship(c, home, dt);
             }
             HouseholdDay(frac);
+            RollSickness();
         }
 
         /// <summary>Öğünler, meydan ve meyhanede sosyal ve eğlence (her iki benzetimde aynı).</summary>
@@ -806,7 +898,8 @@ namespace Thatchwick.Core.Life
         /// </summary>
         public bool OnBirth(Character baby, Character mother)
         {
-            if (baby == null || mother == null || mother.IsVillager) return false;
+            if (baby == null || mother == null) return false;
+            if (mother.IsVillager) return VillageBirth(baby, mother);
             foreach (var c in _population.Members)
             {
                 if (c.IsDead || !c.IsVillager || !_state.TryGetValue(c.Id, out var st)) continue;
@@ -821,6 +914,30 @@ namespace Thatchwick.Core.Life
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Köydeki doğum (belge 66g): köyün ebesi (aktar) yaşıyor, hasta ya da bunalımda değilse lohusayı ziyaret eder; annenin
+        /// toparlanması yarıya iner, bebeğe ve anneye iç ses gelir.
+        /// </summary>
+        private bool VillageBirth(Character baby, Character mother)
+        {
+            Character midwife = null;
+            foreach (var st in _villagers.States)
+            {
+                if (!_content.Villagers.TryGet(st.DefId, out var d) || d.Role != "herbalist") continue;
+                var c = _population.Find(st.CharacterId);
+                if (c != null && !c.IsDead && c.IsVillager && !c.InBreakdown && !IsSick(c) && c != mother) { midwife = c; break; }
+            }
+            if (midwife == null) return false;
+            mother.ShortenPostpartum(MidwifeRecoveryShare);
+            baby.AddMoodlet(MidwifeBabyMood, Text(LocText.Of("village.mood.midwife_hands")), 5, 3.0);
+            mother.AddMoodlet(MidwifeMotherMood, Text(LocText.Of("village.mood.midwife_help")), 6, 2.0);
+            var ms = S(midwife);
+            ms.CalledTo = HomeOf(mother);
+            ms.CalledUntil = _clock.TotalDays + MidwifeVisitDays;   // lohusayı ziyaret eder
+            Bubble?.Invoke(midwife, LocText.Of("village.midwife.village_bubble"));
+            return true;
         }
 
         private bool IsInnkeeperAtWork(Character c, string place)
@@ -953,13 +1070,16 @@ namespace Thatchwick.Core.Life
             foreach (var kv in _state) if (kv.Value.Day == _clock.DayIndex && kv.Value.Meals != 0) { meals.Add(kv.Key); meals.Add(kv.Value.Meals); }
             save.mealsDay = _clock.DayIndex;
             save.meals = meals.ToArray();
+            var sick = new List<double>();
+            foreach (var kv in _sickUntil) if (_clock.TotalDays < kv.Value) { sick.Add(kv.Key); sick.Add(kv.Value); }
+            save.sick = sick.ToArray();
             return save;
         }
 
         /// <summary>Eski kayıt (null): kilerler dolu başlar, stok bugünden.</summary>
         public void Import(LivingVillageSave save)
         {
-            _pantries.Clear(); _state.Clear(); _shoppedDay.Clear(); _producedDay.Clear();
+            _pantries.Clear(); _state.Clear(); _shoppedDay.Clear(); _producedDay.Clear(); _sickUntil.Clear();
             Stock.Import(save?.stock);
             if (save == null) { FillPantries(); return; }
             if (save.pantries != null)
@@ -975,6 +1095,9 @@ namespace Thatchwick.Core.Life
                     var s = new DayState { Day = save.mealsDay, Meals = save.meals[i + 1] };
                     _state[save.meals[i]] = s;
                 }
+            if (save.sick != null)
+                for (int i = 0; i + 1 < save.sick.Length; i += 2) _sickUntil[(int)save.sick[i]] = save.sick[i + 1];
+            _sickRollDay = _clock.DayIndex;   // yüklenen gün yeniden zar atılmaz
             FillPantries();   // kaydı olmayan yeni hane (halef, evlenen)
         }
     }
@@ -995,5 +1118,7 @@ namespace Thatchwick.Core.Life
         public ShopStockSave stock;
         public long mealsDay = -1;
         public int[] meals;
+        /// <summary>Hasta köylüler: (kimlik, iyileşme günü) çiftleri. Eski kayıtta null.</summary>
+        public double[] sick;
     }
 }

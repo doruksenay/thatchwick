@@ -2,7 +2,7 @@
 id: "606"
 title: "Zincir pozları, zanaat 2/3: çark, cam üfle, rendele, yont, kazı (40)"
 status: pending
-approved_by: pending     # BEKLETİLİYOR (63a-K9, K10): kullanıcı ilk dalga pozları (565, 566, 570-577) Unity'de görünce "user" yapılır; o zamana dek çalışmaz
+approved_by: user        # kullanıcı 21.11.2026 (belge 66g): ikinci dalga beklemeden üretilsin
 priority: 45
 family: karakter
 style_gate: false
@@ -25,7 +25,7 @@ created: 2026-11-20
 ## Amaç
 İzlenen eylem zincirlerinin (Project belgeleri 60, 63, 63a) adım pozları: çömlekçi, camcı, marangoz, taşçı, tabak. Kod pozu adla arar (`life.json` → `chains[].steps[].pose`, `GameRoot.StepFrameFor`); kare gelene kadar en yakın eldeki poza düşer. Kare gelince kod değişmeden oynar.
 
-**Bekletme:** bu iş ikinci dalgadır. Kullanıcı kararı (63a-K10): önce ilk dalga pozları (565, 566, 570-577) üretilip Unity'de görülecek. Kullanıcı onay verince `approved_by: user` yapılır.
+**Onay:** ikinci dalga; kullanıcı 21.11.2026 (belge 66g) beklemeden üretilmesini onayladı.
 
 | Anahtar | Nerede oynar |
 |---|---|

@@ -610,5 +610,111 @@ namespace Thatchwick.Core.Tests
             Assert.InRange(posted, 1, 2);   // 4 günde köyde en çok iki rica (üç günde bir)
             Assert.Equal(14, LivingVillage.HardshipRepeatDays);
         }
+
+        // ---- 66g sınırlar ----
+
+        [Fact]
+        public void OrtakKayip_IliskiSistemineYasiOrtakHissiVerir()
+        {
+            var k = Make();
+            var orhan = k.Villager("villager.orhan");
+            At(k, 2, 0.40);
+            Assert.True(k.Life.Breakdowns.Start(orhan, BreakdownKind.Withdraw));
+            k.Ali.AddMoodlet(MoodCatalog.Grief);
+            k.Village.RecentDeaths = () => new[] { (999, "Yusuf", k.Clock.TotalDays - 1) };
+            Assert.True(k.Village.ShareLoss(k.Ali, orhan, true, out _, out _));
+            Assert.True(k.Life.Relations.HasFeeling(k.Ali.Id, orhan.Id, Thatchwick.Core.Relations.FeelingKind.SharedGrief));
+            Assert.True(k.Life.Relations.HasFeeling(orhan.Id, k.Ali.Id, Thatchwick.Core.Relations.FeelingKind.SharedGrief));
+        }
+
+        [Fact]
+        public void Hastalik_EvdeYatar_DukkanKapanir_IhlamurIyilestirir()
+        {
+            var k = Make();
+            var orhan = k.Villager("villager.orhan");
+            At(k, 2, 0.30);
+            k.Village.MakeSick(orhan, 1.5);
+            Assert.True(k.Village.IsSick(orhan));
+            Assert.Equal(ShopClosure.Sick, k.Village.ClosureOf(Shops.Get("smithy"), orhan));
+            Assert.Equal(k.Village.HomeOf(orhan), k.Village.PlaceFor(orhan));
+            Assert.True(orhan.Mood.Has(LivingVillage.SickMood));
+            Assert.False(k.Village.OnGift(orhan, k.Db.Items.Get("item.bread")));
+            Assert.True(k.Village.OnGift(orhan, k.Db.Items.Get("item.tea_linden")));
+            Assert.False(k.Village.IsSick(orhan));
+            Assert.Equal(ShopClosure.None, k.Village.ClosureOf(Shops.Get("smithy"), orhan));
+            // Süre dolunca kendiliğinden iyileşir; kayıtta tutulur.
+            k.Village.MakeSick(orhan, 1.0);
+            var data = JsonSerializer.Deserialize<LifeSaveData>(JsonSerializer.Serialize(k.Life.Export(), Json), Json);
+            var k2 = Make(totalDays: 2.30);
+            k2.Life.Restore(data);
+            Assert.True(k2.Village.IsSick(k2.Villager("villager.orhan")));
+            At(k2, 3, 0.40);
+            Assert.False(k2.Village.IsSick(k2.Villager("villager.orhan")));
+        }
+
+        [Fact]
+        public void Hastalik_AclikVeSogukOlasiligiArtirir()
+        {
+            int sickHard = 0, sickFine = 0;
+            for (int seed = 1; seed <= 6; seed++)
+                foreach (bool hard in new[] { true, false })
+                {
+                    var k = Make(seed: seed);
+                    var vs = k.Pop.Members.Where(m => m.IsVillager && m.Stage >= AgeStage.Child).ToList();
+                    for (int day = 3; day < 10; day++)
+                    {
+                        At(k, day, 0.50);
+                        foreach (var c in vs) c.Needs.Set(NeedType.Warmth, hard ? 10f : 90f);
+                        k.Village.Tick(LivingVillage.StepDays * 1.01);
+                        foreach (var c in vs) if (k.Village.IsSick(c)) { if (hard) sickHard++; else sickFine++; }
+                    }
+                }
+            Assert.True(sickHard > sickFine, $"aç/üşüyen {sickHard}, iyi {sickFine}");
+        }
+
+        [Fact]
+        public void KoyDogumu_EbeLohusayiZiyaretEder()
+        {
+            var k = Make();
+            var zeynep = k.Villager("villager.zeynep");
+            var mother = new Character(400, "Saliha", new GridPos(3, 3)) { Sex = Sex.Female, IsVillager = true, MoodEnabled = true };   // loc-yok: test adı
+            mother.SetAge(35);
+            k.Pop.Add(mother);
+            var baby = new Character(401, "Bebek", new GridPos(3, 3)) { IsVillager = true, MoodEnabled = true };   // loc-yok: test adı
+            k.Pop.Add(baby);
+            mother.RestoreBiology(mother.AgeDays, mother.LifespanDays, false, DeathCause.None, false, null, 0, 10.0, 0, 0);
+            At(k, 3, 0.40);
+            Assert.True(k.Village.OnBirth(baby, mother));
+            Assert.Equal(5.0, mother.PostpartumLeft, 6);
+            Assert.True(baby.Mood.Has(LivingVillage.MidwifeBabyMood));
+            Assert.Equal(k.Village.HomeOf(mother), k.Village.PlaceFor(zeynep));   // lohusa ziyareti
+            // Ebe hastaysa gelmez.
+            var baby2 = new Character(402, "Bebek2", new GridPos(3, 3)) { IsVillager = true, MoodEnabled = true };   // loc-yok: test adı
+            k.Pop.Add(baby2);
+            k.Village.MakeSick(zeynep, 2);
+            Assert.False(k.Village.OnBirth(baby2, mother));
+        }
+
+        [Fact]
+        public void EvdePisenOgun_OcakVeSofraPozlari_VarincaYenidenBaslar()
+        {
+            var k = Make();
+            var orhan = k.Villager("villager.orhan");
+            string home = k.Village.HomeOf(orhan);
+            At(k, 2, 0.72);
+            Step(k);
+            At(k, 3, 0.72);
+            k.Village.AddToPantry(home, "item.bread", -50);   // pişen öğün seçilsin
+            orhan.Needs.Set(NeedType.Hunger, 20f);
+            Step(k);
+            var poses = new HashSet<string>();
+            for (double t = 0; t < LivingVillage.CookedMealSceneDays; t += 0.001) { var p = k.Village.ScenePose(orhan, k.Clock.TotalDays + t); if (p != null) poses.Add(p); }
+            Assert.Contains("stir", poses);      // ocakta pişirme
+            Assert.Contains("sit_eat", poses);   // sofrada yeme
+            Assert.True(k.Village.InScene(orhan));
+            At(k, 3, 0.72 + 0.03);
+            k.Village.RestartScene(orhan);       // ocağa vardı: sahne baştan
+            Assert.Equal("kindle", k.Village.ScenePose(orhan, k.Clock.TotalDays));
+        }
     }
 }

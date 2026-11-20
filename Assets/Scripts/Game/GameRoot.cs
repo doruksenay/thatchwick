@@ -314,7 +314,7 @@ namespace Thatchwick.Game
         private Market _market;
         private AccountProgress _account;
         private MarketPanel _marketPanel;
-        private ShopPanel _shopPanel;   // şehir dükkânları (belge 41)
+        private Ui.ShopWindow _shopPanel;   // köy dükkânları (belge 41; UI Toolkit, belge 66g)
         private StoragePanel _storagePanel;
         private MinePanel _minePanel;
         private KeepsakePanel _keepsakePanel;
@@ -521,7 +521,7 @@ namespace Thatchwick.Game
         private LifeSystems _life;
         private BuildService _buildService;
         private StatusHud _statusHud;
-        private VillagePanel _villagePanel;
+        private Ui.VillageWindow _villagePanel;   // köy penceresi (V; UI Toolkit, belge 66g)
         private RequestPanel _requestPanel;
         // Köylü konuşma balonu (köyün gözü, belge 47 §7.3): karakter → (söz, gerçek zamanda bitiş).
         private readonly Dictionary<int, (string text, float until)> _speech = new Dictionary<int, (string, float)>();
@@ -902,10 +902,10 @@ namespace Thatchwick.Game
             };
             if (loaded != null) SaveGame.RestoreHeat(loaded, _heat);
             _buildService = new BuildService(_world, _household, _content) { Storage = _storage, AccountLevel = () => _account.Level, HousingResidents = _animals.Residents, Plants = _plants };
-            _shopPanel = new ShopPanel(_market, _buildService, _household, _content, _world, () => _player?.Character, () => _player?.Runner,
-                () => HourOfDay, () => _clock.DayIndex, ShopOwner,
-                Thatchwick.Core.World.Regions.IsRegional(_world.Map) ? Thatchwick.Core.World.Regions.ShopAreas() : null)
-            { Animals = _animals, AccountLevel = () => _account.Level, TavernOrdered = (buyer, itemId) => _life?.OnTavernOrder(buyer, itemId) };
+            _shopPanel = new Ui.ShopWindow(_market, _buildService, _household, _content, _world, () => _player?.Character, () => _player?.Runner,
+                ShopOwner, Thatchwick.Core.World.Regions.IsRegional(_world.Map) ? Thatchwick.Core.World.Regions.ShopAreas() : null, () => EnsureUi())
+            { Animals = _animals, AccountLevel = () => _account.Level, TavernOrdered = (buyer, itemId) => _life?.OnTavernOrder(buyer, itemId), Hour = () => HourOfDay, Day = () => _clock.DayIndex };
+            _shopPanel.Opening += () => { _familyPanel?.Close(); _minePanel?.Close(); _marketPanel?.Close(); _villagePanel?.Close(); };   // IMGUI paneli pencerenin üstüne çizilmesin
             if (Thatchwick.Core.World.Regions.IsRegional(_world.Map))
             {
                 // Pazar (P) artık meydandaki tezgâhta değil, Kerem'in genel dükkânında: içeride, açık ve sahibi tezgâhta olmalı.
@@ -1017,7 +1017,8 @@ namespace Thatchwick.Game
             _life.Suitors.Arrived += c => CreateActorFor(c);
             _statusHud = new StatusHud(_life, _content, () => Commander?.Character, c => _actors.Find(a => a.Character == c)?.Runner, () => _plants.Summary());
             _statusHud.OpenSkills = (c, skill) => { _hudExpanded = true; _skillStripFor = c.Id; };
-            _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
+            _villagePanel = new Ui.VillageWindow(_life, _content, _household, _family, _dynasty, () => Commander?.Character, () => EnsureUi());
+            _villagePanel.Opening += () => { _familyPanel?.Close(); _minePanel?.Close(); _marketPanel?.Close(); _requestPanel?.Close(); };   // IMGUI paneli pencerenin üstüne çizilmesin
             WireLivingVillage();   // yaşayan köy (belge 66f): bölge, yer, kapı
             _requestPanel = new RequestPanel(_life, () => Commander?.Character)
             {
@@ -1782,7 +1783,6 @@ namespace Thatchwick.Game
             var guiPos = new Vector2(screenPos.x / s, (Screen.height - screenPos.y) / s);
             if (_buildMode != null && _buildMode.Active && _buildMode.PanelRect(s).Contains(guiPos)) return true;
             if (_marketPanel != null && _marketPanel.Active && _marketPanel.PanelRect(s).Contains(guiPos)) return true;
-            if (_shopPanel != null && _shopPanel.Active && _shopPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_storagePanel != null && _storagePanel.Active && _storagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_minePanel != null && _minePanel.Active && _minePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_keepsakePanel != null && _keepsakePanel.Active && _keepsakePanel.PanelRect(s).Contains(guiPos)) return true;
@@ -1791,7 +1791,6 @@ namespace Thatchwick.Game
             if (_vivView != null && _vivView.Active && _vivView.PanelRect(s).Contains(guiPos)) return true;
             if (_fishingView.Active) return true;
             if (_familyPanel != null && _familyPanel.Active && _familyPanel.PanelRect(s).Contains(guiPos)) return true;
-            if (_villagePanel != null && _villagePanel.Active && _villagePanel.PanelRect(s).Contains(guiPos)) return true;
             if (_requestPanel != null && _requestPanel.Active && _requestPanel.PanelRect(s).Contains(guiPos)) return true;
             if (_statusHud != null && !SidePanelOpen && _statusHud.IsOver(guiPos)) return true;   // panel açıkken HUD çizilmez
             if (_dynastyEnded) return true;
@@ -3258,6 +3257,9 @@ namespace Thatchwick.Game
             _scheduleTimer += _simDays;
             if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); WatchUnderground(); CheckVillageDoor(); }
             FlushSpeechQueue();
+            CheckMealWalks();   // ocağa varan köylü pişirmeye başlar
+            _shopPanel?.Refresh();   // açıkken sahibi geldi, saat döndü
+            _villagePanel?.Refresh();
             RingShopBell();
         }
 
@@ -3764,7 +3766,6 @@ namespace Thatchwick.Game
             { var prevSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _buildMode.OnGUI(s); } finally { GUI.skin = prevSkin; } }   // 391 arayüz kiti
             var prevPanelSkin = GUI.skin; GUI.skin = UiSkin.Skin;   // 391 tema tüm panellere (belge 33)
             try { _marketPanel.OnGUI(s);
-            _shopPanel?.OnGUI(s);
             _storagePanel.OnGUI(s);
             _minePanel.OnGUI(s);
             _keepsakePanel?.OnGUI(s);
@@ -3773,7 +3774,6 @@ namespace Thatchwick.Game
             _vivView?.OnGUI(s);
             _fishingView.OnGUI(s);
             _familyPanel.OnGUI(s);
-            _villagePanel.OnGUI(s);
             _requestPanel.OnGUI(s); } finally { GUI.skin = prevPanelSkin; }
             DrawBalloons(s);
             _statusHud.LeftInset = 8f + HudWidth;

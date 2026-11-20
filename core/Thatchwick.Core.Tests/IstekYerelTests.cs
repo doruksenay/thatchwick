@@ -76,7 +76,7 @@ namespace Thatchwick.Core.Tests
             {
                 "Core/Life/Requests/RequestService.cs", "Core/Life/Requests/RequestCatalog.cs", "Core/Work/TimedDuties.cs",
                 "Core/Upbringing/ChildRoaming.cs", "Core/Life/LifeSystems.cs", "Game/RequestPanel.cs", "Game/FamilyPanel.cs",
-                "Game/VillagePanel.cs", "Game/GameRoot.cs", "Core/Life/QualityBook.cs", "Game/MarketPanel.cs", "Game/UiSkin.cs", "Core/Life/ProduceShow.cs"
+                "Game/Ui/VillageWindow.cs", "Game/Ui/ShopWindow.cs", "Game/GameRoot.cs", "Core/Life/QualityBook.cs", "Game/MarketPanel.cs", "Game/UiSkin.cs", "Core/Life/ProduceShow.cs"
             };
             var rx = new Regex("(?:LocText\\.Of|\\bL|\\bT|GameLocalization\\.T)\\(\\s*\"((?:core\\.req|req|duty|roam|ui\\.req|ui\\.duty|ui\\.roam|quality|ui\\.quality|ui\\.market|show|ui\\.show)\\.[a-z0-9_.]*[a-z0-9_])\"");
             var keys = new List<string>();

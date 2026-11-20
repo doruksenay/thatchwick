@@ -42,6 +42,15 @@ namespace Thatchwick.Core.Life
                 if (member.SpouseId == head.Id) Say(LocText.Of("village.n.family_arrived", ("name", head.Name), ("spouse", member.Name)), NoticeLevel.Info, head.Id);
             };
             Population.BabyBorn += (baby, mother, father) => Living.OnBirth(baby, mother);
+            // Ortak kayıp: ilişki sistemindeki "Yası ortak" hissi iki yönlü (belge 67a).
+            Living.SharedGrief += (a, b) =>
+            {
+                if (Relations == null) return;
+                Relations.AddFeeling(a.Id, b.Id, Thatchwick.Core.Relations.FeelingKind.SharedGrief);
+                Relations.AddFeeling(b.Id, a.Id, Thatchwick.Core.Relations.FeelingKind.SharedGrief);
+            };
+            // Hasta köylüye ıhlamur, şurup ya da iksir götürmek onu hemen iyileştirir.
+            Villagers.GiftGiven += (v, item, taste, msg) => Living.OnGift(v, item);
             Living.Import(null);   // yeni oyun: kilerler dolu başlar (kayıt yüklenirse Restore yeniden kurar)
         }
 
