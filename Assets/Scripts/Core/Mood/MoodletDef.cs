@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
 
@@ -49,6 +50,39 @@ namespace Thatchwick.Core.Mood
     public static class MoodRules
     {
         public const int MiserableAt = -40, UnhappyAt = -10, GoodAt = 10, HappyAt = 30;
+
+        /// <summary>
+        /// İç Sesler (Project belgesi 61b §3): ruh halini oluşturan kayıtların oyuncuya görünen adı. Değeri artı olan
+        /// kayıt "keyif", eksi olan "kasvet"; 0 olan yalnızca durum bildirir ve sayılmaz.
+        /// </summary>
+        public static (int joys, int glooms) InnerVoiceCounts(IEnumerable<ActiveMoodlet> active)
+        {
+            int joys = 0, glooms = 0;
+            if (active != null)
+                foreach (var m in active)
+                {
+                    if (m?.Def == null) continue;
+                    if (m.Def.Value > 0) joys++;
+                    else if (m.Def.Value < 0) glooms++;
+                }
+            return (joys, glooms);
+        }
+
+        /// <summary>Gösterim sırası: önce keyifler (büyükten küçüğe), sonra değeri 0 olanlar, sonra kasvetler (en ağırı sonda).</summary>
+        public static List<ActiveMoodlet> InnerVoicesOrdered(IEnumerable<ActiveMoodlet> active)
+        {
+            var list = new List<ActiveMoodlet>();
+            if (active != null) foreach (var m in active) if (m?.Def != null) list.Add(m);
+            // Kararlı sıralama: eşit değerde ekleniş sırası korunur.
+            return list.Select((m, i) => (m, i)).OrderByDescending(t => t.m.Def.Value).ThenBy(t => t.i).Select(t => t.m).ToList();
+        }
+
+        /// <summary>Başlık satırı: "İç Sesler · 3 keyif, 1 kasvet".</summary>
+        public static Localization.LocText InnerVoicesHeader(IEnumerable<ActiveMoodlet> active)
+        {
+            var (joys, glooms) = InnerVoiceCounts(active);
+            return Localization.LocText.Of("ui.mood.inner_voices.header", ("joys", joys), ("glooms", glooms));
+        }
 
         public static MoodStatus StatusFor(int total)
         {

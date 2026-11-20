@@ -206,7 +206,7 @@ namespace Thatchwick.Core.Tests
             Assert.False(r.Life.Villagers.Give(r.Head, "villager.orhan", "item.chair_wood", out var msg));
             Assert.Contains("kaynak", msg);
             Assert.False(r.Life.Villagers.Give(r.Head, "villager.orhan", "item.turnip", out msg));
-            Assert.Contains("Envanterde", msg);
+            Assert.Contains("ui.common.not_held", msg);   // testte metin çevrilmez, anahtar gelir
         }
 
         [Fact]

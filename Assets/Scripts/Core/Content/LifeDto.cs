@@ -125,6 +125,16 @@ namespace Thatchwick.Core.Content
         public string home;        // adlandırılmış yer: "home:1" ... (oyun katmanı karoya çevirir)
         public string work;
         public VillagerEventDto[] events;
+        public string[] maleNames;     // hanenin sonraki kuşaklarına verilecek adlar (belge 61b §5)
+        public string[] femaleNames;
+    }
+
+    /// <summary>Genel ad havuzu: oyuncu hanesi, talipler, adsız komşular (belge 61b §5).</summary>
+    [Serializable]
+    public sealed class NamePoolDto
+    {
+        public string[] maleNames;
+        public string[] femaleNames;
     }
 
     [Serializable]

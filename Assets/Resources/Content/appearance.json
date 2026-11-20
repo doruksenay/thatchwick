@@ -416,7 +416,7 @@
     },
     {
       "id": "headband",
-      "displayName": "Saç bandı",
+      "displayName": "Saç bağı",
       "sex": "",
       "tag": "",
       "level": 1,
@@ -424,7 +424,7 @@
     },
     {
       "id": "hairnet",
-      "displayName": "Saç filesi",
+      "displayName": "Saç ağı",
       "sex": "",
       "tag": "",
       "level": 3,
@@ -2302,7 +2302,7 @@
     },
     {
       "id": "cord",
-      "displayName": "İp kolye",
+      "displayName": "İp gerdanlık",
       "sex": "",
       "tag": "neck"
     }
@@ -2336,13 +2336,13 @@
   "outfits": [
     {
       "id": "tunic",
-      "displayName": "Tunik",
+      "displayName": "Göynek",
       "sex": "",
       "tag": ""
     },
     {
       "id": "long_tunic",
-      "displayName": "Uzun tunik",
+      "displayName": "Uzun göynek",
       "sex": "",
       "tag": ""
     },
@@ -2386,7 +2386,7 @@
   "bottoms": [
     {
       "id": "trousers",
-      "displayName": "Pantolon",
+      "displayName": "Çakşır",
       "sex": "",
       "tag": ""
     },
@@ -2486,7 +2486,7 @@
     },
     {
       "id": "hood",
-      "displayName": "Kapüşon",
+      "displayName": "Kukuleta",
       "sex": "",
       "tag": "full",
       "level": 0,
@@ -2494,7 +2494,7 @@
     },
     {
       "id": "straw",
-      "displayName": "Hasır şapka",
+      "displayName": "Hasır başlık",
       "sex": "",
       "tag": "top",
       "level": 0,
@@ -2518,7 +2518,7 @@
     },
     {
       "id": "felt",
-      "displayName": "Keçe şapka",
+      "displayName": "Keçe başlık",
       "sex": "",
       "tag": "top",
       "level": 0,
@@ -2534,7 +2534,7 @@
     },
     {
       "id": "chaperon",
-      "displayName": "Şaperon",
+      "displayName": "Sarma başlık",
       "sex": "",
       "tag": "full",
       "level": 0,
@@ -2550,7 +2550,7 @@
     },
     {
       "id": "bonnet",
-      "displayName": "Bere",
+      "displayName": "Örgü takke",
       "sex": "",
       "tag": "top",
       "level": 0,
@@ -2582,7 +2582,7 @@
     },
     {
       "id": "brimmed",
-      "displayName": "Geniş kenarlı şapka",
+      "displayName": "Geniş kenarlı başlık",
       "sex": "",
       "tag": "top",
       "level": 0,
@@ -2590,7 +2590,7 @@
     },
     {
       "id": "pointed_hat",
-      "displayName": "Sivri şapka",
+      "displayName": "Sivri külah",
       "sex": "",
       "tag": "top",
       "level": 0,

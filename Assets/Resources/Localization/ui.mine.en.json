@@ -1,0 +1,7 @@
+{
+  "ui.mine.name": "Household mine",
+  "ui.mine.open": "Open the mine",
+  "ui.mine.opened": "Household mine opened: mark tiles, mine workers dig every morning",
+  "ui.mine.panel.title": "HOUSEHOLD MINE · GALLERY LEVEL",
+  "ui.mine.shift_dug": "{name} dug {n} tiles in the mine"
+}

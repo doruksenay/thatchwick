@@ -209,12 +209,12 @@ namespace Thatchwick.Game
                 GUILayout.Label($"{tool.DisplayName}: {_life.Tools.NameOf(tool.Id)} · hız x{_life.Tools.SpeedFor(tool.Id):0.0#} ({tier}/{tool.Tiers.Count})");
                 var heir = _life.Legacy.ToolHeirloom(tool.Id);
                 if (heir != null)
-                    GUILayout.Label($"   ✦ {heir.DisplayName}: hız ve XP +%{Legacy.BonusOf(heir) * 100:0} ({heir.Level}. basamak)");
+                    GUILayout.Label(GameLocalization.T("ui.legacy.heir_line", ("name", heir.DisplayName), ("pct", (Legacy.BonusOf(heir) * 100).ToString("0")), ("level", heir.Level)));
                 else
                 {
                     string hw = _life.Legacy.CanMakeToolHeirloom(tool.Id, _life.Tools.NameOf(tool.Id));
                     GUI.enabled = hw == null;
-                    if (GUILayout.Button(new GUIContent($"Yadigâr yap ({Legacy.ToolHeirloomCost} mühür)", hw ?? "Hız ve XP +%5; her nesil +%5, en çok %25"), GUILayout.Width(170f)))
+                    if (GUILayout.Button(new GUIContent($"Yadigâr yap ({Legacy.ToolHeirloomCost} mühür)", hw ?? GameLocalization.T("ui.legacy.heirloom_tip")), GUILayout.Width(170f)))
                     {
                         _life.Legacy.MakeToolHeirloom(tool.Id, _life.Tools.NameOf(tool.Id), _commander(), _life.Clock.TotalDays, out var hm);
                         _status = hm;
@@ -268,7 +268,7 @@ namespace Thatchwick.Game
             {
                 bool done = _life.Goals.IsDone(g.Id);
                 int progress = _life.Goals.Progress(g);
-                string reward = (g.RewardAkce > 0 ? $"{g.RewardAkce} akçe" : "") + (g.RewardAkce > 0 && g.RewardXp > 0 ? " + " : "") + (g.RewardXp > 0 ? $"{g.RewardXp} XP" : "");
+                string reward = (g.RewardAkce > 0 ? $"{g.RewardAkce} akçe" : "") + (g.RewardAkce > 0 && g.RewardXp > 0 ? " + " : "") + (g.RewardXp > 0 ? GameLocalization.T("ui.goal.reward_xp", ("n", g.RewardXp)) : "");
                 GUILayout.Label($"{(done ? "✓ " : "")}{g.DisplayName} — {progress}/{g.Target}{(reward.Length > 0 ? $" · ödül {reward}" : "")}");
                 if (!done) GUILayout.Label($"   {g.Description}");
             }

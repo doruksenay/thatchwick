@@ -20,7 +20,7 @@
   "ui.cart.rule": "Tarla arabası yorgun karoya kendiliğinden gübre sersin",
   "ui.cart.sheltered": "sundurmada",
   "ui.cart.steward": "Kâhya boştaki arabalara günün işini versin",
-  "ui.cart.stored": "envanterde",
+  "ui.cart.stored": "hanede",
   "ui.cart.title": "ARABALAR",
   "ui.cart.wear": "tekerlek yıpranması %{pct}",
   "ui.hud.carts": "Arabalar",

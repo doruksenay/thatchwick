@@ -12,6 +12,9 @@ namespace Thatchwick.Core.Content
         public ContentRegistry<BranchDef> Branches { get; } = new ContentRegistry<BranchDef>();
         public ContentRegistry<ProjectDef> Projects { get; } = new ContentRegistry<ProjectDef>();
         public ContentRegistry<VillagerDef> Villagers { get; } = new ContentRegistry<VillagerDef>();
+        /// <summary>Genel ad havuzu (life.json namePool; belge 61b §5).</summary>
+        public List<string> MaleNamePool { get; } = new List<string>();
+        public List<string> FemaleNamePool { get; } = new List<string>();
         public ContentRegistry<FestivalDef> Festivals { get; } = new ContentRegistry<FestivalDef>();
         public ContentRegistry<GoalDef> Goals { get; } = new ContentRegistry<GoalDef>();
         public ContentRegistry<ToolDef> Tools { get; } = new ContentRegistry<ToolDef>();

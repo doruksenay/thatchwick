@@ -182,10 +182,12 @@ namespace Thatchwick.Game
 
             if (c.Mood.Active.Count > 0)
             {
-                var parts = new System.Text.StringBuilder();
-                foreach (var m in c.Mood.Active)
+                var parts = new System.Text.StringBuilder(GameLocalization.R(MoodRules.InnerVoicesHeader(c.Mood.Active)) + ": ");
+                bool first = true;
+                foreach (var m in MoodRules.InnerVoicesOrdered(c.Mood.Active))
                 {
-                    if (parts.Length > 0) parts.Append(" · ");
+                    if (!first) parts.Append(" · ");
+                    first = false;
                     parts.Append($"{m.Def.DisplayName} {(m.Def.Value > 0 ? "+" : "")}{m.Def.Value}");
                 }
                 GUILayout.Label(parts.ToString(), _small);
@@ -264,7 +266,7 @@ namespace Thatchwick.Game
             _rects.Add(rect);
             GUILayout.BeginArea(rect, GUI.skin.box);
             GUILayout.Label($"Gün sonu · {_life.Festivals.DateText(d.Day)}");
-            GUILayout.Label($"Akçe {Signed(d.AkceDelta)} · XP {Signed(d.XpDelta)}");
+            GUILayout.Label(GameLocalization.T("ui.day.akce_xp", ("akce", Signed(d.AkceDelta)), ("xp", Signed(d.XpDelta))));
             if (d.Born > 0 || d.Died > 0) GUILayout.Label($"Doğan {d.Born} · Ölen {d.Died}: {string.Join(", ", d.Names)}", _small);
             foreach (var kv in d.ItemDeltas)
             {

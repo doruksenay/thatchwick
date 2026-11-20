@@ -99,7 +99,7 @@ namespace Thatchwick.Core.Life
                     if (SkillFlag("graft:" + item.Id) > 0) return "Bu ağaç zaten aşılı.";
                     return GraftScion(item) == null ? "Aşı için envanterde başka bir meyve fidanı gerekli." : null;
                 case "stock_pond":
-                    if (SkillFlag("stock:" + item.Id) > Today) return "Gölet zaten stoklu.";
+                    if (SkillFlag("stock:" + item.Id) > Today) return Localization.CoreText.T("ui.pond.already_stocked");
                     return null;
                 case "black_earth":
                     if (SkillFlag("black_earth") > 0 && Today - SkillFlag("black_earth") < 40) return "Kara toprak yılda bir hazırlanır.";
@@ -291,7 +291,7 @@ namespace Thatchwick.Core.Life
                     break;
                 case "stock_pond":
                     SetSkillFlag("stock:" + item.Id, Today + StockedPondDays);
-                    Say($"{c.Name} göleti yavru balıkla stokladı ({StockedPondDays} gün balık bol).", NoticeLevel.Info, c.Id);
+                    Say(Localization.CoreText.T("ui.pond.stocked", ("name", c.Name), ("days", StockedPondDays)), NoticeLevel.Info, c.Id);
                     break;
                 case "chronicle":
                     Upbringing.Reputation.Add(2, "kronik");

@@ -1,6 +1,7 @@
 {
   "ui.build.all_sets": "Her takım",
-  "ui.build.shop_only": "{set} takımı: yalnızca şehirdeki dükkânda.",
+  "ui.build.shop_only": "{set} takımı: yalnızca köy meydanındaki dükkânda.",
+  "ui.build.shop_only_fail": "{set} takımı yalnızca köy meydanındaki dükkânlarda satılır.",
   "ui.styleset.artisan": "Zanaatkâr",
   "ui.styleset.catki": "Çatkı",
   "ui.styleset.merchant": "Tüccar",

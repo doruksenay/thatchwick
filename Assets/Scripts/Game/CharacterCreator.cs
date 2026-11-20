@@ -53,7 +53,7 @@ namespace Thatchwick.Game
         private static readonly string[] BuildLabels = { "İnce", "Orta", "Gürbüz", "Dolgun" };
         private static readonly string[] FrameLabels = { "Erkeksi", "Arada", "Kadınsı" };
         private static readonly string[] VoiceLabels = { "Kalın", "Sıcak", "Berrak", "İnce" };
-        private static readonly string[] AccidentLabels = { "Kapalı", "Seyrek", "Normal" };
+        private static string[] AccidentLabels => new[] { GameLocalization.T("ui.system.accident.off"), GameLocalization.T("ui.system.accident.rare"), GameLocalization.T("ui.system.accident.normal") };
         private static readonly string[] FocusLabels = { "Yok", "Çiftçilik", "Odunculuk", "Yemek", "Marangozluk" };
 
         // ---- Ayna kipi (belge 01 ve 14): var olan karakterin görünüşünü ve adını değiştirir ----
@@ -100,11 +100,14 @@ namespace Thatchwick.Game
         {
             _catalog = catalog;
             _rng = new System.Random(seed);
-            _draft = CharacterDraft.CreateRandom(catalog, _rng, "Aldric");
+            _draft = CharacterDraft.CreateRandom(catalog, _rng, "");
             _draft.SetSex(Sex.Male, catalog);
             _draft.Appearance = catalog.Randomize(_rng, Sex.Male);
             _ink = catalog.InkColors.Count > 0 ? catalog.InkColors[0] : new Rgb(40, 50, 90);
         }
+
+        /// <summary>Varsayılan ad genel ad havuzundan gelir (belge 61b §5); oyuncu değiştirebilir.</summary>
+        public void SetDefaultName(string name) { if (!string.IsNullOrWhiteSpace(name)) _draft.Name = name; }
 
         public void Release()
         {

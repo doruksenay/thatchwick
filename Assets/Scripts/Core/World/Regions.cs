@@ -154,11 +154,11 @@ namespace Thatchwick.Core.World
         public static readonly Region Farm = new Region { Id = "farm", Name = "Çiftlik", X = 0, Y = 0, W = 96, H = 72 };
         // Köy yolu taslaktan (maps/road): kenar bandı için kuzeye ve güneye 4'er karo büyüdü (belge 64a K5).
         public static readonly Region Road = new Region { Id = "road", Name = "Köy yolu", X = 100, Y = 16, W = 40, H = 32 };
-        public static readonly Region Town = new Region { Id = "town", Name = "Şehir", X = 144, Y = 10, W = 64, H = 52 };
+        public static readonly Region Town = new Region { Id = "town", Name = "Köy meydanı", X = 144, Y = 10, W = 64, H = 52 };   // loc-yok: geliştirici adı; oyuncuya region.<id> anahtarı gider
         public static readonly Region Forest = new Region { Id = "forest", Name = "Orman", X = 212, Y = 0, W = 48, H = 48 };
         public static readonly Region Lake = new Region { Id = "lake", Name = "Irmak ve göl", X = 264, Y = 0, W = 48, H = 32 };
         public static readonly Region Marsh = new Region { Id = "marsh", Name = "Sazlık", X = 316, Y = 0, W = 32, H = 24 };
-        public static readonly Region Hill = new Region { Id = "hill", Name = "Tepe ve taş ocağı", X = 352, Y = 0, W = 40, H = 40 };
+        public static readonly Region Hill = new Region { Id = "hill", Name = "Tepe ve taşlık", X = 352, Y = 0, W = 40, H = 40 };   // loc-yok: geliştirici adı; oyuncuya region.<id> anahtarı gider
         public static readonly Region Slopes = new Region { Id = "slopes", Name = "Güney Yamaçları", X = 396, Y = 0, W = 32, H = 24 };
         /// <summary>Deniz kıyısı (belge 47 ek, 20.11.2026): gölün güneyinde, dünyanın genişliğini değiştirmeden boş şeritte.</summary>
         public static readonly Region Coast = new Region { Id = "coast", Name = "Deniz kıyısı", X = 264, Y = 36, W = 48, H = 32 };

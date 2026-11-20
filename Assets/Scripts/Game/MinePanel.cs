@@ -50,7 +50,7 @@ namespace Thatchwick.Game
             if (!Active) return;
             GUILayout.BeginArea(PanelRect(guiScale), GUI.skin.box);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("AİLE OCAĞI · GALERİ KATI");
+            GUILayout.Label(GameLocalization.T("ui.mine.panel.title"));
             if (GUILayout.Button("Kapat", GUILayout.Width(56f))) Active = false;
             GUILayout.EndHorizontal();
             var m = _mines.Get(MineSystem.MineId);
@@ -61,12 +61,12 @@ namespace Thatchwick.Game
                 if (why == null && _house.Akce < OpenCostAkce) why = "Akçe yetmiyor.";
                 if (why == null && _house.Count("item.plank") < OpenCostPlanks) why = "4 tahta gerekir.";
                 GUI.enabled = why == null;
-                if (GUILayout.Button("Ocağı aç"))
+                if (GUILayout.Button(GameLocalization.T("ui.mine.open")))
                 {
                     _house.TrySpend(OpenCostAkce);
                     for (int i = 0; i < OpenCostPlanks; i++) _house.TryTakeItem("item.plank");
                     _mines.EnsureMine();
-                    Message?.Invoke("Aile ocağı açıldı: karoları işaretle, maden görevlileri her sabah kazar");
+                    Message?.Invoke(GameLocalization.T("ui.mine.opened"));
                 }
                 GUI.enabled = true;
                 if (why != null) GUILayout.Label(why);

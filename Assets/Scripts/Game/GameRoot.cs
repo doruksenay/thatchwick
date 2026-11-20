@@ -471,9 +471,8 @@ namespace Thatchwick.Game
         private Vector2 _menuScroll;
         private string _menuTitle;
         // Hayali yerleşim: iki kültürün adları tek havuzda (karar 17.11.2026).
-        private static readonly string[] GirlNames = { "Edith", "Agnes", "Matilda", "Joan", "Isolde", "Mabel", "Cecily", "Alys", "Elif", "Gülbahar", "Selcan", "Esma", "Nergis", "Ayla" };
-        private static readonly string[] BoyNames = { "Wat", "Hob", "Piers", "Osric", "Godric", "Tobias", "Alard", "Hugh", "Tolga", "Baran", "Kaya", "Alp", "Oğuz", "Doğan" };
-        private int _nameCounter;
+        private readonly NamePools _names = new NamePools();   // belge 61b §5: hane listeleri ve genel havuz (life.json)
+        private const int StartingVillagerId = 2;   // meydanda başlayan köylü (eski adı Maud)
 
         // Yaşam katmanı (Adım 18-43): tüm kurallar Core.Life'ta; burası kurar, her karede ilerletir, çizer.
         private LifeSystems _life;
@@ -697,7 +696,7 @@ namespace Thatchwick.Game
                 {
                     // Eski kayıt yeni dünyaya açıldı: eklenen bölgelerin eşyaları (dükkânlar, ağaçlar, toplama düğümleri).
                     PlaceRegionItems(_widenedFrom);
-                    ShowMessage("Dünya genişledi: köy yolu, şehir ve yaban haritaları eklendi.", 8f);
+                    ShowMessage(GameLocalization.T("ui.world.expanded"), 8f);
                     _widenedFrom = 0;
                 }
             }
@@ -776,7 +775,7 @@ namespace Thatchwick.Game
             _household = loaded != null ? loaded.Household : new Household(100);
             _account = loaded != null ? loaded.Account : new AccountProgress();
             _account.LevelChanged += (from, to) => ShowMessage($"Hesap seviyesi {to}! Dükkânda yeni eşyalar açılmış olabilir.");
-            _account.BadgeEarned += b => ShowMessage($"Rozet kazanıldı: {b.DisplayName} (+{b.RewardXp} XP)");
+            _account.BadgeEarned += b => ShowMessage(GameLocalization.T("ui.account.badge_earned", ("name", b.DisplayName), ("xp", b.RewardXp)));
             if (loaded == null)
             {
                 StartingKit.Apply(_household);   // başlangıç erzakı (belge 41, denge)
@@ -851,7 +850,9 @@ namespace Thatchwick.Game
             _population = new Population(firstFreeId: 1, seed: Thatchwick.Core.Seeds.Derive(_seed, 5, _rngEpoch));
             // Yerleştirme denetimi karakterleri bilsin: kimsenin üstüne eşya, ekin ya da mezar konmaz.
             _world.CharacterPositions = LivingPositions;
+            LoadNamePools();
             _population.NameGenerator = NextName;
+            _population.HouseholdNameGenerator = NextNameFor;
             _population.BabyBorn += OnBabyBorn;
             _population.BirthPlace = m => Population.ShelterNear(_world, m.Position);   // helada, tarlada doğan bebek eve
             _family = new FamilyService(_population, _household, _content, seed: Thatchwick.Core.Seeds.Derive(_seed, 6, _rngEpoch));
@@ -950,7 +951,7 @@ namespace Thatchwick.Game
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
             _requestPanel = new RequestPanel(_life, () => Commander?.Character)
             {
-                ShowOnMap = c => ShowMessage($"{c.Name} şu an: {Thatchwick.Core.World.Regions.At(c.Position)?.Name ?? "köyde"}")
+                ShowOnMap = c => ShowMessage(GameLocalization.T("ui.where.now", ("name", c.Name), ("place", Thatchwick.Core.World.Regions.At(c.Position) is Thatchwick.Core.World.Region rg ? GameLocalization.T("region." + rg.Id) : GameLocalization.T("ui.where.village"))))
             };
             // İstek teslimi elden: verenin 3 karo yakınında olmalı (yoksa ulak).
             _life.Requests.Near = (a, b) => a != null && b != null && a.Position.Z == b.Position.Z
@@ -1008,7 +1009,7 @@ namespace Thatchwick.Game
                     _population.Add(c);
                     var actor = CreateActorFor(c);
                     if (c.IsPlayerControlled && !c.IsDead && _player == null) _player = actor;
-                    if (c.Name == "Maud" && _maud == null) _maud = actor;
+                    if (c.Id == StartingVillagerId && !c.IsPlayerControlled && _maud == null) _maud = actor;   // eski kayıtta adı Maud
                 }
                 foreach (var (a, b, v) in loaded.Affection) _family.SetAffection(a, b, v);
                 _life.Restore(loaded.Life);
@@ -1032,7 +1033,7 @@ namespace Thatchwick.Game
             // Maud (NPC) rastgele görünümle hemen oluşur; oyuncunun karakteri yaratma ekranından gelir.
             // Köylüler oyuncunun arsasında yaşamaz (belge 47 §8): Maud meydanda başlar, VillageHomes ona bir ev verir.
             var maudPos = Places.ContainsKey("square") && _regional ? NearestWalkable(Places["square"], 8) : new GridPos(33, 31);
-            var maud = new Character(2, "Maud", maudPos, false) { Sex = Sex.Female };
+            var maud = new Character(StartingVillagerId, "Selcan", maudPos, false) { Sex = Sex.Female };   // belge 61b §5: sabit kadro
             GiveRandomLook(maud);
             maud.SetAge(36);
             maud.LifespanDays = maud.AgeConfig.RollLifespan(_rng);
@@ -1048,6 +1049,7 @@ namespace Thatchwick.Game
             _life.Weather.Seed = _rng.Next(1, int.MaxValue);
 
             _creator = new CharacterCreator(_appearanceCatalog, seed: 5) { Content = _content, DaysPerSeason = _clock.Config.DaysPerSeason };
+            _creator.SetDefaultName(NextName(Sex.Male));
             _namingSettlement = true;                       // önce yerleşimin adı, sonra karakter
             _settlementDraft = Settlement.DefaultName;
             _input.enabled = false;
@@ -1304,24 +1306,22 @@ namespace Thatchwick.Game
             }
         }
 
-        // Yeni doğan ya da gelen kişinin adı: listeden sıradaki, ama yaşayan biriyle aynı ad verilmez (yüklemeden sonra sayaç
-        // sıfırlansa da). Liste tükenirse aynı ada sıra eki konur ("Edith II").
-        private string NextName(Sex sex)
+        // Yeni doğan ya da gelen kişinin adı (belge 61b §5): köylü hanesinde hanenin listesi, değilse genel havuz; yaşayan
+        // biriyle aynı ad verilmez. Liste tükenirse sıra eki konur ("Timur II").
+        private string NextName(Sex sex) => _names.Pick(sex, null, LivingNames());
+        private string NextNameFor(Sex sex, string household) => _names.Pick(sex, household, LivingNames());
+
+        private HashSet<string> LivingNames()
         {
-            var names = sex == Sex.Female ? GirlNames : BoyNames;
-            var taken = new HashSet<string>();
+            var taken = new HashSet<string>(System.StringComparer.Ordinal);
             foreach (var c in _population.Members) if (!c.IsDead) taken.Add(c.Name);
-            for (int i = 0; i < names.Length; i++)
-            {
-                string n = names[_nameCounter++ % names.Length];
-                if (!taken.Contains(n)) return n;
-            }
-            string baseName = names[_nameCounter++ % names.Length];
-            for (int k = 2; ; k++)
-            {
-                string n = $"{baseName} {Roman(k)}";
-                if (!taken.Contains(n)) return n;
-            }
+            return taken;
+        }
+
+        private void LoadNamePools()
+        {
+            _names.SetGeneral(_content.MaleNamePool, _content.FemaleNamePool);
+            foreach (var v in _content.Villagers.All) _names.SetHousehold(v.Id, v.MaleNames, v.FemaleNames);
         }
 
         private static string Roman(int n) => n switch { 2 => "II", 3 => "III", 4 => "IV", 5 => "V", 6 => "VI", 7 => "VII", 8 => "VIII", 9 => "IX", _ => n.ToString() };
@@ -1875,7 +1875,7 @@ namespace Thatchwick.Game
             var areas = Thatchwick.Core.World.Regions.ShopAreas();
             if (shop == null || !areas.TryGetValue("general", out var area)) return null;
             var p = _player?.Character;
-            if (p == null || !area.Contains(p.Position)) return "Alışveriş için Kerem'in genel dükkânında olmalısın (şehir meydanının yanında).";
+            if (p == null || !area.Contains(p.Position)) return GameLocalization.T("ui.shop.need_kerem");
             if (!shop.IsOpenAt(HourOfDay, _clock.DayIndex)) return $"Genel dükkân kapalı. Saatler: {shop.HoursText}.";
             var owner = ShopOwner(shop);
             if (owner == null || !area.Contains(owner.Position)) return "Kerem şu an tezgâhta değil; biraz bekle.";
@@ -2078,7 +2078,7 @@ namespace Thatchwick.Game
                 var hill = Thatchwick.Core.World.Regions.Hill;
                 int mx = hill.X + Thatchwick.Core.World.Regions.MineMouthX, my = hill.Y + Thatchwick.Core.World.Regions.MineMouthY;
                 if (System.Math.Abs(tile.X - mx) <= 2 && System.Math.Abs(tile.Y - my) <= 2 && Thatchwick.Core.World.Regions.Exists(_world.Map, hill))
-                { _minePanel.Toggle(); ShowMessage("Aile ocağı"); }
+                { _minePanel.Toggle(); ShowMessage(GameLocalization.T("ui.mine.name")); }
             }
             // Çapa kipi: boş çime dokunmak orayı çapalar, yıpranmış yola dokunmak onarır (sıraya eklenir).
             if (_hoeMode && _menuOptions.Count == 0)
@@ -2593,7 +2593,7 @@ namespace Thatchwick.Game
             {
                 if (c.IsDead || c.IsVillager || c.Duty != DutyKind.Mine || !DutyPlanner.CanTakeDuty(c, DutyKind.Mine)) continue;
                 int dug = _mines.Shift(mine, c, 0.25);
-                if (dug > 0) ShowMessage($"{c.Name} ocakta {dug} karo kazdı");
+                if (dug > 0) ShowMessage(GameLocalization.T("ui.mine.shift_dug", ("name", c.Name), ("n", dug)));
             }
         }
 
@@ -3618,7 +3618,7 @@ namespace Thatchwick.Game
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Kazalar", GUILayout.Width(60f));
                 int acc = _life.Injuries.Setting == AccidentSetting.NotSet ? 1 : (int)_life.Injuries.Setting - 1;
-                int newAcc = GUILayout.Toolbar(acc, new[] { "Kapalı", "Seyrek", "Normal" });
+                int newAcc = GUILayout.Toolbar(acc, new[] { GameLocalization.T("ui.system.accident.off"), GameLocalization.T("ui.system.accident.rare"), GameLocalization.T("ui.system.accident.normal") });
                 if (newAcc != acc || _life.Injuries.Setting == AccidentSetting.NotSet) _life.Injuries.Setting = (AccidentSetting)(newAcc + 1);
                 GUILayout.EndHorizontal();
                 if (GUILayout.Button(GameLocalization.T("ui.menu.to_title")))
@@ -3630,7 +3630,7 @@ namespace Thatchwick.Game
                     return;
                 }
                 int next = AccountProgress.XpForLevel(_account.Level + 1);
-                GUILayout.Label($"Hesap Sv {_account.Level} · XP {_account.Xp}/{next} · bugünkü iş XP {_account.WorkXpToday(_clock.DayIndex)}/{AccountProgress.DailyWorkCap}");
+                GUILayout.Label(GameLocalization.T("ui.account.level_line", ("level", _account.Level), ("xp", _account.Xp), ("next", next), ("today", _account.WorkXpToday(_clock.DayIndex)), ("cap", AccountProgress.DailyWorkCap)));
                 DrawHeatHud();
                 // Hava bilgisi: kaç gün ilerisi görünür.
                 var ahead = _life.WeatherAhead(_life.ForecastDays);

@@ -152,7 +152,7 @@ namespace Thatchwick.Core.Life
                 }
                 if (inheritOnly) continue;
 
-                string name = _population.NameGenerator != null ? _population.NameGenerator(def.Sex) : null;
+                string name = _population.NameFor(def.Sex, def.Id);
                 if (string.IsNullOrWhiteSpace(name) || (old != null && name == old.Name)) name = def.Name;
                 var pos = PlaceResolver != null ? PlaceResolver(def.Home) : (old != null ? old.Position : new GridPos(0, 0));
                 var c = new Character(_population.NextId(), name, pos)
@@ -255,7 +255,7 @@ namespace Thatchwick.Core.Life
             if (!v.IsVillager) return $"{v.Name} artık hanenin bir üyesi.";
             if (!_content.Items.TryGet(itemId, out var item)) return "Böyle bir eşya yok.";
             if (item.Placement != ItemPlacement.Resource) return "Yalnızca kaynak eşyalar hediye edilir.";
-            if (_house.Count(itemId) <= 0) return "Envanterde yok.";
+            if (_house.Count(itemId) <= 0) return Localization.CoreText.T("ui.common.not_held");
             if (s.LastGiftDay == _clock.DayIndex) return $"{v.Name} bugün zaten hediye aldı.";
             if (Family == null) return "Aile sistemi bağlı değil.";
             return null;
