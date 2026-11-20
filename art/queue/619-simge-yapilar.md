@@ -1,7 +1,7 @@
 ---
 id: "619"
 title: "Simge yapılar (bölge başına 1-2; 9 eşya)"
-status: running
+status: blocked
 claimed_at: 2026-11-20T18:06Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
 family: yapi
@@ -49,6 +49,11 @@ Yöntem 357 (`create_map_object`, stil eşleme; aile referansları). Ortak ek: `
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family yapi`.
+
+## Sorular
+- Bulut işçisinde `PIXELLAB_API_TOKEN` yok ve MCP `create_map_object` kılavuz+maske için yalnızca base64 kabul ediyor (dosya yolu yok). Tarifin istediği stil eşlemesi, 10 işin kılavuz ve maske PNG'lerini (her biri ~1,2-1,4 KB + 0,4-1 KB) elle base64 yazmayı gerektirir; bozulma riski var (301 notu). Tarifin dışına (referanssız temel mod) çıkmadım. 0 generation harcandı.
+- Öneri: işi `worker: batch` + "## Parametreler (toplu işçi)" bloğuyla yerelde `tools/art/batch_worker.py run 619` ile çalıştırın. Kılavuzlar `art/tmp/619/` altında hazırlandı (ayak izi: 1x1 x8-71 y72-103 vb.).
+- Not: `art/queue/619-johan-wick-eksik-yonler.md` de aynı `id: "619"` ile duruyor (pending, family karakter). Numara çakışması; birinin yeniden numaralanması gerekir. O işe dokunmadım.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
