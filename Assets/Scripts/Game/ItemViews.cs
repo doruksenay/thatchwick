@@ -428,7 +428,7 @@ namespace Thatchwick.Game
 
         // ---- Ulu ağaçlar ve ağaç evler (belge 52; GameRootTrees'ten taşındı) ----
         // Görsel ölçüleri (art/queue 492-493): 2x2 ağaç tuvali 192x256, pivot (96, 40); 3x3 çınar 256x320, pivot (128, 56).
-        private const float GreatTreePivotX2 = 96f, GreatTreePivotY2 = 40f, GreatTreePivotX3 = 128f, GreatTreePivotY3 = 56f;
+        private const float GreatTreePivotX2 = 80f, GreatTreePivotY2 = 36f, GreatTreePivotX3 = 96f, GreatTreePivotY3 = 48f;   // 492a-c tuvali 160x224 ve 192x192 (karar 20.11)
 
         private static string SeasonKey(Season s) => s switch
         {

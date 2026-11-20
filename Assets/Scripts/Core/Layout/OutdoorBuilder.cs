@@ -71,6 +71,26 @@ namespace Thatchwick.Core.Layout
                     var p = new GridPos(x, y);
                     if (map.IsPortal(p)) ctx.Reserved.Add(p);
                 }
+            // Ek yapı ile ana gövdenin iç köşesi: iki duvar arasında sıkışan karoya eşya konmaz (kullanılamaz kalır).
+            foreach (var b in Regions.TownBuildings)
+            {
+                if (!b.HasAnnex) continue;
+                var a = b.AnnexRect;
+                for (int y = a.Y - 1; y <= a.Y + a.H; y++)
+                    for (int x = a.X - 1; x <= a.X + a.W; x++)
+                    {
+                        var p = new GridPos(x, y);
+                        if (b.Covers(p)) continue;
+                        bool nearA = false, nearB = false;
+                        foreach (var d in Facing.All)
+                        {
+                            var q = Facing.Step(p, d);
+                            if (a.Contains(q)) nearA = true;
+                            if (b.Rect.Contains(q)) nearB = true;
+                        }
+                        if (nearA && nearB) ctx.Reserved.Add(p);
+                    }
+            }
         }
 
         internal static bool Open(Context ctx, GridPos p)
@@ -543,7 +563,88 @@ namespace Thatchwick.Core.Layout
         private static void Yard(Context ctx, TownBuilding b)
         {
             var t = ctx.Catalog?.Building(b.Template);
-            if (t?.Garden != null) RunGarden(ctx, View(ctx, b), t.Garden, $"{b.Name} (avlu ve bahçe)");
+            if (t?.Garden == null) return;
+            var g = ctx.Catalog.Garden(t.Garden);
+            if (g != null && g.Enclosure == "fence") BackYardFence(ctx, b);
+            RunGarden(ctx, View(ctx, b), t.Garden, $"{b.Name} (avlu ve bahçe)");
+        }
+
+        /// <summary>
+        /// Arka avlu çiti (belge 64a, köy meydanı sadeleştirme 20.11): bahçe şablonu "fence" ise binanın arka duvarı boyunca
+        /// 3 (olmazsa 2) karo derin çitli avlu. Avlunun her karosu açık, yolsuz ve ayrılmamış olmalı; kapı yola en yakın
+        /// yüzde, dışı ve içi boş kalır. Uymazsa çit kurulmaz (avlu eşyaları yine konur).
+        /// </summary>
+        private static void BackYardFence(Context ctx, TownBuilding b)
+        {
+            var map = ctx.Map;
+            var back = Facing.Opposite(Facing.FromChar(b.Door));
+            var r = b.Rect;
+            bool alongX = back == Dir4.N || back == Dir4.S;
+            int wallLen = alongX ? r.W : r.H;
+            var doorOut = Facing.Step(b.DoorInside, Facing.FromChar(b.Door));
+            foreach (int depth in new[] { 3, 2 })
+                for (int len = wallLen; len >= 3; len--)
+                    for (int off = 0; off + len <= wallLen; off++)
+                    {
+                        int x0, y0, w, h;
+                        switch (back)
+                        {
+                            case Dir4.N: x0 = r.X + off; y0 = r.Y - depth; w = len; h = depth; break;
+                            case Dir4.S: x0 = r.X + off; y0 = r.Y + r.H; w = len; h = depth; break;
+                            case Dir4.W: x0 = r.X - depth; y0 = r.Y + off; w = depth; h = len; break;
+                            default: x0 = r.X + r.W; y0 = r.Y + off; w = depth; h = len; break;
+                        }
+                        if (TryFenceYard(ctx, b, new RectI(x0, y0, w, h), doorOut)) return;
+                    }
+        }
+
+        private static bool IsBand(GridPos p)
+        {
+            var t = Regions.TerrainAt(p);
+            return t == MapTerrain.Band || t == MapTerrain.Rock;
+        }
+
+        private static bool TryFenceYard(Context ctx, TownBuilding b, RectI yard, GridPos doorOut)
+        {
+            var map = ctx.Map;
+            var r = b.Rect;
+            var cells = new List<GridPos>();
+            for (int y = yard.Y; y < yard.Y + yard.H; y++)
+                for (int x = yard.X; x < yard.X + yard.W; x++)
+                {
+                    var c = new GridPos(x, y);
+                    if (Regions.At(c) != Regions.Town || !Open(ctx, c) || ctx.Reserved.Contains(c) || Regions.InPlazaLocal(x - Regions.Town.X, y - Regions.Town.Y)) return false;
+                    cells.Add(c);
+                }
+            // Dış kenarlar: binaya bakan yüz duvardır; diğerleri çit olacak, hepsi boş olmalı.
+            var outer = new List<(GridPos inside, Dir4 d, GridPos outside)>();
+            foreach (var c in cells)
+                foreach (var d in Facing.All)
+                {
+                    var o = Facing.Step(c, d);
+                    if (yard.Contains(o) || b.Covers(o)) continue;
+                    if (map.GetEdge(Facing.EdgeOf(c, d)) != EdgeKind.None) return false;
+                    outer.Add((c, d, o));
+                }
+            // Kapı: dışı yürünebilir açık karo ya da yol; yola değen önce, sonra binanın kapısına en yakın.
+            (GridPos inside, Dir4 d, GridPos outside)? gate = null;
+            int best = int.MaxValue;
+            foreach (var e in outer)
+            {
+                bool road = map.GetRoad(e.outside) != RoadType.None;
+                var far = Facing.Step(e.outside, e.d);
+                if (!road && !Open(ctx, e.outside)) continue;
+                if (IsBand(e.outside) || IsBand(far) || (map.GetRoad(far) == RoadType.None && !Open(ctx, far))) continue;   // kapı önü iki karo açık kalır
+                int score = (road || OutdoorRules.TouchesRoad(map, e.outside) ? 0 : 1000) + Math.Abs(e.outside.X - doorOut.X) + Math.Abs(e.outside.Y - doorOut.Y);
+                if (score < best) { best = score; gate = e; }
+            }
+            if (gate == null) return false;
+            foreach (var e in outer)
+                map.SetEdge(Facing.EdgeOf(e.inside, e.d), e.Equals(gate.Value) ? EdgeKind.Gate : EdgeKind.Fence);
+            ctx.Reserved.Add(gate.Value.outside);
+            ctx.Reserved.Add(Facing.Step(gate.Value.outside, gate.Value.d));
+            ctx.Reserved.Add(gate.Value.inside);
+            return true;
         }
 
         private static void Pen(Context ctx)

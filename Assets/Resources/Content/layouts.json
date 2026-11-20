@@ -1438,7 +1438,7 @@
     },
     {
       "id": "garden_shop",
-      "enclosure": "none",
+      "enclosure": "fence",
       "steps": [
         {
           "item": "item.rain_barrel",
@@ -1612,7 +1612,7 @@
     },
     {
       "id": "yard_carpenter",
-      "enclosure": "none",
+      "enclosure": "fence",
       "steps": [
         {
           "item": "item.sawmill",
@@ -1650,7 +1650,7 @@
     },
     {
       "id": "yard_tailor",
-      "enclosure": "none",
+      "enclosure": "fence",
       "steps": [
         {
           "item": "item.cloth_drying_line",
@@ -1677,7 +1677,7 @@
     },
     {
       "id": "yard_potter",
-      "enclosure": "none",
+      "enclosure": "fence",
       "steps": [
         {
           "item": "item.kiln",
@@ -1720,7 +1720,7 @@
     },
     {
       "id": "yard_saddler",
-      "enclosure": "none",
+      "enclosure": "fence",
       "steps": [
         {
           "item": "item.tanning_rack",
@@ -1736,7 +1736,7 @@
     },
     {
       "id": "yard_mason",
-      "enclosure": "none",
+      "enclosure": "fence",
       "steps": [
         {
           "item": "item.lime_kiln",
