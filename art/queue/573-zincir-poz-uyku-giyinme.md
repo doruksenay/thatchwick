@@ -1,7 +1,7 @@
 ---
 id: "573"
 title: "Zincir pozları, uyku ve giyinme: yat, uyan, giyin, işine bak (32)"
-status: running
+status: review
 claimed_at: 2026-11-20T16:28Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 40
