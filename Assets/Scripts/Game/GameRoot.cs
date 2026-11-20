@@ -1271,6 +1271,7 @@ namespace Thatchwick.Game
 
         private void PlaceDemoItems()
         {
+            Thatchwick.Core.Content.ItemArtDef.FileExists = IsoArt.Has;   // görseli gelen "pending" eşya beklemede sayılmaz
             var res = Thatchwick.Core.Layout.StarterWorld.Place(_world, _content, _layouts, _seed, msg => Debug.LogWarning(msg));
             _stallId = res.StallId;
             _layoutPlan = res.Plan;

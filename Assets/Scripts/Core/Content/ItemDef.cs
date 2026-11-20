@@ -238,8 +238,34 @@ namespace Thatchwick.Core.Content
         public string Young, Grown, Fruit;
         /// <summary>Yalnızca bu dönüşler geçerli (merdiven görseli tek yöne çıkar); boş = görsele göre.</summary>
         public readonly System.Collections.Generic.List<int> Rotations = new System.Collections.Generic.List<int>();
-        /// <summary>Görsel eşlendi ama dosyası henüz gelmedi (yer tutucu çizilir).</summary>
+        /// <summary>
+        /// Görsel eşlendi ama dosyası henüz gelmedi (yer tutucu çizilir). Yalnızca not: dosya geldiyse <see cref="Awaiting"/>
+        /// false olur ve görsel kullanılır (kullanıcı kararı 21.11.2026, işçi teslimi main'i bozmasın). İşaret
+        /// <c>python tools/art/art_link.py --apply</c> ile temizlenir.
+        /// </summary>
         public bool Pending;
+
+        /// <summary>Görsel dosyası var mı (oyun katmanı kurar: IsoArt.Has). Kurulmamışsa yalnızca Pending işaretine bakılır.</summary>
+        public static System.Func<string, bool> FileExists { get; set; }
+
+        /// <summary>Görsel gerçekten bekleniyor mu: işaretli ve dosyalarından biri yok.</summary>
+        public bool Awaiting
+        {
+            get
+            {
+                if (!Pending) return false;
+                if (FileExists == null) return true;
+                foreach (var n in Names()) if (n != null && !FileExists(n)) return true;
+                return false;
+            }
+        }
+
+        /// <summary>Eşlenen bütün görsel adları (boşlar dahil değil).</summary>
+        public System.Collections.Generic.IEnumerable<string> Names()
+        {
+            foreach (var n in new[] { AlongX, AlongY, Lit, Young, Grown, Fruit }) if (n != null) yield return n;
+            foreach (var f in Faces) if (f != null) yield return f;
+        }
         public bool HasFaces => Faces[0] != null || Faces[1] != null || Faces[2] != null || Faces[3] != null;
         public bool HasAny => HasFaces || AlongX != null || AlongY != null || Grown != null;
     }
