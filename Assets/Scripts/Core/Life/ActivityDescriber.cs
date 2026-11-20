@@ -15,6 +15,10 @@ namespace Thatchwick.Core.Life
         public string Reason;
         public NeedType? Need;
         public bool Walking;
+        /// <summary>Zincirin şu anki adımı (belge 60); arayüz metni "chain.step.&lt;StepId&gt;" anahtarından. Zincirsiz işte null.</summary>
+        public string StepId;
+        /// <summary>Adımın kare anahtarı; karesi yoksa görünüm Icon'a düşer.</summary>
+        public string StepPose;
         public string Full => string.IsNullOrEmpty(Reason) ? Text : $"{Text} — {Reason}";
     }
 
@@ -77,6 +81,8 @@ namespace Thatchwick.Core.Life
             var info = DescribeJob(job, world);
             info.Walking = job.Kind == JobKind.MoveTo || !runner.IsUsingItem;
             if (runner.IsFetchingWater) { info.Icon = "work"; info.Text = "Kovayla su taşıyor (" + info.Text + ")"; }
+            var step = runner.CurrentStep;
+            if (step != null) { info.StepId = step.Id; info.StepPose = step.Pose; }
             return info;
         }
 

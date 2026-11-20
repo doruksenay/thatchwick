@@ -21,6 +21,8 @@ namespace Thatchwick.Core.Content
         public ContentRegistry<BuildPartDef> Parts { get; } = new ContentRegistry<BuildPartDef>();
         /// <summary>Beceri seviyesi → açılan tablosu (belge 45; life.json "skillUnlocks").</summary>
         public List<SkillUnlockDef> SkillUnlocks { get; } = new List<SkillUnlockDef>();
+        /// <summary>İzlenen eylem zincirleri (belge 60; life.json "chains"). Sıra eşleme önceliğidir.</summary>
+        public ContentRegistry<ActionChainDef> Chains { get; } = new ContentRegistry<ActionChainDef>();
         /// <summary>Etkileşimlerin başvurduğu moodlet kataloğu (doğrulama için).</summary>
         public Mood.MoodCatalog Moods { get; set; } = Mood.MoodCatalog.Default;
         /// <summary>Giysi kataloğu (clothing.json; belge 48). Yüklenmezse boş.</summary>

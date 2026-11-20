@@ -184,6 +184,11 @@ namespace Thatchwick.Core.Content
             || AddFeed > 0 || Collect || RequiresAnimal || AddIce > 0f || RequiresFrost || NeedsPipedWater || BefriendAnimals > 0f || Teach || Heal > 0f || Wets > 0f || Bath || AddFill > 0 || EmptyFill || Dries
             || Water || Fertilize > 0f || TakesFruit || RequiresFruit || PetsAnimals || Slaughter
             || RepairMaterial != null || Polish || Embellish || CollectContents || FillDecor || EatContents || HomeAction != null || TreeAction != null;
+        /// <summary>Açıkça verilen eylem zinciri kimliği (belge 60); boşsa eşleme kuralı bağlar.</summary>
+        public string Chain { get; set; }
+        /// <summary>İçerik yüklenince çözülen zincir; yoksa null (iş tek pozda yapılır).</summary>
+        public ActionChainDef ChainDef { get; set; }
+
         public bool RestoresNeed => Restore > 0f;
         public bool GivesMood => !string.IsNullOrEmpty(MoodId) && MoodValue != 0 && MoodDays > 0.0;
 

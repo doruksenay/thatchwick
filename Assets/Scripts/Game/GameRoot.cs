@@ -58,6 +58,7 @@ namespace Thatchwick.Game
             public float LastBeat;
             public object WorkJob;
             public string WorkIcon;
+            public ActionStepDef WorkStep;
             public Sprite ActionFrame;
             // Elde tutulan yiyecek (yemek animasyonu): neyi yiyorsa onun ikonu elin üstünde.
             public SpriteRenderer Held;
@@ -140,6 +141,30 @@ namespace Thatchwick.Game
             if (frame == null && actor.Held != null) actor.Held.enabled = false;
             return frame;
         }
+
+        /// <summary>Zincir adımının kendi karesi (adımın "pose" anahtarı); karesi yoksa null.</summary>
+        private Sprite StepFrameFor(Actor actor, ActionStepDef step, int seed)
+        {
+            if (step == null || step.Pose == null) return null;
+            float cyc = ActionCycle(seed);
+            var f = IsoArt.CharacterAction(actor.Character, step.Pose, actor.Direction, cyc);
+            if (f == null && StepPoseStandIns.TryGetValue(step.Pose, out var standIn))
+                f = IsoArt.CharacterAction(actor.Character, standIn, actor.Direction, cyc);
+            return f;
+        }
+
+        /// <summary>
+        /// Adım pozunun kendi karesi gelene kadar yerine oynayan, ona en yakın eldeki kare (belge 60 §5.1). Listede olmayan
+        /// poz etkileşimin eski simgesine düşer. Yeni kare seti gelince buradan satırı silmek gerekmez: önce kendi karesi denenir.
+        /// </summary>
+        private static readonly Dictionary<string, string> StepPoseStandIns = new Dictionary<string, string>
+        {
+            ["stir"] = "cook", ["taste"] = "cook", ["ladle"] = "cook",
+            ["chop_knife"] = "craft_hand", ["knead"] = "craft_hand", ["sew"] = "craft_hand", ["spin"] = "craft_hand",
+            ["weave"] = "craft_hand", ["scrape"] = "craft_hand", ["write"] = "craft_hand", ["churn"] = "craft_hand",
+            ["saw"] = "craft_hammer", ["plane"] = "craft_hammer", ["chisel"] = "craft_hammer", ["pound"] = "craft_hammer",
+            ["reap"] = "hoe", ["thresh"] = "hoe", ["bend"] = "sow", ["milk"] = "care",
+        };
 
         private Sprite ActionFrameFor(Actor actor, string icon, int seed)
         {
@@ -2864,8 +2889,15 @@ namespace Thatchwick.Game
                 }
                 string icon = actor.WorkIcon;
                 bool beats = icon == "chop" || icon == "farm" || icon == "craft" || icon == "cook" || icon == "work";
+                // Zincir adımı (belge 60): adımın kendi karesi varsa o oynar; yoksa etkileşimin eski simgesine düşülür.
+                var step = actor.Runner.CurrentStep;
+                if (!ReferenceEquals(step, actor.WorkStep))
+                {
+                    actor.WorkStep = step;
+                    if (step != null && step.Sfx != null) Sfx(step.Sfx, pos, actor.Character.Id);
+                }
                 // Gerçek etkileşim kareleri (018c-e) varsa onlar oynar; yoksa kodla vuruş.
-                actor.ActionFrame = UpdateHeld(actor, icon, seed) ?? ActionFrameFor(actor, icon, seed);
+                actor.ActionFrame = UpdateHeld(actor, icon, seed) ?? StepFrameFor(actor, step, seed) ?? ActionFrameFor(actor, icon, seed);
                 if (actor.ActionFrame != null && _juice != null)
                 {
                     float cyc = ActionCycle(seed);

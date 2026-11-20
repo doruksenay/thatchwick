@@ -178,6 +178,85 @@ namespace Thatchwick.Core.Jobs
 
         public bool IsUsingItem => _using;
 
+        // ---- İzlenen eylem zinciri (Project belgesi 60) ----
+        private List<ActionStepDef> _steps;
+        private double[] _stepEnds;          // adımların bittiği yer, 0-1 arası birikimli pay
+        private int _stepIndex = -1;
+
+        /// <summary>Sürmekte olan işin şu anki zincir adımı; iş zincirsizse ya da karakter henüz yürüyorsa null.</summary>
+        public ActionStepDef CurrentStep => _using && _steps != null && _stepIndex >= 0 && _stepIndex < _steps.Count ? _steps[_stepIndex] : null;
+
+        /// <summary>Bu iş için oynayacak adımlar (koşulu tutmayanlar ayıklanmış); zincir yoksa boş.</summary>
+        public IReadOnlyList<ActionStepDef> ActiveSteps => _steps ?? (IReadOnlyList<ActionStepDef>)Array.Empty<ActionStepDef>();
+
+        /// <summary>Şu anki adımda karakter soyunuk mu (peştamal; yıkanma).</summary>
+        public bool IsUndressed => CurrentStep != null && CurrentStep.Undress;
+
+        /// <summary>Zincirde yeni adıma geçildi (görünüm: poz, ses, elde eşya). İş bitince ya da kesilince çağrılmaz.</summary>
+        public event Action<Character, ActionStepDef> StepChanged;
+
+        /// <summary>
+        /// İşe başlarken zinciri kurar: koşulu tutmayan adımlar ayıklanır, kalanların payları 0-1 aralığına dizilir.
+        /// Zincir toplam süreyi değiştirmez; yalnızca böler.
+        /// </summary>
+        private void BeginChain(ItemInstance item, InteractionDef interaction)
+        {
+            _steps = null; _stepEnds = null; _stepIndex = -1;
+            var chain = interaction.ChainDef;
+            if (chain == null) return;
+            var steps = new List<ActionStepDef>(chain.Steps.Count);
+            double total = 0;
+            foreach (var st in chain.Steps)
+            {
+                if (st.When != null && !StepApplies(st.When, item, interaction)) continue;
+                steps.Add(st);
+                total += st.Share;
+            }
+            if (steps.Count == 0 || total <= 0) return;
+            var ends = new double[steps.Count];
+            double acc = 0;
+            for (int k = 0; k < steps.Count; k++) { acc += steps[k].Share; ends[k] = acc / total; }
+            ends[steps.Count - 1] = 1.0;
+            _steps = steps; _stepEnds = ends;
+            UpdateStep(0.0);
+        }
+
+        private bool StepApplies(string when, ItemInstance item, InteractionDef interaction)
+        {
+            switch (when)
+            {
+                case ChainConditions.SkillLow:
+                    return interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) <= ChainConditions.LowSkillMax;
+                case ChainConditions.SkillHigh:
+                    return interaction.Skill.HasValue && _character.Skills.GetLevel(interaction.Skill.Value) >= ChainConditions.HighSkillMin;
+                case ChainConditions.MoodGood:
+                    return _character.MoodEnabled && (_character.Mood.Status == MoodStatus.Good || _character.Mood.Status == MoodStatus.Happy);
+                case ChainConditions.MoodBad:
+                    return _character.MoodEnabled && (_character.Mood.Status == MoodStatus.Unhappy || _character.Mood.Status == MoodStatus.Miserable);
+                case ChainConditions.CarriedWater:
+                    return _carriedWater;
+                case ChainConditions.Fire:
+                    return item != null && item.Def.HeatOutput > 0f;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>İlerleme oranına (0-1) göre adımı günceller; adım değiştiyse haber verir.</summary>
+        private void UpdateStep(double fraction)
+        {
+            if (_steps == null) return;
+            int index = _steps.Count - 1;
+            for (int k = 0; k < _stepEnds.Length; k++)
+                if (fraction < _stepEnds[k]) { index = k; break; }
+            if (index == _stepIndex) return;
+            _stepIndex = index;
+            StepChanged?.Invoke(_character, _steps[index]);
+        }
+
+        private void ClearChain() { _steps = null; _stepEnds = null; _stepIndex = -1; _carriedWater = false; }
+        private bool _carriedWater;
+
         public bool IsIdle => Queue.Current == null;
 
         /// <summary>Mevcut işi ve kuyruğu bırakıp yeni bir işi tek iş olarak başlatır (oyuncu komutu).</summary>
@@ -638,6 +717,7 @@ namespace Thatchwick.Core.Jobs
                 if (_path == null) return walked;
                 if (_pathIndex < _path.Count) return walked;
                 _hasWater = true;            // kova dolu: şimdi eşyaya
+                _carriedWater = true;
                 _fetching = false;
                 _path = null;
                 return walked;
@@ -670,6 +750,7 @@ namespace Thatchwick.Core.Jobs
                     TopUpFire(item);
                     if (!item.IsLit) { Fail("Ocak sönük, odun kalmadı."); return used; }
                 }
+                BeginChain(item, interaction);
             }
             _character.Asleep = interaction.Need == NeedType.Energy && interaction.RestoresNeed;
 
@@ -713,6 +794,11 @@ namespace Thatchwick.Core.Jobs
             }
 
             _useProgress += available;
+            if (_steps != null)
+            {
+                double whole = EffectiveDuration(interaction, item);
+                UpdateStep(whole > 0 ? _useProgress / whole : 1.0);
+            }
             return used + available;
         }
 
@@ -1231,6 +1317,7 @@ namespace Thatchwick.Core.Jobs
             _stepFraction = 0;
             _using = false;
             _useProgress = 0;
+            ClearChain();
         }
     }
 }
