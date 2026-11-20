@@ -5,7 +5,7 @@ kind: spot
 family: spots
 freq: B
 pilot: true
-status: claimed
+status: review
 approved_by: auto
 key: spot.bird.song
 spot_of: amb.farm.day
@@ -34,5 +34,9 @@ axes:
   - song thrush
 claimed_by: runnervm0hi8g
 claimed_at: '2026-11-20T09:54:12Z'
+candidates: 4
+passed: 4
+credits_spent: 0
+generated_at: '2026-11-20T09:54:21Z'
 ---
 One short song phrase of a single small songbird, a little distant.
