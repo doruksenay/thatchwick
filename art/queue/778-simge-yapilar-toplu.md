@@ -1,7 +1,7 @@
 ---
 id: "778"
 title: "Simge yapılar (619'un toplu işçiyle yeniden çalışması; 9 eşya)"
-status: pending
+status: review
 approved_by: user        # kullanıcı 21.11 00:09 "devam et harita oluşturmaya"; 619 kararıyla aynı onay (belge 64a)
 worker: batch            # 619 bulut ajanında kılavuz yükleyemediği için bloklandı (619 Sorular); toplu işçi REST ile yükler
 priority: 10
@@ -209,6 +209,10 @@ Kod: `items.json` `item.landmark_*` (etiket `landmark`, `pending`), `maps/<bölg
 
 ## Doğrulama
 `validate_iso.py`, `style.py check --family yapi`. Dönem kuralı: hayali ortaçağ, yazıt yalnızca aşınmış çizgi.
+
+- 2026-11-20 (toplu işçi): başladı
+
+- 2026-11-20 (toplu işçi): 9/9 teslim, 10 gen, Claude'suz. Rapor: art/results/778-simge-yapilar-toplu.md
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
