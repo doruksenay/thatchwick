@@ -4,7 +4,7 @@ title: Hece bankası, Kalın-alçak (pilot, 40 hece)
 kind: voice_syllables
 family: voice
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 depends_on:
 - s140
@@ -13,6 +13,8 @@ count: 40
 takes: 2
 bank_seed: 1
 cost_max: 800
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T16:45:59Z'
 ---
 45a bölüm 2.5: konuşmayı oyunda hecelerden birleştirme pilotu. Heceler 8'li gruplar halinde okunur, sessizliklerden bölünür.
 Kabulde hece başına kapıdan geçen ilk kayıt alınır (pick boş bırakılabilir).
