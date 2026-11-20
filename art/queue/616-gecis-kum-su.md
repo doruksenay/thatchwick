@@ -1,7 +1,7 @@
 ---
 id: "616g"
 title: "Geçiş seti: kum ↔ su (16 maske x 2 çeşit)"
-status: running
+status: review
 claimed_at: 2026-11-20T23:31Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
 priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
