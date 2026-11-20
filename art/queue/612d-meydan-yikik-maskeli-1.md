@@ -1,7 +1,7 @@
 ---
 id: "612d"
 title: "Köy meydanı: kuyu, kiler, çan kulesi, pazar çardağının yıkık hâli (maskeli)"
-status: running
+status: review
 claimed_at: 2026-11-20T18:51Z
 approved_by: user        # kullanıcı kararı 2026-11-20: yıkık hâller maskeli düzenlemeyle (Project belgesi 64c §3)
 priority: 15
