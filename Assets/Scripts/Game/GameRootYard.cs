@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Thatchwick.Core.Animals;
 using Thatchwick.Core.Audio;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Farmyard;
@@ -20,12 +21,17 @@ namespace Thatchwick.Game
     public sealed partial class GameRoot
     {
         private const string FxPref = "fx_intensity";
-        private CartPanel _cartPanel;
+        private Ui.CartPanel _cartPanel;
         /// <summary>Efekt yoğunluğu: 0 kapalı, 1 az, 2 tam (sinek, damla gibi ortam efektleri).</summary>
         private int _fxLevel = 2;
         private float FxScale => _fxLevel <= 0 ? 0f : _fxLevel == 1 ? 0.5f : 1f;
 
-        private float _wetGround, _wetGroundShown = -1f;
+        private float _wetGround, _wetGroundShown = -1f, _snowGround, _snowShown = -1f, _decalAt, _pondAt;
+        private SpriteRenderer[] _clouds;
+        private readonly Dictionary<int, float> _shiverAt = new Dictionary<int, float>();
+        private readonly Dictionary<string, List<Vector3>> _cartRoutes = new Dictionary<string, List<Vector3>>(System.StringComparer.Ordinal);
+        private readonly Dictionary<int, (Vector3 pos, int dir, bool hidden)> _hitched = new Dictionary<int, (Vector3, int, bool)>();
+        private long _routesDay = long.MinValue;
         private float _flyBuzzAt, _splashDebt;
         private readonly Dictionary<int, float> _catDig = new Dictionary<int, float>();          // kedi → eşelemenin bittiği an
         private readonly Dictionary<int, Vector3> _cartHome = new Dictionary<int, Vector3>();    // araba eşyası → avludaki yeri
@@ -76,12 +82,13 @@ namespace Thatchwick.Game
                     : i.FarmAction == LifeSystems.ActBarnClean ? SoundKeys.YardMuckOut : null;
                 if (key != null) Sfx(key, TileCenter(item.Position), c.Id);
             };
-            _cartPanel = new CartPanel(_life, _animals, _content)
+            _cartPanel = new Ui.CartPanel(_life, _animals, _content, () => EnsureUi())
             {
                 Family = FamilyForCarts,
                 Day = () => _clock.DayIndex
             };
             _cartPanel.Message += m => ShowMessage(m, 4f);
+            _cartPanel.Opening += () => { _familyPanel?.Close(); _minePanel?.Close(); };   // IMGUI paneli pencerenin üstüne çizilmesin
             Shader.SetGlobalFloat("_TwLodgeSide", -1f);   // yağmur rüzgârı sola eser; tahıl o yöne yatar
         }
 
@@ -109,8 +116,13 @@ namespace Thatchwick.Game
             UpdateCartViews();
             float scale = FxScale;
             UpdateWetGround(dt, weather, scale);
+            UpdateSnow(dt, weather);
             UpdateWetCharacters(dt, scale);
+            UpdateDecals();
+            UpdateClouds(dt, weather, scale);
+            Shader.SetGlobalFloat("_TwWaterAmp", scale);
             if (scale <= 0f) return;
+            UpdateWaterLife(dt, weather, scale);
             UpdateSwarms(dt, weather, scale);
             UpdateRainDetails(dt, weather, scale);
             UpdateCatDig();
@@ -305,6 +317,17 @@ namespace Thatchwick.Game
                 }
                 bool outdoorCold = c.AmbientTemperature < 3f && !c.Asleep;
                 if (outdoorCold && Random01() < dt * 0.4f * scale) _juice.Emit(Juice.Kind.Breath, head + new Vector3(0.1f, -0.12f, 0f), 1, order);
+                // Titreme: üşüyen (üşütmüş ya da sıfırın altında ıslak) karakter sürekli, hafifçe titrer: bir piksel sağa sola.
+                bool shivering = !c.Asleep && (c.Mood.Has(MoodCatalog.Chilled) || (c.AmbientTemperature < 0f && wet > 0.3f));
+                if (shivering)
+                {
+                    if (!_shiverAt.TryGetValue(c.Id, out float at) || Time.time >= at)
+                    {
+                        _shiverAt[c.Id] = Time.time + 0.09f;
+                        actor.View.position += new Vector3(((int)(Time.time * 11f) & 1) == 0 ? 1f / 32f : -1f / 32f, 0f, 0f);
+                    }
+                }
+                else _shiverAt.Remove(c.Id);
                 if (c.Mood.Has(MoodCatalog.Chilled) && !c.Asleep)
                 {
                     if (!_sneezeAt.TryGetValue(c.Id, out float next)) _sneezeAt[c.Id] = next = Time.time + 6f + Random01() * 10f;
@@ -338,9 +361,10 @@ namespace Thatchwick.Game
         }
 
         /// <summary>
-        /// Arabaların seferi (belge 57e §2.2 "görünür"): sabah köy yoluna doğru çekilir, gözden kaybolur, akşam döner.
-        /// Geçici çizim: araba eşyasının görünümü düz çizgide kaydırılır (yol bulma yok, koşulu hayvan çizilmez);
-        /// yürüyüş kareleri ve koşum art/queue 707'den sonra bağlanır.
+        /// Arabaların seferi (belge 57e §2.2 "görünür"): sabah araba, önünde koşulu hayvanıyla avludan köy yoluna doğru
+        /// yol bularak çıkar, gözden kaybolur, akşam aynı yoldan döner. Yol günde bir kez bulunur (Core yol bulucu);
+        /// bulunamazsa araba yerinde kalır, hayvan yine gizlenir. Koşulu hayvanın görünümü yolculuk boyunca arabanın
+        /// önüne taşınır; sürü içinde ikinci kez çizilmez.
         /// </summary>
         private void UpdateCartViews()
         {
@@ -356,10 +380,13 @@ namespace Thatchwick.Game
                     if (!it.IsDecor && _life.Compost.IsHeap(it) && _life.Compost.HeapOf(it).Hot) _hotHeaps.Add(it);
             }
             double frac = _clock.DayFraction;
+            if (_routesDay != _clock.DayIndex) { _routesDay = _clock.DayIndex; _cartRoutes.Clear(); }
+            _hitched.Clear();
             foreach (var cart in _placedCarts)
             {
-                if (cart.ItemId == 0 || !_items.Views.TryGetValue(cart.ItemId, out var view) || view == null) continue;
+                if (!_items.Views.TryGetValue(cart.ItemId, out var view) || view == null) continue;
                 var (phase, t) = fleet.TripPhase(cart, frac);
+                var worked = TodayCart(fleet, cart);
                 if (phase == 0)
                 {
                     if (!_cartHome.TryGetValue(cart.ItemId, out var home)) continue;
@@ -369,17 +396,214 @@ namespace Thatchwick.Game
                     continue;
                 }
                 if (!_cartHome.TryGetValue(cart.ItemId, out var start)) _cartHome[cart.ItemId] = start = view.position;
-                if (phase == 2) { if (view.gameObject.activeSelf) view.gameObject.SetActive(false); continue; }
+                int animalId = worked != null ? worked.AnimalId : 0;
+                if (phase == 2)
+                {
+                    if (view.gameObject.activeSelf) view.gameObject.SetActive(false);
+                    if (animalId != 0) _hitched[animalId] = (start, IsoArt.DefaultDirection, true);
+                    continue;
+                }
                 if (!view.gameObject.activeSelf) view.gameObject.SetActive(true);
-                var road = Regions.Road;
-                var toward = Iso.GridToWorld(road.X + road.W * 0.5f, road.Y + road.H * 0.5f, 0) - start;
-                float dist = Mathf.Sqrt(toward.x * toward.x + toward.y * toward.y);
-                var exit = dist < 0.01f ? start : start + toward * (Mathf.Min(dist, 9f) / dist);
+                var route = RouteFor(cart, start);
                 float k = phase == 1 ? t : 1f - t;
-                var pos = Vector3.Lerp(start, exit, k * k * (3f - 2f * k));
+                k = k * k * (3f - 2f * k);
+                var pos = Along(route, k);
+                var ahead = Along(route, Mathf.Min(1f, k + 1f / Mathf.Max(1, route.Count - 1)));
+                if (phase == 3) ahead = Along(route, Mathf.Max(0f, k - 1f / Mathf.Max(1, route.Count - 1)));   // dönüşte avluya bakar
                 view.position = pos;
+                var heading = new Vector2(ahead.x - pos.x, ahead.y - pos.y);
+                if (animalId != 0)
+                {
+                    // Hayvan arabanın bir karo önünde, gidiş yönüne bakar.
+                    var lead = heading.sqrMagnitude > 0.0001f ? pos + (Vector3)(heading.normalized * 0.9f) : pos;
+                    _hitched[animalId] = (lead, IsoArt.DirectionIndex(heading), false);
+                }
                 if (FxScale > 0f && Random01() < Time.deltaTime * 6f) _juice.Emit(Juice.Kind.Dust, pos + new Vector3(0f, 0.05f, 0f), 1, Iso.SortOrder(pos.y, -1));
             }
+        }
+
+        private static Cart TodayCart(CartFleet fleet, Cart cart)
+        {
+            foreach (var c in fleet.Today) if (c.Key == cart.Key) return c;
+            return null;
+        }
+
+        private (Vector3 pos, int dir, bool hidden)? HitchedView(Animal a) =>
+            a != null && _hitched.TryGetValue(a.Id, out var h) ? h : ((Vector3, int, bool)?)null;
+
+        /// <summary>Avludaki arabadan köy yoluna giden yol (dünya noktaları). Yol bulunamazsa yalnızca başlangıç.</summary>
+        private List<Vector3> RouteFor(Cart cart, Vector3 start)
+        {
+            if (_cartRoutes.TryGetValue(cart.Key, out var route)) return route;
+            route = new List<Vector3> { start };
+            var item = _world.GetItem(cart.ItemId);
+            if (item != null)
+            {
+                var road = Regions.Road;
+                var goal = new GridPos(road.X + 2, road.Y + road.H / 2, 0);
+                // Araba kendi karosunu kapatır: yol bitişik açık karodan başlar.
+                GridPos? from = null;
+                foreach (var d in new[] { new GridPos(1, 0, 0), new GridPos(0, 1, 0), new GridPos(-1, 0, 0), new GridPos(0, -1, 0), new GridPos(2, 0, 0), new GridPos(0, 2, 0) })
+                {
+                    var p = new GridPos(item.Position.X + d.X, item.Position.Y + d.Y, 0);
+                    if (_world.Map.InBounds(p) && _world.Map.IsWalkable(p)) { from = p; break; }
+                }
+                var path = from.HasValue && _world.Map.InBounds(goal) ? Pathfinder.FindPath(_world.Map, from.Value, goal) : null;
+                if (path != null)
+                {
+                    // Ekranda yaklaşık 14 karo yürür, sonra köy yoluna sapmış sayılır (gözden kaybolur).
+                    int n = Mathf.Min(path.Count, 14);
+                    for (int i = 0; i < n; i++) route.Add(_view.TileToWorld(path[i]));
+                }
+            }
+            _cartRoutes[cart.Key] = route;
+            return route;
+        }
+
+        private static Vector3 Along(List<Vector3> route, float k)
+        {
+            if (route.Count == 1) return route[0];
+            float f = Mathf.Clamp01(k) * (route.Count - 1);
+            int i = Mathf.Min(route.Count - 2, Mathf.FloorToInt(f));
+            return Vector3.Lerp(route[i], route[i + 1], f - i);
+        }
+
+        // ---------- kar, çıkartmalar, bulut gölgesi, su canlılığı ----------
+
+        /// <summary>
+        /// Kar birikimi (belge 57 §9): kar yağarken zemin yaklaşık bir dakikada örtülür; havada ılık (+1°C üstü) ya da
+        /// yağmurda erir. Örtü shader'la çizilir (Thatchwick/SnowCover); efekt ayarından bağımsızdır (durum bilgisi).
+        /// </summary>
+        private void UpdateSnow(float dt, WeatherType weather)
+        {
+            float outdoor = _heat != null ? _heat.OutdoorTemperature : 5f;
+            if (_snowShown < 0f && weather == WeatherType.Snow) _snowGround = 1f;   // yüklemede kar yağıyorsa örtü hazır
+            if (weather == WeatherType.Snow && outdoor <= 1f) _snowGround = Mathf.MoveTowards(_snowGround, 1f, dt / 60f);
+            else if (outdoor > 1f || weather == WeatherType.Rain || weather == WeatherType.Storm)
+                _snowGround = Mathf.MoveTowards(_snowGround, 0f, dt / (weather == WeatherType.Rain ? 40f : 120f));
+            if (Mathf.Abs(_snowGround - _snowShown) < 0.01f) return;
+            _snowShown = _snowGround;
+            Shader.SetGlobalFloat("_TwSnow", _snowGround);
+        }
+
+        private static int TileHash(int x, int y) => (x * 73856093) ^ (y * 19349663);
+
+        /// <summary>Karo başına zemin çıkartması: yabani ot, kıyı köpüğü, yağmur birikintisi ve patikada çamur.</summary>
+        private Sprite DecalAt(int x, int y)
+        {
+            var p = new GridPos(x, y, 0);
+            var map = _world.Map;
+            if (_plants != null && _plants.IsWeedy(p)) return IsoArt.Decal((TileHash(x, y) & 1) == 0 ? "iso_decal_weeds_a" : "iso_decal_weeds_b");
+            var floor = map.GetFloor(p);
+            if (floor == FloorType.Water)
+            {
+                if (!map.IsFilled(p) || map.FrozenAt(p) || _fxLevel <= 0) return null;
+                bool shore = !map.IsWater(new GridPos(x + 1, y, 0)) || !map.IsWater(new GridPos(x, y + 1, 0))
+                    || !map.IsWater(new GridPos(x - 1, y, 0)) || !map.IsWater(new GridPos(x, y - 1, 0));
+                return shore ? IsoArt.Decal((TileHash(x, y) & 2) == 0 ? "iso_decal_shore_foam_a" : "iso_decal_shore_foam_b") : null;
+            }
+            if (_wetGround < 0.3f || _snowGround > 0.5f || _fxLevel <= 0) return null;
+            var room = map.Rooms.RoomAt(p);
+            if ((room != null && room.IsIndoor) || _world.GetItemAt(p) != null) return null;
+            int h = TileHash(x, y) & 1023;
+            if (map.GetRoad(p) != RoadType.None || floor == FloorType.Dirt)
+                return h < _wetGround * 150f ? IsoArt.Decal("iso_decal_mud_a") : null;
+            return h < _wetGround * 50f ? IsoArt.Decal((h & 1) == 0 ? "iso_decal_puddle_a" : "iso_decal_puddle_b") : null;
+        }
+
+        /// <summary>Çıkartmalar iki saniyede bir yenilenir (ot, birikinti ve çamur yavaş değişir).</summary>
+        private void UpdateDecals()
+        {
+            if (Time.time < _decalAt || _view == null) return;
+            _decalAt = Time.time + 2f;
+            _view.RefreshDecals(DecalAt);
+        }
+
+        /// <summary>
+        /// Bulut gölgesi (belge 57 §9): açık havada gündüz, birkaç yumuşak gölge rüzgâr yönünde ekranı yavaşça geçer.
+        /// Yağışta gökyüzü kapalı sayılır, gölge çizilmez.
+        /// </summary>
+        private void UpdateClouds(float dt, WeatherType weather, float scale)
+        {
+            var cam = Camera.main;
+            if (cam == null) return;
+            bool show = scale > 0f && weather == WeatherType.Clear && !IsNightFx;
+            if (_clouds == null)
+            {
+                if (!show) return;
+                _clouds = new SpriteRenderer[4];
+                for (int i = 0; i < _clouds.Length; i++)
+                {
+                    var go = new GameObject("Cloud shadow " + i);
+                    go.transform.SetParent(transform, false);
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sharedMaterial = SpriteMaterials.Unlit;
+                    sr.sprite = SpriteMaterials.CloudShadow(1031 + i * 7);
+                    sr.sortingOrder = WeatherFx.Order - 5;
+                    go.transform.position = cam.transform.position + new Vector3((i - 1.5f) * 9f, (i % 2 == 0 ? 2.5f : -3f), 0f);
+                    _clouds[i] = sr;
+                }
+            }
+            float halfW = cam.orthographicSize * cam.aspect + 6f, halfH = cam.orthographicSize + 4f;
+            float wind = _juice != null && _juice.Wind != 0f ? Mathf.Sign(_juice.Wind) : 1f;
+            foreach (var sr in _clouds)
+            {
+                if (sr == null) continue;
+                sr.enabled = show;
+                if (!show) continue;
+                sr.color = new Color(0f, 0f, 0f, 0.10f * scale);
+                var tr = sr.transform;
+                var pos = tr.position + new Vector3(wind * 0.35f * dt, 0.08f * dt, 0f);
+                var c = cam.transform.position;
+                // Ekrandan çıkan gölge öbür kenardan yeniden girer.
+                if (pos.x > c.x + halfW) pos.x -= 2f * halfW; else if (pos.x < c.x - halfW) pos.x += 2f * halfW;
+                if (pos.y > c.y + halfH) pos.y -= 2f * halfH; else if (pos.y < c.y - halfH) pos.y += 2f * halfH;
+                tr.position = new Vector3(Mathf.Round(pos.x * 32f) / 32f, Mathf.Round(pos.y * 32f) / 32f, 0f);
+            }
+        }
+
+        /// <summary>
+        /// Suda yürüme ve gölet canlılığı (belge 57 §10): suya giren karakter ve hayvanın (ördek, kaz) çevresinde halka
+        /// ve sıçrama; ekrandaki suda arada balık sıçrar, yazın gündüz kızböceği uçar.
+        /// </summary>
+        private void UpdateWaterLife(float dt, WeatherType weather, float scale)
+        {
+            var map = _world.Map;
+            foreach (var actor in _actors)
+            {
+                var c = actor.Character;
+                if (c == null || actor.View == null || c.IsDead || c.Away) continue;
+                var p = c.Position;
+                if (p.Z != 0 || !map.InBounds(p) || !map.IsWater(p) || !map.IsFilled(p) || map.FrozenAt(p)) continue;
+                var step = actor.View.position - actor.LastPos;
+                bool moving = step.x * step.x + step.y * step.y > 0.00001f;
+                int order = Iso.SortOrder(actor.View.position.y, 2, 0);
+                if (Random01() < dt * (moving ? 5f : 1.2f) * scale) _juice.Emit(Juice.Kind.Glint, actor.View.position, 1, order);
+                if (moving && Random01() < dt * 3f * scale) _juice.Emit(Juice.Kind.Splash, actor.View.position, 2, order);
+            }
+            if (_animals != null)
+                foreach (var a in _animals.Animals)
+                {
+                    var p = a.Position;
+                    if (a.IsDead || p.Z != 0 || !map.InBounds(p) || !map.IsWater(p) || !map.IsFilled(p) || map.FrozenAt(p)) continue;
+                    if (Random01() >= dt * 1.5f * scale) continue;
+                    var at = _view.TileToWorld(p);
+                    _juice.Emit(Juice.Kind.Glint, at, 1, Iso.SortOrder(at.y, 2, 0));
+                }
+
+            if (Time.time < _pondAt) return;
+            _pondAt = Time.time + 0.5f;
+            if (!RandomVisibleTile(out var tile, out var world) || !map.IsWater(tile) || !map.IsFilled(tile) || map.FrozenAt(tile)) return;
+            bool day = !IsNightFx;
+            if (Random01() < 0.12f * scale)
+            {
+                // Balık sıçrar: halka ve küçük sıçrama.
+                int order = Iso.SortOrder(world.y, 1);
+                _juice.Emit(Juice.Kind.Splash, world, 3, order);
+                _juice.Emit(Juice.Kind.Glint, world, 2, order);
+            }
+            if (day && _clock.Season == Season.Summer && weather == WeatherType.Clear && Random01() < 0.2f * scale)
+                _juice.Emit(Juice.Kind.Dragonfly, world, 1, Iso.SortOrder(world.y, 6));
         }
     }
 }

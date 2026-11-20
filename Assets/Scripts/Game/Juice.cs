@@ -13,7 +13,7 @@ namespace Thatchwick.Game
     {
         public const float Px = 1f / 32f;
 
-        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop, Fly, Moth, Firefly, Butterfly, Bee, Stink, Drip, Splash, Glint, Breath }
+        public enum Kind { Smoke, Spark, Dust, Chip, Leaf, Steam, Soil, Pop, Fly, Moth, Firefly, Butterfly, Bee, Stink, Drip, Splash, Glint, Breath, Dragonfly }
 
         private struct Particle
         {
@@ -120,6 +120,11 @@ namespace Thatchwick.Game
                         p.Life = Rand(3f, 5f); p.Size = 2f;
                         p.Color = _rng.NextDouble() < 0.5 ? new Color(0.98f, 0.96f, 0.86f, 1f) : new Color(0.96f, 0.82f, 0.32f, 1f);
                         break;
+                    case Kind.Dragonfly:
+                        p.Pos += new Vector3(Rand(-0.4f, 0.4f), Rand(0.2f, 0.5f), 0f);
+                        p.Life = Rand(2.5f, 4f); p.Size = 2f;
+                        p.Color = _rng.NextDouble() < 0.5 ? new Color(0.3f, 0.62f, 0.86f, 1f) : new Color(0.42f, 0.74f, 0.5f, 1f);
+                        break;
                     case Kind.Bee:
                         p.Pos += new Vector3(Rand(-0.25f, 0.25f), Rand(0.1f, 0.4f), 0f);
                         p.Life = Rand(1.6f, 2.6f); p.Size = 1f;
@@ -222,6 +227,10 @@ namespace Thatchwick.Game
                     case Kind.Fly:
                     case Kind.Bee:
                         p.Vel = new Vector3(Mathf.Sin(t * 9f + p.Phase) * 0.4f, Mathf.Cos(t * 7f + p.Phase * 1.7f) * 0.25f, 0f);
+                        break;
+                    case Kind.Dragonfly:
+                        // Kızböceği: durur, birden atılır (suyun üstünde kısa sıçrayışlar).
+                        p.Vel = Mathf.Repeat(t * 0.7f + p.Phase, 1f) < 0.25f ? new Vector3(Mathf.Sin(p.Phase * 5f) * 1.2f, Mathf.Cos(p.Phase * 3f) * 0.4f, 0f) : Vector3.zero;
                         break;
                     case Kind.Moth:
                         p.Vel = new Vector3(Mathf.Sin(t * 5f + p.Phase) * 0.3f, Mathf.Cos(t * 6f + p.Phase * 1.3f) * 0.2f, 0f);

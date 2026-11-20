@@ -382,11 +382,11 @@ namespace Thatchwick.Core.Work
         {
             double now = Today;
             float rate = WeedRate != null ? Math.Max(0f, WeedRate()) : 1f;
-            if (rate <= 0f) return;
+            if (rate <= 0f || Config.WeedChance <= 0f) return;   // kapalıyken rastgele sayı da çekilmez
             foreach (var crop in crops)
             {
                 if (crop.IsGrown || !wetBefore.Contains(crop.Id)) continue;
-                var plot = PlotAt(crop.Position);
+                var plot = PlotAt(crop.Position);   // ilk ekimde toprağın kaydı yoksa açılır (verimi varsayılanla aynı)
                 if (plot.Weedy || plot.WeedFreeUntil > now || Shades(crop)) continue;
                 float chance = Config.WeedChance * rate * (plot.MulchUntil > now ? Config.MulchWeedFactor : 1f);
                 if (_rng.NextDouble() < chance) plot.Weedy = true;

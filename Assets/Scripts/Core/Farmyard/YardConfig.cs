@@ -73,6 +73,8 @@ namespace Thatchwick.Core.Farmyard
         public double RainSaleLoss = 0.10;
         /// <summary>Tekerlek takmak için gereken Marangozluk seviyesi.</summary>
         public int RepairCarpentry = 2;
+        /// <summary>Kedinin gömme, köpeğin çömelme pozunun süresi (oyun günü; ≈ 2,4 gerçek saniye).</summary>
+        public double PoseDays = 0.0035;
 
         // ---- açıkta tuvalet ----
         public float ReliefRestore = 70f;

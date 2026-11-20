@@ -192,7 +192,9 @@ namespace Thatchwick.Core.Life
             if (animals == null || _yardAnimals == animals) return;
             _yardAnimals = animals;
             _barn = new BarnService(World, animals, House, Filth, Compost) { Plants = _plants, Grazing = () => animals.Released && Clock.Season != Time.Season.Winter };
-            _barn.CatBuried += a => CatBuried?.Invoke(a);
+            // Kedi eşeleyip gömer, köpek çömelir (art/queue 704 kareleri; yoksa düz duruş). Gerçek süre ≈ 2,4 saniye.
+            _barn.CatBuried += a => { Scenes.SetPose(a.Id, "bury", a.Position, YardNumbers.PoseDays); CatBuried?.Invoke(a); };
+            _barn.DogDropped += a => Scenes.SetPose(a.Id, "squat", a.Position, YardNumbers.PoseDays);
             _barn.LitterShort += home => Say(LocText.Of("yard.n.litter_short", ("item", home.Def.Id)), NoticeLevel.Warning);
             animals.FilthPenalty = _barn.ComfortPenalty;
             animals.FilthSickRisk = _barn.SickRisk;

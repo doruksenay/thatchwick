@@ -831,6 +831,7 @@ namespace Thatchwick.Core.Tests
             var shaded = Put(world, "item.crop_lettuce", 6, 2);
             Put(world, "item.crop_lettuce", 5, 2); Put(world, "item.crop_lettuce", 7, 2);
             var guarded = Put(world, "item.crop_carrot", 10, 2);
+            foreach (var it in world.Items) if (it.IsPlant) plants.Plot(it.Position);   // çapalanmış toprak
             plants.ApplyFertilizer(guarded.Position, Fertilizer.Seaweed, 0.2f, guarded);
             Days(world, plants, day, 2);
             Assert.True(plants.IsWeedy(carrot.Position));
@@ -852,6 +853,7 @@ namespace Thatchwick.Core.Tests
             // malçlı karoda yarı şans, sulanmayan karoda hiç
             plants.Config.WeedChance = 0.5f;
             var dry = Put(world, "item.crop_carrot", 18, 2);
+            plants.Plot(dry.Position);
             Days(world, plants, day, 6, water: false);
             Assert.False(plants.IsWeedy(dry.Position));
         }

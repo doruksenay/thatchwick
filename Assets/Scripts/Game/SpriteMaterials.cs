@@ -311,6 +311,66 @@ namespace Thatchwick.Game
             }
         }
 
+        private static Material _snow;
+        private static bool _snowMissing;
+        /// <summary>Kar örtüsü malzemesi (Thatchwick/SnowCover; belge 57 §9). Shader yoksa null: kar zemini örtmez.</summary>
+        public static Material SnowCover
+        {
+            get
+            {
+                if (_snow != null || _snowMissing) return _snow;
+                var shader = Shader.Find("Thatchwick/SnowCover");
+                if (shader == null) { _snowMissing = true; return null; }
+                return _snow = new Material(shader) { name = "RuntimeSnowCover" };
+            }
+        }
+
+        /// <summary>
+        /// Bulut gölgesi (belge 57 §9): yumuşak kenarlı, üç kademeli saydamlıkla piksel ızgarasına oturmuş leke. Renk siyah;
+        /// saydamlığı çizen ayarlar. Tohum aynı biçimi verir.
+        /// </summary>
+        public static Sprite CloudShadow(int seed, int w = 160, int h = 96)
+        {
+            var rng = new System.Random(seed);
+            // Üç-dört üst üste binen elips: kenarı düzensiz bir bulut.
+            int blobs = 3 + rng.Next(2);
+            var cx = new float[blobs]; var cy = new float[blobs]; var rx = new float[blobs]; var ry = new float[blobs];
+            for (int i = 0; i < blobs; i++)
+            {
+                cx[i] = w * (0.3f + 0.4f * (float)rng.NextDouble()); cy[i] = h * (0.35f + 0.3f * (float)rng.NextDouble());
+                rx[i] = w * (0.18f + 0.14f * (float)rng.NextDouble()); ry[i] = h * (0.2f + 0.16f * (float)rng.NextDouble());
+            }
+            var px = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    float best = 0f;
+                    for (int i = 0; i < blobs; i++)
+                    {
+                        float dx = (x - cx[i]) / rx[i], dy = (y - cy[i]) / ry[i];
+                        best = Mathf.Max(best, 1f - (dx * dx + dy * dy));
+                    }
+                    // Üç kademe: kenar seyrek, orta, iç (saydamlık 85, 170, 255); kademeli geçiş pikselli kalır.
+                    byte a = best > 0.45f ? (byte)255 : best > 0.2f ? (byte)170 : best > 0.05f ? (byte)85 : (byte)0;
+                    px[y * w + x] = new Color32(0, 0, 0, a);
+                }
+            return MakeSprite(px, w, h, new Vector2(0.5f, 0.5f));
+        }
+
+        private static Material _water;
+        private static bool _waterMissing;
+        /// <summary>Su parıltısı malzemesi (Thatchwick/WaterShimmer; belge 57 §10). Shader yoksa null: parıltı katmanı kurulmaz.</summary>
+        public static Material WaterShimmer
+        {
+            get
+            {
+                if (_water != null || _waterMissing) return _water;
+                var shader = Shader.Find("Thatchwick/WaterShimmer");
+                if (shader == null) { _waterMissing = true; return null; }
+                return _water = new Material(shader) { name = "RuntimeWaterShimmer" };
+            }
+        }
+
         private static Material _lodged;
         private static bool _lodgedMissing;
         /// <summary>Yatmış tahıl malzemesi (Thatchwick/LodgedSprite; belge 57d §2). Shader yoksa null: ekin devrik çizilir.</summary>
