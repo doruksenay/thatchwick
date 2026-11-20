@@ -22,6 +22,7 @@ namespace Thatchwick.Core.Relations
         public int[] guests;
     }
     [Serializable] public sealed class DecisionSave { public int id, kind, a, b, eventId, amount; public double deadline; }
+    [Serializable] public sealed class DowrySave { public int bride; public string[] items; public int[] counts; }
     [Serializable] public sealed class IssueSave { public int a, b, trigger, offender, count; public double day; }
 
     /// <summary>İlişki sisteminin kaydı (eklemeli alan; eski kayıtta null: romantik VillagerState'ten taşınır).</summary>
@@ -34,6 +35,7 @@ namespace Thatchwick.Core.Relations
         public CourtEventSave[] events;
         public DecisionSave[] decisions;
         public IssueSave[] issues;
+        public DowrySave[] dowry;
         public int nextEventId = 1, nextDecisionId = 1;
         public KnowledgeSave knowledge;
         public CouncilSave council;
@@ -74,6 +76,14 @@ namespace Thatchwick.Core.Relations
             var issues = new List<IssueSave>();
             foreach (var kv in _issues) issues.Add(new IssueSave { a = (int)(kv.Key >> 32), b = (int)(kv.Key & 0xffffffff), trigger = (int)kv.Value.Trigger, offender = kv.Value.Offender, count = kv.Value.Count, day = kv.Value.Day });
             s.issues = issues.ToArray();
+            var dowry = new List<DowrySave>();
+            foreach (var (bride, goods) in _dowry)
+            {
+                var items = new List<string>(); var counts = new List<int>();
+                foreach (var kv in goods) if (kv.Value > 0) { items.Add(kv.Key); counts.Add(kv.Value); }
+                if (items.Count > 0) dowry.Add(new DowrySave { bride = bride, items = items.ToArray(), counts = counts.ToArray() });
+            }
+            s.dowry = dowry.ToArray();
             s.knowledge = Knowledge?.Export();
             s.council = Council?.Export();
             return s;
@@ -84,7 +94,7 @@ namespace Thatchwick.Core.Relations
 
         public void Import(RelationsSave s)
         {
-            _pairs.Clear(); _feelings.Clear(); _prefs.Clear(); _prefsKnown.Clear(); _events.Clear(); _decisions.Clear(); _issues.Clear();
+            _pairs.Clear(); _feelings.Clear(); _prefs.Clear(); _prefsKnown.Clear(); _events.Clear(); _decisions.Clear(); _issues.Clear(); _dowry.Clear();
             NeedsLegacyMigration = s == null;
             Knowledge?.Import(s?.knowledge);
             Council?.Import(s?.council);
@@ -119,6 +129,10 @@ namespace Thatchwick.Core.Relations
                     _events.Add(e);
                 }
             if (s.decisions != null) foreach (var x in s.decisions) if (x != null) _decisions.Add(new PendingDecision { Id = x.id, Kind = (DecisionKind)x.kind, A = x.a, B = x.b, EventId = x.eventId, Amount = x.amount, Deadline = x.deadline });
+            if (s.dowry != null)
+                foreach (var x in s.dowry)
+                    if (x?.items != null && x.counts != null)
+                        for (int i = 0; i < Math.Min(x.items.Length, x.counts.Length); i++) RecordDowry(x.bride, x.items[i], x.counts[i]);
             if (s.issues != null) foreach (var x in s.issues) if (x != null) _issues[Key(x.a, x.b)] = new SpouseIssue { Trigger = (SpouseTrigger)x.trigger, Offender = x.offender, Count = x.count, Day = x.day };
         }
 

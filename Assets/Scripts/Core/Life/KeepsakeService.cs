@@ -318,16 +318,23 @@ namespace Thatchwick.Core.Life
         /// <summary>Gelinin ailesinin hâli: 1 sıradan, 2 nitelikli talip (ailesi itibarlı). Çeyiz dokumaları bu katla gelir.</summary>
         public Func<int> DowryScale { get; set; }
 
+        /// <summary>Son gelen gelinin getirdikleri (eşya, adet): ilişki sistemi çeyiz defterine yazar (T3, belge 67c §2).</summary>
+        public IReadOnlyList<(string id, int count)> LastDowry => _lastDowry;
+        private readonly List<(string, int)> _lastDowry = new List<(string, int)>();
+
         public string OnJoined(Character bride)
         {
+            _lastDowry.Clear();
             int k = Math.Max(1, DowryScale != null ? DowryScale() : 1);
             if (bride == null || bride.Sex != Sex.Female || !_content.Items.Contains(DowryChest)) return null;
             _house.AddItem(DowryChest);
+            _lastDowry.Add((DowryChest, 1));
             var parts = new List<string>();
             foreach (var (id, count) in BrideDowry)
             {
                 if (!_content.Items.Contains(id)) continue;
                 _house.AddItem(id, count * k);
+                _lastDowry.Add((id, count * k));
                 parts.Add($"{count * k} {Name(id).ToLowerInvariant()}");
             }
             string msg = $"{bride.Name} {(k > 1 ? "dolgun bir " : "")}çeyiz sandığıyla geldi: {string.Join(", ", parts)}. Sandığı evine koyup doldurabilirsin.";

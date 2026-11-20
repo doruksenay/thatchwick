@@ -61,6 +61,9 @@ namespace Thatchwick.Game
             public ActionStepDef WorkStep;
             public string IdlePose;          // boşta hareket (belge 60b §4): kısa süre oynayan poz
             public float IdlePoseUntil;
+            // Sahnede ve muhabbette dönülecek karo (belge 67b §3): dururken bu oyun gününe dek o yöne bakar.
+            public GridPos? FaceCell;
+            public double FaceUntil;
             public Sprite ActionFrame;
             // Elde tutulan yiyecek (yemek animasyonu): neyi yiyorsa onun ikonu elin üstünde.
             public SpriteRenderer Held;
@@ -969,6 +972,7 @@ namespace Thatchwick.Game
             _life.FounderId = () => _dynasty.History.Count > 0 ? _dynasty.History[0].CharacterId : (int?)null;
             _buildService.StoreBlocker = _life.Legacy.StoreBlocker;
             _buildService.PlacedItemSold += _life.Legacy.OnItemSold;
+            _buildService.PlacedItemSold += _life.OnPlacedItemSold;   // çeyiz sandığı satışı (T3)
             _life.Legacy.MarriedOutHappened += OnMarriedOut;
             _buildMode.Legacy = _life.Legacy;
             _buildMode.Comfort = _life.Mood;
@@ -3355,6 +3359,16 @@ namespace Thatchwick.Game
                 actor.Direction = IsoArt.DirectionIndex(new Vector2(to.x - pos.x, to.y - pos.y));
                 pos = Vector3.Lerp(pos, to, actor.Runner.StepProgress);
             }
+            else if (actor.FaceCell.HasValue)
+            {
+                var cell = actor.FaceCell.Value;
+                if (_clock.TotalDays > actor.FaceUntil) actor.FaceCell = null;
+                else if (cell.X != actor.Character.Position.X || cell.Y != actor.Character.Position.Y)
+                {
+                    var at = _view.TileToWorld(new GridPos(cell.X, cell.Y, actor.Character.Position.Z));
+                    actor.Direction = IsoArt.DirectionIndex(new Vector2(at.x - pos.x, at.y - pos.y));
+                }
+            }
             if (_animals != null && _animals.MountOf(actor.Character.Id) != null) pos += new Vector3(0f, 0.35f, 0f);   // at sırtında
             actor.Sim.Push(pos);
         }
@@ -3473,8 +3487,8 @@ namespace Thatchwick.Game
             var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
             // Kavga (belge 67a §5.2): toz bulutu kavgayı başlatanın yerine çizilir, hedef bulutun içinde kaybolur.
             bool brawlHidden = false;
-            var brawl = moving ? null : BrawlFrame(actor, seed, ref brawlHidden, pos, Iso.SortOrder(pos.y, 1, level));
-            if (brawl != null) real = brawl;
+            var brawl = moving ? null : BrawlFrame(actor, seed, ref brawlHidden, ref pos, Iso.SortOrder(pos.y, 1, level));
+            if (brawl != null) { real = brawl; actor.View.position = pos; }
             if (brawlHidden) actor.Renderer.enabled = false;
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }

@@ -27,6 +27,14 @@ namespace Thatchwick.Game
                 actor.IdlePose = pose;
                 actor.IdlePoseUntil = Time.unscaledTime + secs;
             };
+            _life.FaceCue += (c, cell, until) =>
+            {
+                var actor = _actors.Find(a => a.Character == c);
+                if (actor == null) return;
+                actor.FaceCell = cell;
+                actor.FaceUntil = until;
+            };
+            _life.ActingMember = () => Commander?.Character;   // satış ve bahsi yapan: seçili kişi
             _life.HouseholdHome = HouseholdHomeSpot;
             _life.ExtraGathering = NearInn;
             _relationsPanel = new Ui.RelationsPanel(_life, () => EnsureUi())
@@ -61,8 +69,8 @@ namespace Thatchwick.Game
             return false;
         }
 
-        /// <summary>Bu karakter toz bulutunda mı (kavga eden ya da hedefi): bulutu çizen kavgayı başlatandır.</summary>
-        private Actor BrawlerFor(Actor actor)
+        /// <summary>Bu karakter toz bulutunda mı (kavga eden ya da hedefi): kavgayı başlatan ve hedefi döner.</summary>
+        private (Actor brawler, Actor target) BrawlerFor(Actor actor)
         {
             foreach (var other in _actors)
             {
@@ -70,27 +78,35 @@ namespace Thatchwick.Game
                 if (job == null || job.Kind != JobKind.Social || job.Action != SocialAction.Fight) continue;
                 var step = other.Runner.CurrentStep;
                 if (step == null || step.Pose != "brawl") continue;
-                if (other == actor || job.TargetCharacterId == actor.Character.Id) return other;
+                if (other == actor || job.TargetCharacterId == actor.Character.Id)
+                    return (other, _actors.Find(a => a.Character.Id == job.TargetCharacterId));
             }
-            return null;
+            return (null, null);
         }
 
         /// <summary>
-        /// Kavga karesi: kavgayı başlatan bulutu çizer (iki karonun ortası), hedef gizlenir. Bulut asset'i yoksa null döner
-        /// ve iki karakter de kendi pozunda kalır (toz parçacığı atılır).
+        /// Kavga karesi: kavgayı başlatan bulutu iki kavgacının tam ortasına çizer (pos ortaya kayar), hedef gizlenir. Bulut
+        /// asset'i yoksa null döner ve iki karakter de kendi pozunda kalır; toz parçacığı yine ortadan atılır.
         /// </summary>
-        private Sprite BrawlFrame(Actor actor, int seed, ref bool hide, Vector3 pos, int sortOrder)
+        private Sprite BrawlFrame(Actor actor, int seed, ref bool hide, ref Vector3 pos, int sortOrder)
         {
-            var brawler = BrawlerFor(actor);
+            var (brawler, target) = BrawlerFor(actor);
             if (brawler == null) return null;
+            Vector3 mid = pos;
+            if (target != null && target != brawler)
+            {
+                var a = brawler.Sim.At(1f); var b = target.Sim.At(1f);
+                mid = new Vector3((a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f, pos.z);
+            }
             int frame = (int)(Mathf.Repeat(Time.time * 10f + seed, BrawlFrames));
             var cloud = IsoArt.Get(BrawlCloud + frame, 0.5f, 0.15f);
             if (cloud == null)
             {
-                if (_juice != null && Mathf.Repeat(Time.time * 7f + seed, 1f) < 0.15f) _juice.Emit(Juice.Kind.Dust, pos, 2, sortOrder + 1);
+                if (brawler == actor && _juice != null && Mathf.Repeat(Time.time * 7f + seed, 1f) < 0.15f) _juice.Emit(Juice.Kind.Dust, mid, 2, sortOrder + 1);
                 return null;
             }
             if (brawler != actor) { hide = true; return null; }
+            pos = mid;
             return cloud;
         }
     }

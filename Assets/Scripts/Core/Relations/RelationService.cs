@@ -525,6 +525,7 @@ namespace Thatchwick.Core.Relations
         public int OnDeath(Character dead)
         {
             if (dead == null) return 0;
+            ForgetDowry(dead.Id);
             int n = 0;
             foreach (var m in _population.Members)
             {

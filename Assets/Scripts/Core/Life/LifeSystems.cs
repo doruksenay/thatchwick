@@ -1083,6 +1083,7 @@ namespace Thatchwick.Core.Life
             market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor;
             market.HouseTradeLevel = () => BestSkill(SkillType.Trade);              // tezgâh, toptan, takas (belge 45)
             _market = market;
+            AttachRelations(market);
             market.IsFairDay = () => Festivals.TodaysFestival() != null;
             market.CalendarFactor = def => FastingCalendar.PriceFactor(def, IsFasting);   // perhiz günleri (belge 48 §9.4)
         }

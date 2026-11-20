@@ -214,6 +214,7 @@
   "rel.n.trigger": "{spouse} is hurt: {who} {what}.",
   "rel.n.village_engaged": "An engagement in the village: {groom} and {bride}. The wedding is in {days} days, you're invited.",
   "rel.n.wedding_gifts": "Wedding gifts: {n} coin from {guests} guests.",
+  "rel.n.wedding_jewel": "A bracelet was put on {bride}'s wrist at the wedding; like her dowry, it is hers.",
   "rel.n.wedding_today": "Today is {groom} and {bride}'s wedding!",
   "rel.n.flirt.wink": "{a} winked at {b}.",
   "rel.n.flirt.romantic_compliment": "{a} paid {b} a sweet compliment.",

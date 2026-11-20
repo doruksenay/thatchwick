@@ -266,7 +266,7 @@ namespace Thatchwick.Game
             bool picked = _betPick >= 0 && _betPick < card.Runners.Count;
             model.Footer.Add(new Ui.ListWindow.Act(T("ui.bet.place"), () =>
             {
-                var err = _life.Bets.Place(card, _betPick, _betStake, _household);
+                var err = _life.Bets.Place(card, _betPick, _betStake, _household, Commander?.Character?.Id ?? 0);
                 _betStatus = err.IsEmpty ? "" : GameLocalization.R(err);
             }, disabled: !picked));
             return model;

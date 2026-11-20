@@ -1,4 +1,5 @@
 using System.Linq;
+using Thatchwick.Core.Animals;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Family;
@@ -290,6 +291,107 @@ namespace Thatchwick.Core.Tests
             int total = 0;
             foreach (var g in RelationLines.Groups) total += RelationLines.Count(g);
             Assert.True(total >= 300);
+        }
+
+        [Fact]
+        public void Sahne_DamatGelinKarsilikli_YerlerAyriVeYurunur()
+        {
+            var center = new GridPos(10, 10);
+            var roles = new[] { SceneRole.Groom, SceneRole.Bride, SceneRole.GroomSide, SceneRole.BrideSide, SceneRole.Guest, SceneRole.Guest, SceneRole.Guest };
+            var blocked = new GridPos(11, 10);   // gelinin yeri dolu: en yakın boş karo
+            var seats = SceneSeats.Layout(center, roles, p => p != blocked);
+            Assert.All(seats, s => Assert.True(s.seat.HasValue));
+            Assert.Equal(seats.Count, seats.Select(s => s.seat.Value).Distinct().Count());
+            Assert.DoesNotContain(seats, s => s.seat.Value == blocked);
+            Assert.Equal(new GridPos(9, 10), seats[0].seat.Value);
+            Assert.True(seats[0].face.X > seats[0].seat.Value.X);   // damat geline (doğuya) döner
+            Assert.True(seats[1].face.X < seats[1].seat.Value.X);   // gelin damada döner
+            Assert.True(seats[2].seat.Value.X < center.X && seats[3].seat.Value.X > center.X);   // taraflar kendi yanında
+            Assert.All(seats.Skip(4), s => Assert.Equal(center, s.face));   // davetliler ortaya bakar
+            // Kına: gelin ortada, annesi yanı başında.
+            var henna = SceneSeats.Layout(center, new[] { SceneRole.Center, SceneRole.BrideSide }, null);
+            Assert.Equal(center, henna[0].seat.Value);
+            Assert.Equal(1, System.Math.Abs(henna[1].seat.Value.X - center.X) + System.Math.Abs(henna[1].seat.Value.Y - center.Y));
+        }
+
+        private static (Character husband, Character bride) Couple(Rig r)
+        {
+            var h = Add(r, "Kerem", Sex.Male, 40); var w = Add(r, "Aslı", Sex.Female, 38, x: 6);
+            h.SpouseId = w.Id; w.SpouseId = h.Id;
+            return (h, w);
+        }
+
+        [Fact]
+        public void Ceyiz_SatilirsaGelinKocasinaKirilir_EvdeHarcanmasiSayilmaz()
+        {
+            var r = NewRig();
+            var (h, w) = Couple(r);
+            r.Rel.RecordDowry(w.Id, "item.linen", 2);
+            // Evde dikişte 2 keten harcandı, hanede kendi 3 keteni var: 1 satış gelinin payına dokunmaz.
+            r.Rel.OnGoodsLeft("item.linen", 1, ownedAfter: 2, seller: h);
+            Assert.Null(r.Rel.PendingIssue(h.Id, w.Id));
+            Assert.Equal(2, r.Rel.DowryCount(w.Id, "item.linen"));
+            // Hepsi satıldı: gelinin payı gitti.
+            r.Rel.OnGoodsLeft("item.linen", 2, ownedAfter: 0, seller: h);
+            var issue = r.Rel.PendingIssue(h.Id, w.Id);
+            Assert.NotNull(issue);
+            Assert.Equal(SpouseTrigger.SpentDowry, issue.Trigger);
+            Assert.Equal(h.Id, issue.Offender);
+            Assert.Equal(0, r.Rel.DowryCount(w.Id, "item.linen"));
+        }
+
+        [Fact]
+        public void Ceyiz_GelinKendiSatarsaKimseKirilmaz_TakiAgir()
+        {
+            var r = NewRig();
+            var (h, w) = Couple(r);
+            r.Rel.RecordDowry(w.Id, "item.dowry_linen", 1);
+            r.Rel.OnGoodsLeft("item.dowry_linen", 1, 0, seller: w);
+            Assert.Null(r.Rel.PendingIssue(h.Id, w.Id));
+            r.Rel.RecordDowry(w.Id, RelationService.WeddingJewel, 1);
+            r.Rel.OnGoodsLeft(RelationService.WeddingJewel, 1, 0, seller: h);
+            Assert.Equal(80 - 24, r.Rel.Warmth(h.Id, w.Id));   // 20 × 1,2
+            Assert.True(RelationService.DowryScale("item.linen", 1) < RelationService.DowryScale(RelationService.WeddingJewel, 1));
+        }
+
+        [Fact]
+        public void Yadigar_EsinSoyundanAgir_KendiSoyundanHafif_KumarBahisleBuyur()
+        {
+            var r = NewRig();
+            var (h, w) = Couple(r);
+            var wifesMother = Add(r, "Nine", Sex.Female, 70); w.BirthMotherId = wifesMother.Id;
+            var hisFather = Add(r, "Dede", Sex.Male, 70); h.BirthFatherId = hisFather.Id;
+            Assert.Equal(1.5, LifeSystems.HeirloomScale(new Heirloom { MakerId = wifesMother.Id }, h, w));
+            Assert.Equal(0.5, LifeSystems.HeirloomScale(new Heirloom { MakerId = hisFather.Id }, h, w));
+            Assert.Equal(1.0, LifeSystems.HeirloomScale(new Heirloom { MakerId = 999 }, h, w));
+            r.Rel.ReportTrigger(SpouseTrigger.SoldHeirloom, h, scale: 1.5);
+            Assert.Equal(80 - 30, r.Rel.Warmth(h.Id, w.Id));
+            Assert.True(LifeSystems.GambleScale(5) < LifeSystems.GambleScale(50));
+        }
+
+        [Fact]
+        public void Bahis_YatiraniKaydeder_EskiKayitOkunur()
+        {
+            var bets = new RaceBets();
+            bets.Import("12|fest.spring|0|25|0.2|7|Karayel");
+            Assert.Equal(7, bets.Current.BettorId);
+            Assert.Equal("Karayel", bets.Current.RunnerName);
+            var again = new RaceBets(); again.Import(bets.Export());
+            Assert.Equal(7, again.Current.BettorId);
+            var old = new RaceBets(); old.Import("12|fest.spring|0|25|0.2|Poyraz");
+            Assert.Equal(0, old.Current.BettorId);
+            Assert.Equal("Poyraz", old.Current.RunnerName);
+        }
+
+        [Fact]
+        public void Ceyiz_KayittaKalir()
+        {
+            var r = NewRig();
+            var (h, w) = Couple(r);
+            r.Rel.RecordDowry(w.Id, "item.felt", 3);
+            var save = r.Rel.Export();
+            r.Rel.Import(save);
+            Assert.Equal(3, r.Rel.DowryCount(w.Id, "item.felt"));
         }
     }
 }

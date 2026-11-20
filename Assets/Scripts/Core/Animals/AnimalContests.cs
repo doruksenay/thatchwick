@@ -339,6 +339,8 @@ namespace Thatchwick.Core.Animals
         public long Day;
         public string FestivalId, RunnerName;
         public int AnimalId, Stake;
+        /// <summary>Bahsi yatıran hane üyesi (0: bilinmiyor; eski kayıt). Kaybederse eşi ona kırılır (67c §2).</summary>
+        public int BettorId;
         /// <summary>Bahis yatırılırkenki şans; ödeme buna göre yapılır.</summary>
         public double Chance;
     }
@@ -425,7 +427,7 @@ namespace Thatchwick.Core.Animals
         public static int PayoutFor(RaceRunner runner, int stake) => runner == null ? 0 : AnimalContests.BetPayout(stake, runner.Chance);
 
         /// <summary>Bahis yatırır; hata metni ya da boş (tamam).</summary>
-        public LocText Place(RaceCard card, int runner, int stake, Build.Household house)
+        public LocText Place(RaceCard card, int runner, int stake, Build.Household house, int bettorId = 0)
         {
             if (!Thatchwick.Core.Content.ContentPacks.Adult) return LocText.Of("bet.err.pack");
             if (card == null || runner < 0 || runner >= card.Runners.Count) return LocText.Of("bet.err.no_race");
@@ -433,7 +435,7 @@ namespace Thatchwick.Core.Animals
             if (Array.IndexOf(Stakes, stake) < 0) return LocText.Of("bet.err.stake");
             if (house == null || !house.TrySpend(stake)) return LocText.Of("bet.err.akce", ("stake", stake));
             var r = card.Runners[runner];
-            Current = new RaceBet { Day = card.Day, FestivalId = card.FestivalId, RunnerName = r.Name, AnimalId = r.AnimalId, Stake = stake, Chance = r.Chance };
+            Current = new RaceBet { Day = card.Day, FestivalId = card.FestivalId, RunnerName = r.Name, AnimalId = r.AnimalId, Stake = stake, Chance = r.Chance, BettorId = bettorId };
             return default;
         }
 
@@ -475,17 +477,22 @@ namespace Thatchwick.Core.Animals
 
         public string Export() => Current == null ? null
             : string.Join("|", Current.Day.ToString(System.Globalization.CultureInfo.InvariantCulture), Current.FestivalId, Current.AnimalId.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                Current.Stake.ToString(System.Globalization.CultureInfo.InvariantCulture), Current.Chance.ToString("R", System.Globalization.CultureInfo.InvariantCulture), Current.RunnerName);
+                Current.Stake.ToString(System.Globalization.CultureInfo.InvariantCulture), Current.Chance.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
+                Current.BettorId.ToString(System.Globalization.CultureInfo.InvariantCulture), Current.RunnerName);
 
         public void Import(string data)
         {
             Current = null; _card = null;
-            var p = string.IsNullOrEmpty(data) ? null : data.Split(new[] { '|' }, 6);
-            if (p == null || p.Length != 6) return;
+            // Eski kayıt 6 alan (bahisçi yok), yeni kayıt 7 alan: at adı her zaman sonda.
+            var p = string.IsNullOrEmpty(data) ? null : data.Split('|');
+            if (p == null || (p.Length != 6 && p.Length != 7)) return;
+            int bettor = 0;
+            if (p.Length == 7) int.TryParse(p[5], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out bettor);
+            string runnerName = p[p.Length - 1];
             var inv = System.Globalization.CultureInfo.InvariantCulture;
             if (long.TryParse(p[0], System.Globalization.NumberStyles.Integer, inv, out long day) && int.TryParse(p[2], System.Globalization.NumberStyles.Integer, inv, out int animal)
                 && int.TryParse(p[3], System.Globalization.NumberStyles.Integer, inv, out int stake) && double.TryParse(p[4], System.Globalization.NumberStyles.Float, inv, out double chance) && stake > 0)
-                Current = new RaceBet { Day = day, FestivalId = p[1], AnimalId = animal, Stake = stake, Chance = chance, RunnerName = p[5] };
+                Current = new RaceBet { Day = day, FestivalId = p[1], AnimalId = animal, Stake = stake, Chance = chance, RunnerName = runnerName, BettorId = bettor };
         }
     }
 }
