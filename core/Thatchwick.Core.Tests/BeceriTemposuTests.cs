@@ -108,7 +108,7 @@ namespace Thatchwick.Core.Tests
             var note = LifeRules.ApplyChildhoodAptitude(c);
             Assert.NotNull(note);
             Assert.Equal(Aptitude.Minor, c.Skills.GetAptitude(SkillType.Fishing));
-            Assert.Contains(note, c.Chronicle);
+            Assert.Contains(c.Chronicle, n => n.StartsWith("@@core.chronicle.aptitude_"));   // kroniğe anahtarlı yazılır (SavedText)
             // Zaten yatkınsa çok yatkına çıkar; çok yatkınsa değişmez.
             Assert.NotNull(LifeRules.ApplyChildhoodAptitude(c));
             Assert.Equal(Aptitude.Major, c.Skills.GetAptitude(SkillType.Fishing));
@@ -280,10 +280,10 @@ namespace Thatchwick.Core.Tests
                 Assert.Equal(want, list.Count);
                 if (want == 2) Assert.All(list, b => Assert.Equal(5, b.Level));
             }
-            Assert.Equal(118, total);   // 116 + Atletizm (5. seviye 2 dal)
+            Assert.Equal(120, total);   // 116 + Atletizm + Terzilik (5. seviye 2 dal)
             Assert.Equal(14, main);
             Assert.Equal(4, none);
-            Assert.Equal(118, db.Branches.Count);
+            Assert.Equal(120, db.Branches.Count);
         }
     }
 }

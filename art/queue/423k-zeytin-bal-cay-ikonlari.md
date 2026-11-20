@@ -1,7 +1,7 @@
 ---
 id: "423k"
 title: "Zeytin, bal, çay ürün ikonları (19)"
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:50Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 32
 family: arayuz
@@ -69,3 +69,4 @@ Zeytin, bal ve bitki çayı zinciri `items.json`'a eklendi (belge 32-7, 8.1, 8.2
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

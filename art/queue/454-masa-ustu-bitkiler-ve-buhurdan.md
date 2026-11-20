@@ -1,7 +1,7 @@
 ---
 id: "454"
 title: "Masa üstü saksılar, eğrelti teknesi, buhurdan, kuş yalağı (12)"
-status: review
+status: accepted
 claimed_at: 2026-11-20T06:49Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (ev bitkileri ve yeni dekor), Project belgesi 45
 priority: 20
@@ -60,3 +60,4 @@ Belge 45 ek: masa ve pencere üstü canlı saksılar (her mevsimde çiçek açan
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

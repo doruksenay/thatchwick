@@ -1,7 +1,7 @@
 ---
 id: "421"
 title: Tüccar malları (3 ikon) ve risaleler (4 kitap eşyası)
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:23Z
 approved_by: user        # kullanıcı 19.11.2026: "hem eşyaları ekle"; otomatik akış (art/budget.md)
 priority: 25
@@ -50,3 +50,4 @@ Belge 34-D5 (gezgin tüccar): yalnızca tüccarda satılan çivit, safran, karab
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

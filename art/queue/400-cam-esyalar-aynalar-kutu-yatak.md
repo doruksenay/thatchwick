@@ -1,7 +1,7 @@
 ---
 id: "400"
 title: "Cam eşyalar, aynalar, kutu yatak ve cam ürün ikonları (8 eşya + 7 ikon)"
-status: review
+status: accepted
 claimed_at: 2026-11-18T18:40Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §18 (18.11.2026)
 priority: 20
@@ -62,3 +62,4 @@ Masa üstü eşyalar **301 ile aynı** (küçük tuval, 382'deki gibi masa üst�
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

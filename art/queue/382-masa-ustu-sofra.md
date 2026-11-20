@@ -1,7 +1,7 @@
 ---
 id: "382"
 title: Masa ve raf üstü: sofra takımı ve kaplar (10)
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:50Z
 approved_by: user        # otomatik akış (art/budget.md)
 priority: 10
@@ -57,3 +57,4 @@ Yöntem, ortak ayarlar, ayak izi kılavuzu, ikinci deneme kuralı, teslim (`cp -
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

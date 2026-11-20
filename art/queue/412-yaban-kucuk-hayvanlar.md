@@ -1,7 +1,8 @@
 ---
 id: "408"
 title: "Yaban hayvanları: küçük memeliler ve kurbağa (5)"
-status: pending
+status: running
+claimed_at: 2026-11-20T11:15Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 31, 29 (kullanıcı 18.11.2026 "önerdiklerinin tamamını yap")
 family: hayvan
 style_gate: false

@@ -1,7 +1,7 @@
 ---
 id: "316"
 title: Envanter ve ürün ikonları (hammadde, ürün, yemek, toplanan)
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
@@ -35,3 +35,4 @@ Boyut 32x32, ≤16 renk, hepsi koyu/açık zeminde 2x ölçekle okunuyor mu, yem
 
 ## Notlar
 - `item.grave` ve mobilya ikonları bu işte yok (dünya sprite'ı kullanılır).
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

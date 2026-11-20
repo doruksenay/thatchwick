@@ -66,7 +66,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(4, house.Count("item.must"));
             Assert.Equal(LifeSystems.VintagePrize, house.Akce);
             Assert.Contains(notes, n => n.Contains("kazandı"));
-            Assert.Contains(c.Chronicle, n => n.Contains("üzüm yarışması"));
+            Assert.Contains(c.Chronicle, n => n.StartsWith("@@core.chronicle.vintage_won"));
             Assert.True(c.Mood.Has("eff_vintage"));
             // Üzüm yoksa yarışmaya girilmez.
             var empty = new Household(0);

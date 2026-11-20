@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,6 +152,9 @@ namespace Thatchwick.Core.Life
         {
             switch (i.SkillWork)
             {
+                case "wash_all":
+                    WashAllClothes(c);
+                    break;
                 case "inspect_field":
                 {
                     var s = _plants?.Summary() ?? default;
@@ -291,7 +295,7 @@ namespace Thatchwick.Core.Life
                     break;
                 case "chronicle":
                     Upbringing.Reputation.Add(2, "kronik");
-                    foreach (var m in Household()) m.AddChronicle($"{c.Name} hanenin kroniğini yazdı (Yıl {Clock.YearIndex + 1}).");
+                    foreach (var m in Household()) m.AddChronicle(SavedText.Encode("core.chronicle.written", ("name", c.Name), ("year", Clock.YearIndex + 1)));
                     break;
                 case "weekly_plan":
                     Say(WeeklyPlanText(), NoticeLevel.Info, c.Id);
@@ -306,7 +310,8 @@ namespace Thatchwick.Core.Life
                 {
                     SetSkillFlag("heritage:" + item.Id, Clock.YearIndex + 1);
                     string note = $"{c.Name} {item.Def.DisplayName.ToLowerInvariant()} yadigâr ağaç ilan etti; torunlara kalacak.";
-                    foreach (var m in Household()) m.AddChronicle(note);
+                    string savedNote = SavedText.Encode("core.chronicle.heritage_tree", ("name", c.Name), ("item", SavedText.Content(item.Def.Id)));
+                    foreach (var m in Household()) m.AddChronicle(savedNote);
                     Upbringing.Reputation.Add(1, "yadigâr ağaç");
                     Say(note, NoticeLevel.Info, c.Id);
                     break;

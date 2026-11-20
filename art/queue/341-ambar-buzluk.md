@@ -1,7 +1,7 @@
 ---
 id: "341"
 title: Ambar, buzluk, buzhane
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:07Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -39,3 +39,4 @@ status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
 
 - 2026-11-18 (bulut işçisi): ambar ve buzluk teslim (buzluk palet UYARI, ambar ayak izini ~%60 dolduruyor). Buzhane çimen zemin pişirdiği ve stil denetiminde KALDI olduğu için teslim edilmedi (`art/results/341-red/`); tek deneme hakkı bitti, yeniden üretim için karar gerek. Rapor: `art/results/341-ambar-buzluk.md`.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

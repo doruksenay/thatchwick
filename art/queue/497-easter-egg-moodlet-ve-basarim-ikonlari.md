@@ -1,5 +1,5 @@
 ---
-id: "494"
+id: "497"
 title: "Easter egg moodlet, başarım ve Tuhaflıklar ikonları (13)"
 status: pending
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 sohbet ("bu moodletler için de asset üretmemiz lazım", "yaz bunları ve sen ekle sıraya"), Project belgeleri 55 ve 55b
@@ -17,7 +17,7 @@ outputs:
   - Assets/Art/Iso/_aday/ui_icon_tab_oddities.png
 created: 2026-11-20
 ---
-# 494 Easter egg moodlet, başarım ve Tuhaflıklar ikonları (13)
+# 497 Easter egg moodlet, başarım ve Tuhaflıklar ikonları (13)
 
 ## Amaç
 Project belgesi `55-easter-eggler.md`:
@@ -52,7 +52,7 @@ Stil: 210 yönü (varsayılan `parsomen`), tek renk koyu kahve kontur, düz göl
 ## Doğrulama
 - Moodlet ikonları 16x16 (+ `_32`), yarı saydam 0, renk ≤ 12. Başarım ve sekme ikonları 32x32, yarı saydam 0, renk ≤ 16.
 - `python tools/art/style.py check --family arayuz <dosya> ...`.
-- Toplu önizleme x4, parşömen (#EADBB8) ve koyu (#333333) zeminde: `art/results/494-ikonlar-x4.png`, `art/results/494-ikonlar-x4-koyu.png`.
+- Toplu önizleme x4, parşömen (#EADBB8) ve koyu (#333333) zeminde: `art/results/497-ikonlar-x4.png`, `art/results/497-ikonlar-x4-koyu.png`.
 - Göz kontrolü 3 kat ölçekte:
   - üç balon (`believed`, `nobody_believes`, `odd_chat`) içindeki işaretten ayırt edilmeli;
   - `confidant` 212'deki `pet_love` (pati ve kalp) ile, `family_tale` `inspired` (açık kitap) ile, `let_down` `grief` (kırık kalp) ile karışmamalı;

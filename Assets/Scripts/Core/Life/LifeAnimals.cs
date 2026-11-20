@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Animals;
@@ -40,7 +41,8 @@ namespace Thatchwick.Core.Life
                     : null;
                 if (text == null) return;
                 Say(text, NoticeLevel.Info);
-                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(text);
+                string savedText = SavedText.Encode(key == "event.male_calico" ? "core.chronicle.male_calico" : "core.chronicle.miracle_foal", ("name", baby.Name));
+                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(savedText);
             };
             animals.AwayLost += (a, why) =>
                 Say(why == "old_age" ? $"{a.Name} uzaktayken yaşlılıktan öldü." : $"{a.Name} {(why == "lost" ? "yaylada ya da merada kayboldu (kurt ya da uçurum)" : "döndü")}.",
@@ -68,7 +70,8 @@ namespace Thatchwick.Core.Life
                 string name = Content.Items.TryGet(item, out var d) ? d.DisplayName : item;
                 string text = $"Efsanevi bir canlı deftere girdi: {name}.";
                 Say(text, NoticeLevel.Info);
-                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(text);
+                string savedText = SavedText.Encode("core.chronicle.legendary_creature", ("item", SavedText.Content(item)));
+                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(savedText);
             };
         }
 

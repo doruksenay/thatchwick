@@ -1,7 +1,7 @@
 ---
 id: "304b"
 title: Korkuluk yeniden (klasik saman korkuluk)
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:44Z
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 2: korkuluk beğenilmedi)
 family: esya
@@ -34,3 +34,4 @@ Açıklama metni: `classic field scarecrow: a wooden pole with a crossbar for ar
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -42,7 +42,7 @@ namespace Thatchwick.Core.Tests
         public void Beceriler_AdlariVeMeslekleriFarkli()
         {
             var all = (SkillType[])Enum.GetValues(typeof(SkillType));
-            Assert.Equal(35, all.Length);   // + Atletizm (18.11.2026)
+            Assert.Equal(36, all.Length);   // + Atletizm (18.11.2026), Terzilik (20.11.2026)
             Assert.Equal(all.Length, all.Select(SkillNames.Name).Distinct().Count());
             Assert.Equal(all.Length, all.Select(SkillNames.TradeName).Distinct().Count());
             Assert.True(SkillNames.IsCraft(SkillType.Leatherwork) && SkillNames.IsCraft(SkillType.Weaving) && SkillNames.IsCraft(SkillType.Carpentry));

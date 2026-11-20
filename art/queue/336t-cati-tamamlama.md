@@ -1,7 +1,7 @@
 ---
 id: "336t"
 title: "Çatı tamamlama: saz, şindıl ve kara kiremit yeniden; arduvaz ve bütün sırtlar"
-status: running
+status: review
 claimed_at: 2026-11-20T10:40Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette yapı incelemesi: "önerini uygula")
 priority: 15

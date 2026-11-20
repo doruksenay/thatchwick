@@ -1,7 +1,7 @@
 ---
 id: "324"
 title: Saklama eşyaları 2 (tütsülük, peynir presi)
-status: review
+status: accepted
 claimed_at: 2026-11-18T09:48Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 priority: 20
@@ -39,3 +39,4 @@ Ayrıntılı yöntem (referanssız kılavuz, `create_map_object` stil eşleme, i
 
 ## Notlar
 - Yeni ürün ikonları (tuz, et, kümes eti, tuzlu et, pastırma, füme et, peynir, beyaz peynir, füme peynir, 4 yeni turşu, 4 kuru meyve, 2 reçel) 316'nın envanter ikon listesine eklenmedi; 316 ileride güncellenecek.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

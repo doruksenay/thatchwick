@@ -1,7 +1,7 @@
 ---
 id: "355"
 title: Boru, kurşun ve yeni yiyecek ikonları; su yolu araç ikonları
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:05Z
 approved_by: user        # otomatik akış (2026-11-17); su şebekesi PR (feat/su-sebekesi)
 family: arayuz
@@ -35,3 +35,4 @@ Boyut, ≤16 renk, koyu/açık zeminde 2x ölçekle okunuyor mu; üç boru ayır
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

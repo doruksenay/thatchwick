@@ -57,6 +57,22 @@ namespace Thatchwick.Game
             return db;
         }
 
+        private const string ClothingPath = "Content/clothing";
+
+        /// <summary>Giysi kataloğunu (clothing.json; belge 48, 51) okur. Dosya yoksa boş katalog.</summary>
+        public static Thatchwick.Core.Clothing.ClothingCatalog LoadClothing(ContentDatabase content, out List<string> errors)
+        {
+            errors = new List<string>();
+            var asset = Resources.Load<TextAsset>(ClothingPath);
+            if (asset == null) { errors.Add($"Resources/{ClothingPath}.json bulunamadı."); return new Thatchwick.Core.Clothing.ClothingCatalog(); }
+            try
+            {
+                var file = JsonUtility.FromJson<Thatchwick.Core.Clothing.ClothingFileDto>(asset.text);
+                return Thatchwick.Core.Clothing.ClothingCatalog.Map(file, content, errors);
+            }
+            catch (ArgumentException ex) { errors.Add($"clothing.json çözümlenemedi: {ex.Message}"); return new Thatchwick.Core.Clothing.ClothingCatalog(); }
+        }
+
         private const string LayoutsPath = "Content/layouts";
 
         /// <summary>Yerleşim şablonlarını (layouts.json: oda, bina, bahçe; belge 44) okur. Dosya yoksa null (iç mekânlar boş kalır).</summary>
