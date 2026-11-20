@@ -1,7 +1,8 @@
 ---
 id: "351b"
 title: "Su yolu karoları yeniden: toprak ark, taş ark, ahşap oluk (kuru ve sulu)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:18Z
 approved_by: user        # kullanıcı kararı 2026-11-20: 351 reddedildi, yeniden üretim
 priority: 20
 family: zemin
