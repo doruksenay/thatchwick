@@ -1,7 +1,8 @@
 ---
 id: "444t"
 title: "Duvar, kapı, korkuluk ve çit tamamlama (eksikler ve 2 yeniden)"
-status: pending
+status: running
+claimed_at: 2026-11-20T10:40Z
 approved_by: user        # kullanıcı kararı 2026-11-20 (sohbette yapı incelemesi: "önerini uygula")
 priority: 15
 family: yapi
