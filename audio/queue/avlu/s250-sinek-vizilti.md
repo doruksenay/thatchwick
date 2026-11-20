@@ -4,7 +4,7 @@ title: Sinek vızıltısı (yığın, dolu hela, kokan ahır)
 kind: sfx
 family: foley
 freq: B
-status: blocked
+status: review
 approved_by: user
 depends_on: []
 key: yard.flies
@@ -24,6 +24,6 @@ candidates: 6
 passed: 0
 credits_spent: 0
 generated_at: '2026-11-20T17:29:29Z'
-error: 'hiçbir aday kapıdan geçmedi: c1 ile neredeyse aynı (0.021); c1 ile neredeyse aynı (0.0269); c1 ile neredeyse aynı (0.0282); c1 ile neredeyse aynı (0.0287)'
+not_kapi: '20.11.2026: adaylar yalnız aile süre sınırına (3 sn) takıldı, iş 4 sn istiyordu; ses sağlam, krediyi boşa harcamamak için incelemeye alındı (PR #114 kapıyı düzeltiyor).'
 ---
 A few houseflies buzzing lazily around one spot outdoors, close and dry, no other sounds. Loopable, quiet.
