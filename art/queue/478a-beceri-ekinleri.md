@@ -1,7 +1,7 @@
 ---
 id: "478a"
 title: "Beceri tamamlama: yeni ekinler ve yer mantarı düğümü (10)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:56Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("geliştirmeyi tamamla"), Project belgesi 45 bölüm 9
 priority: 40
