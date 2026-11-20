@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Thatchwick · Ses incelemesi</title>
+<style>
+  :root { --bg:#f6f1e7; --card:#fffdf8; --ink:#2b2420; --mute:#7a6e64; --accent:#7d1f2c; --ok:#2f6b3a; --warn:#b26a00; --bad:#a3262f; --line:#e3d8c6; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  header { position:sticky; top:0; z-index:5; background:var(--accent); color:#fff; padding:10px 18px; display:flex; gap:16px; align-items:center; }
+  header h1 { font-size:16px; margin:0; font-weight:600; }
+  header .sp { flex:1; }
+  header button { background:#fff2; color:#fff; border:1px solid #fff6; }
+  main { max-width:1100px; margin:0 auto; padding:16px; }
+  .job { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:18px; }
+  .job h2 { margin:0 0 4px; font-size:15px; }
+  .meta { color:var(--mute); font-size:12px; margin-bottom:10px; }
+  .tag { display:inline-block; padding:1px 7px; border-radius:9px; background:#efe6d6; margin-right:4px; font-size:11px; }
+  .tag.pilot { background:var(--accent); color:#fff; }
+  .group { border-top:1px dashed var(--line); padding-top:8px; margin-top:8px; }
+  .group h3 { font-size:13px; margin:0 0 6px; color:var(--mute); font-weight:600; }
+  .cands { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:8px; }
+  .c { border:1px solid var(--line); border-radius:8px; padding:7px 9px; background:#fff; }
+  .c.fail { border-color:var(--bad); background:#fff5f5; }
+  .c.sim { border-color:var(--warn); }
+  .c.sel { outline:2px solid var(--ok); }
+  .c .top { display:flex; gap:6px; align-items:center; }
+  .c .nm { font-weight:600; flex:1; }
+  .c .m { color:var(--mute); font-size:11px; }
+  .c .fl { color:var(--bad); font-size:11px; }
+  .c .fl.w { color:var(--warn); }
+  .c .stt { font-size:11px; font-style:italic; color:#5a4b8a; }
+  button { font:inherit; padding:4px 10px; border-radius:6px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  .play { width:30px; padding:4px 0; }
+  .bar { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; align-items:center; }
+  .accept { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .reject { color:var(--bad); }
+  input[type=text] { flex:1; min-width:220px; padding:4px 8px; border:1px solid var(--line); border-radius:6px; font:inherit; }
+  .empty { text-align:center; color:var(--mute); padding:60px 0; }
+  .refs { font-size:12px; color:var(--mute); }
+  .count { font-size:12px; color:var(--mute); }
+  .count.over { color:var(--bad); font-weight:600; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Thatchwick · Ses incelemesi</h1>
+  <span id="sum" class="meta" style="color:#fff;margin:0"></span>
+  <span class="sp"></span>
+  <button onclick="stopAll()">■ Durdur</button>
+  <button onclick="load()">↻ Yenile</button>
+</header>
+<main id="root"><div class="empty">Yükleniyor…</div></main>
+<script>
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const cache = new Map();
+let playing = [], timers = [];
+
+async function buf(url) {
+  if (!cache.has(url)) cache.set(url, fetch(url).then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)));
+  return cache.get(url);
+}
+function stopAll() { playing.forEach(s => { try { s.stop(); } catch(e){} }); playing = []; timers.forEach(clearTimeout); timers = []; }
+async function playUrl(url, rate = 1, gainDb = 0, when = 0, fadeIn = 0, fadeOut = 0, dur = null) {
+  if (ctx.state === "suspended") await ctx.resume();
+  const b = await buf(url);
+  const s = ctx.createBufferSource(); s.buffer = b; s.playbackRate.value = rate;
+  const g = ctx.createGain(); const t0 = ctx.currentTime + when;
+  const v = Math.pow(10, gainDb / 20);
+  g.gain.setValueAtTime(fadeIn ? 0 : v, t0);
+  if (fadeIn) g.gain.linearRampToValueAtTime(v, t0 + fadeIn);
+  const len = dur || b.duration / rate;
+  if (fadeOut) { g.gain.setValueAtTime(v, t0 + len - fadeOut); g.gain.linearRampToValueAtTime(0, t0 + len); }
+  s.connect(g).connect(ctx.destination); s.start(t0); if (dur) s.stop(t0 + dur);
+  playing.push(s); return b.duration / rate;
+}
+const aud = (job, n) => `/audio/${job}/${n}.ogg`;
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+// Oyundaki gibi çal: karıştırma torbası (son yarısı tekrar seçilmez), rastgele perde ve ses (45a bölüm 3)
+function bagPlayer(names) {
+  let bag = [], recent = [];
+  const noRepeat = Math.floor(names.length / 2);
+  return () => {
+    if (!bag.length) bag = names.slice().sort(() => Math.random() - .5);
+    let i = bag.findIndex(n => !recent.includes(n)); if (i < 0) i = 0;
+    const n = bag.splice(i, 1)[0];
+    recent.push(n); if (recent.length > noRepeat) recent.shift();
+    return n;
+  };
+}
+function inGame(job, times = 24) {
+  stopAll();
+  const sel = selected(job);
+  const groups = Object.keys(job.groups);
+  const pool = {};
+  for (const g of groups) {
+    const names = Object.keys(job.groups[g].candidates);
+    const picked = names.filter(n => sel.includes(n));
+    const passed = names.filter(n => job.groups[g].candidates[n].pass);
+    pool[g] = bagPlayer(picked.length ? picked : passed.length ? passed : names);
+  }
+  const layered = job.layered;
+  let t = 0;
+  for (let k = 0; k < times; k++) {
+    const rate = 1 + rnd(-job.pitchVar, job.pitchVar), gdb = rnd(-job.volVarDb, job.volVarDb);
+    const targets = layered ? groups : [groups[k % groups.length]];
+    for (const g of targets) { const n = pool[g](); timers.push(setTimeout(() => playUrl(aud(job.id, n), rate, gdb), t)); }
+    t += job.interval * rnd(0.8, 1.25);
+  }
+}
+// Ortam yatağı: parçalar rastgele sırayla, 2 sn çapraz geçişle ~3 dk
+async function bed(job) {
+  stopAll();
+  const g = Object.keys(job.groups)[0];
+  const names = Object.keys(job.groups[g].candidates);
+  const next = bagPlayer(names);
+  let when = 0; const xf = 2;
+  while (when < 180) {
+    const n = next(); const b = await buf(aud(job.id, n));
+    await playUrl(aud(job.id, n), 1, 0, when, xf, xf, b.duration);
+    when += b.duration - xf;
+  }
+}
+
+function selected(job) { return [...document.querySelectorAll(`#j-${CSS.escape(job.id)} input.pk:checked`)].map(i => i.value); }
+function updCount(job) {
+  const n = selected(job).length; const el = document.querySelector(`#j-${CSS.escape(job.id)} .count`);
+  const limit = Object.values(job.groups).reduce((a, g) => a + Math.min(job.keep, Object.keys(g.candidates).length), 0);
+  el.textContent = `${n} seçili (hedef en çok ${limit})`; el.className = "count" + (n > limit ? " over" : "");
+  document.querySelectorAll(`#j-${CSS.escape(job.id)} .c`).forEach(c => c.classList.toggle("sel", c.querySelector("input.pk").checked));
+}
+function pickPassed(job) {
+  for (const g of Object.keys(job.groups)) {
+    const c = job.groups[g].candidates;
+    const ok = Object.keys(c).filter(n => c[n].pass && !c[n].similarity_warning).slice(0, job.kind === "voice_syllables" ? 99 : job.keep);
+    ok.forEach(n => { const i = document.querySelector(`#j-${CSS.escape(job.id)} input[value="${n}"]`); if (i) i.checked = true; });
+  }
+  updCount(job);
+}
+async function decide(job, action) {
+  const note = document.querySelector(`#j-${CSS.escape(job.id)} input[type=text]`).value;
+  const body = { job: job.id, action, pick: selected(job), note };
+  const r = await fetch("/api/decide", { method: "POST", body: JSON.stringify(body) }).then(r => r.json());
+  if (!r.ok) { alert(r.error); return; }
+  document.getElementById("j-" + job.id).remove(); stopAll(); summary();
+}
+function summary() { document.getElementById("sum").textContent = `${document.querySelectorAll(".job").length} iş incelemede`; }
+
+function card(job) {
+  const d = document.createElement("div"); d.className = "job"; d.id = "j-" + job.id;
+  const kindTxt = { sfx: "efekt", stinger: "müzik vuruşu", spot: "nokta sesi", ambience: "ortam", voice_lines: "replik", voice_syllables: "hece bankası", voice_design: "ses tasarımı", music: "müzik" }[job.kind] || job.kind;
+  d.innerHTML = `<h2>${job.id} · ${job.title || ""}</h2>
+    <div class="meta"><span class="tag ${job.pilot ? "pilot" : ""}">${job.pilot ? "PİLOT" : kindTxt}</span><span class="tag">${job.family}</span><span class="tag">sıklık ${job.freq}</span>${job.loop ? '<span class="tag">döngü</span>' : ""}
+    ${job.note ? `<div>Not: ${job.note}</div>` : ""}${job.slice_misses.length ? `<div class="fl">Dilimleme tutmadı: ${job.slice_misses.join("; ")}</div>` : ""}</div>`;
+  if (job.refs.length) {
+    const r = document.createElement("div"); r.className = "refs"; r.textContent = "Aile referansı: ";
+    job.refs.forEach((u, i) => { const b = document.createElement("button"); b.textContent = "▶ ref " + (i + 1); b.onclick = () => { stopAll(); playUrl(u); }; r.append(b, " "); });
+    d.append(r);
+  }
+  for (const [g, gr] of Object.entries(job.groups)) {
+    const box = document.createElement("div"); box.className = "group";
+    if (Object.keys(job.groups).length > 1) box.innerHTML = `<h3>${job.layered ? "Katman: " : ""}${g}</h3>`;
+    const grid = document.createElement("div"); grid.className = "cands";
+    for (const [n, m] of Object.entries(gr.candidates)) {
+      const c = document.createElement("label"); c.className = "c" + (m.pass ? "" : " fail") + (m.similarity_warning ? " sim" : "");
+      const fl = (m.flags || []).map(f => `<div class="fl ${m.pass ? "w" : ""}">• ${f}</div>`).join("");
+      c.innerHTML = `<div class="top"><button class="play" type="button">▶</button><span class="nm">${n}</span><input class="pk" type="checkbox" value="${n}"></div>
+        <div class="m">${m.duration_s} sn · ${m.lufs} LUFS · tepe ${m.true_peak_db}${m.seam !== undefined ? " · dikiş " + m.seam : ""}${gr.set && gr.set.nearest && gr.set.nearest[n] != null ? " · en yakın " + gr.set.nearest[n] : ""}</div>
+        ${m.text ? `<div class="m">“${m.text}”</div>` : ""}${m.stt ? `<div class="stt">STT: ${m.stt}</div>` : ""}${fl}`;
+      c.querySelector(".play").onclick = e => { e.preventDefault(); stopAll(); playUrl(aud(job.id, n)); };
+      c.querySelector("input").onchange = () => updCount(job);
+      grid.append(c);
+    }
+    box.append(grid); d.append(box);
+  }
+  const bar = document.createElement("div"); bar.className = "bar";
+  const isBed = job.kind === "ambience" && !job.loop;
+  bar.innerHTML = `${isBed ? '<button class="ig">▶ 3 dakika dinle</button>' : (job.kind === "music" || job.kind === "voice_design") ? "" : '<button class="ig">▶ Oyundaki gibi çal (24 kez)</button>'}
+    <button class="pp">Geçenleri seç</button><span class="count"></span>
+    <input type="text" placeholder="Not (yeniden üretimde prompt'a ne değişsin?)">
+    <button class="accept">Kabul</button><button class="regen">Yeniden üret</button><button class="reject">Ret</button>`;
+  const ig = bar.querySelector(".ig"); if (ig) ig.onclick = () => isBed ? bed(job) : inGame(job);
+  bar.querySelector(".pp").onclick = () => pickPassed(job);
+  bar.querySelector(".accept").onclick = () => decide(job, "accept");
+  bar.querySelector(".regen").onclick = () => decide(job, "regenerate");
+  bar.querySelector(".reject").onclick = () => { if (confirm("Bu iş reddedilsin mi?")) decide(job, "reject"); };
+  d.append(bar);
+  setTimeout(() => updCount(job));
+  return d;
+}
+async function load() {
+  stopAll();
+  const jobs = await fetch("/api/jobs").then(r => r.json());
+  const root = document.getElementById("root"); root.innerHTML = "";
+  if (!jobs.length) root.innerHTML = '<div class="empty">İncelemede iş yok.</div>';
+  jobs.forEach(j => root.append(card(j))); summary();
+}
+load();
+</script>
+</body>
+</html>
