@@ -135,7 +135,7 @@ namespace Thatchwick.Game
                 && GUILayout.Button(GameLocalization.T(c.FreeMirrorAvailable ? "ui.mirror.open_free" : "ui.mirror.open"), GUILayout.Width(c.FreeMirrorAvailable ? 120f : 60f)))
                 OpenMirror(c);
             // Hanedan geçmişi: kişinin hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.").
-            if (!c.IsVillager) foreach (var note in c.Chronicle) UiSkin.Wrap("    · " + note, UiSkin.FamilyTextW);
+            if (!c.IsVillager) foreach (var note in c.Chronicle) UiSkin.Wrap("    · " + GameLocalization.Saved(note), UiSkin.FamilyTextW);
 
             // Görev (otomasyonun işçi tarafı): ihtiyaçları iyiyken gündüz kendiliğinden tarlaya ya da hayvanlara bakar.
             if (!c.IsVillager && DutyPlanner.CanTakeDuty(c))

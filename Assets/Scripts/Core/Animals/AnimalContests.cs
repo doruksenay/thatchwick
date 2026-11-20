@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Characters;
@@ -34,6 +35,8 @@ namespace Thatchwick.Core.Animals
         public string LegendTitle;
         /// <summary>Kısa sonuç metni (sonuç kartı ve kronik).</summary>
         public string Summary;
+        /// <summary>Kroniğe yazılan anahtarlı özet (SavedText); ekranda Summary gösterilir.</summary>
+        public string SavedSummary;
     }
 
     /// <summary>
@@ -192,6 +195,10 @@ namespace Thatchwick.Core.Animals
             r.Summary = place == 1
                 ? $"{a.Name}, {what} kazandı!" + (r.LegendTitle != null ? $" Artık bir efsane: {r.LegendTitle}." : "")
                 : $"{a.Name}, {what} {place}. bitirdi.";
+            string kindKey = "core.contest." + kind;
+            r.SavedSummary = place != 1 ? SavedText.Encode("core.chronicle.contest_placed", ("name", a.Name), ("kind", SavedText.Key(kindKey)), ("place", place))
+                : r.LegendTitle != null ? SavedText.Encode("core.chronicle.contest_won_legend", ("name", a.Name), ("kind", SavedText.Key(kindKey)), ("title", r.LegendTitle))
+                : SavedText.Encode("core.chronicle.contest_won", ("name", a.Name), ("kind", SavedText.Key(kindKey)));
             return r;
         }
 
@@ -277,7 +284,7 @@ namespace Thatchwick.Core.Animals
                 var r = a != null && h != null ? AnimalContests.Run(_rng, e.Kind, a, h, year, main) : null;
                 if (r == null) continue;
                 if (r.PrizeAkce > 0) house?.AddAkce(r.PrizeAkce);
-                h.AddChronicle(r.Summary);
+                h.AddChronicle(r.SavedSummary ?? r.Summary);
                 results.Add(r);
                 Finished?.Invoke(r, a, h);
             }

@@ -1,3 +1,4 @@
+using Thatchwick.Core.Localization;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Animals;
@@ -892,7 +893,7 @@ namespace Thatchwick.Core.Life
                 {
                     House.AddAkce(VintagePrize);
                     string text = $"En iyi üzüm yarışmasını {grower.Name} kazandı! +{VintagePrize} akçe.";
-                    grower.AddChronicle(text);
+                    grower.AddChronicle(SavedText.Encode("core.chronicle.vintage_won", ("name", grower.Name), ("akce", VintagePrize)));
                     notes.Add(text);
                 }
                 else notes.Add("En iyi üzüm yarışmasında bu yıl komşunun salkımı seçildi.");
@@ -1118,7 +1119,9 @@ namespace Thatchwick.Core.Life
             foreach (var note in Olives.OnNewDay((int)Clock.TotalDays, World, HeadName()))
             {
                 Say(note, NoticeLevel.Info);
-                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(note);
+                string savedNote = note == Olives.LastHeirloomNote && Olives.LastHeirloomPlanter != null
+                    ? SavedText.Encode("core.chronicle.olive_heirloom", ("planter", Olives.LastHeirloomPlanter)) : note;
+                foreach (var m in Population.Members) if (!m.IsDead && !m.IsVillager) m.AddChronicle(savedNote);
             }
             var grow = Adoptions.OnGrowUp((int)Clock.TotalDays, Clock.Season);
             if (grow == "returned") Say("Büyüttüğün karaca artık yetişkin; bir sabah ormana döndü.", NoticeLevel.Info);

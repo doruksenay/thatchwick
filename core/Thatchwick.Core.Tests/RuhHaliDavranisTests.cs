@@ -372,7 +372,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.", note);
             Assert.True(c.HasTrait(MoodBehavior.TraitGloomy));
             Assert.False(c.HasTrait(MoodBehavior.TraitCheerful));
-            Assert.Contains(note, c.Chronicle);
+            Assert.Contains(c.Chronicle, n => n.StartsWith("@@core.chronicle.childhood_conflict_hard"));
         }
 
         [Fact]
@@ -431,7 +431,7 @@ namespace Thatchwick.Core.Tests
             for (int i = 0; i < 6; i++) teen.Tick(0.1);                      // 30,1: Genç yetişkin
             Assert.Equal(AgeStage.YoungAdult, teen.Stage);
             Assert.True(teen.HasTrait(MoodBehavior.TraitCheerful));
-            Assert.Contains(teen.Chronicle, n => n.Contains("Mutlu bir çocukluk"));
+            Assert.Contains(teen.Chronicle, n => n.StartsWith("@@core.chronicle.childhood_happy"));
             Assert.Contains(life.Log.Recent(5), e => e.Text.Contains("genç bir yetişkin oldu"));
         }
 

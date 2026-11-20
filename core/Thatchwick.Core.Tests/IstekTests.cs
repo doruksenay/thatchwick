@@ -280,7 +280,7 @@ namespace Thatchwick.Core.Tests
             Assert.NotNull(k.Req.CanVow("adak.fountain", child));
             var v = k.Req.Vow("adak.fountain", k.Ali, out var msg);
             Assert.NotNull(v);
-            Assert.Contains(k.Ali.Chronicle, n => n.Contains("adak adadı"));
+            Assert.Contains(k.Ali.Chronicle, n => n.StartsWith("@@core.chronicle.vow_made"));
             k.House.AddItem("item.stone", 10);
             k.House.AddItem("item.limestone", 6);
             Assert.True(k.Req.Deliver(v.Id, k.Ali, false, out msg), msg);

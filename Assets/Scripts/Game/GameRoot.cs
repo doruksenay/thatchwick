@@ -759,6 +759,10 @@ namespace Thatchwick.Game
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
             _population.AppearanceCatalog = _appearanceCatalog;
             _life.Suitors.AppearanceCatalog = _appearanceCatalog;
+            GameLocalization.ContentName = id =>
+                id == null ? null
+                : _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName
+                : _content.Traits.TryGet(id, out var traitDef) ? traitDef.DisplayName : null;
             _life.Goals.Completed += _ => _account?.OnGoalCompleted();   // elmas: hanedan hedefi (karar 20.11.2026)
             LayeredCharacterArt.Catalog = _appearanceCatalog;
             // Eski kayıt: tam saç stili kimlikleri modüllere (kütle + ön + eklenti), eski kirli sakal dokuya (belge 43b).
