@@ -265,5 +265,123 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(2, v.Entries.Count);
             Assert.Equal(25, v.Entries[1].Hunger, 3);
         }
+
+        // ---------- tatlı su, balık ve süs (kullanıcı 20.11: balık, taş, yosun, kabuk) ----------
+
+        [Fact]
+        public void TatliSu_BedavaDolar_BalikKonur_KaraHayvaniKonmaz()
+        {
+            var k = Make();
+            var g = Garden(k);
+            Assert.Null(k.Home.SetHabitat(g, HomeLife.Fresh));
+            Give(k, "item.viv_minnow", "item.viv_hornwort", "item.viv_lizard");
+            Assert.True(k.Home.AddToViv(g, "item.viv_hornwort"));
+            Assert.True(k.Home.AddToViv(g, "item.viv_minnow"));
+            Assert.NotNull(k.Home.CanAddToViv(g, "item.viv_lizard"));
+            var v = k.Home.VivOf(g);
+            v.Moisture = 50;
+            Assert.Null(k.Home.Mist(g));                       // kuyu suyu: tuz istemez
+            Assert.Equal(100, v.Moisture, 3);
+        }
+
+        [Fact]
+        public void Sus_AyriSayilir_HerZemineUyanVeYalnizDenizeUyanAyrilir()
+        {
+            var k = Make();
+            var g = Garden(k);
+            k.Home.SetHabitat(g, HomeLife.Moist);
+            Give(k, "item.viv_flat_stone", "item.river_pebble", "item.viv_mossy_stone", "item.viv_bark", "item.viv_coral");
+            Assert.NotNull(k.Home.CanAddToViv(g, "item.viv_coral"));     // mercan tuzlu suda
+            Assert.True(k.Home.AddToViv(g, "item.viv_flat_stone"));
+            Assert.True(k.Home.AddToViv(g, "item.river_pebble"));
+            Assert.True(k.Home.AddToViv(g, "item.viv_mossy_stone"));
+            Assert.Contains("Süs yeri dolu", k.Home.CanAddToViv(g, "item.viv_bark"));
+            var v = k.Home.VivOf(g);
+            Assert.Equal(3, k.Home.CountDecor(v));
+            Assert.Equal(0, k.Home.CountCreatures(v));
+            Assert.Equal(0, k.Home.CountPlants(v));
+            // süsler tabanda ayrı yerlere dizilir, kaydırılır
+            Assert.Equal(3, v.Entries.Select(e => System.Math.Round(e.Pos, 2)).Distinct().Count());
+            k.Home.MoveInViv(g, 0, -5);
+            Assert.True(v.Entries[0].Pos >= 0.05 && v.Entries[0].Pos < 0.1);
+            // süsler gün geçince bozulmaz
+            for (int d = 0; d < 5; d++) { k.Home.VivariumTick(1); k.Home.VivariumDay(); }
+            Assert.Equal(3, v.Entries.Count);
+            Assert.True(k.Home.BeautyBonus(g) >= 3);
+        }
+
+        [Fact]
+        public void Istek_KesisYengeciBosKabukIster_KertenkeleGunesTasi()
+        {
+            var k = Make();
+            var g = Garden(k);
+            Give(k, "item.salt", "item.viv_hermit", "item.viv_seaweed", "item.viv_whelk");
+            k.Home.SetHabitat(g, HomeLife.Salt);
+            k.Home.AddToViv(g, "item.viv_seaweed");
+            Assert.Contains(k.Home.AddWarnings(g, "item.viv_hermit"), w => w.Contains("boş kabuk"));
+            k.Home.AddToViv(g, "item.viv_hermit");
+            var v = k.Home.VivOf(g);
+            for (int d = 0; d < 2; d++) { v.Moisture = 90; k.Home.VivariumDay(); }
+            Assert.False(k.Home.IsBalanced(v));
+            double before = v.Entries.First(e => e.Item == "item.viv_hermit").Health;
+            Assert.True(before < 100);
+            k.Home.AddToViv(g, "item.viv_whelk");
+            Assert.Null(k.Home.UnmetNeed(v, k.D("item.viv_hermit").Viv));
+            Assert.True(k.Home.IsBalanced(v));
+
+            var k2 = Make();
+            var dry = Garden(k2);
+            k2.Home.SetHabitat(dry, HomeLife.Dry);
+            Give(k2, "item.viv_lizard", "item.viv_flat_stone");
+            Assert.Contains(k2.Home.AddWarnings(dry, "item.viv_lizard"), w => w.Contains("güneşlenme taşı"));
+            k2.Home.AddToViv(dry, "item.viv_flat_stone");
+            Assert.DoesNotContain(k2.Home.AddWarnings(dry, "item.viv_lizard"), w => w.Contains("güneşlenme taşı"));
+        }
+
+        [Fact]
+        public void Iribas_KurbagayaDoner_TatliSuda()
+        {
+            var k = Make();
+            var g = Garden(k);
+            k.Home.SetHabitat(g, HomeLife.Fresh);
+            Give(k, "item.viv_hornwort", "item.viv_duckweed", "item.viv_tadpole");
+            foreach (var id in new[] { "item.viv_hornwort", "item.viv_duckweed", "item.viv_tadpole" }) k.Home.AddToViv(g, id);
+            var v = k.Home.VivOf(g);
+            for (int d = 0; d < 7; d++) { v.Moisture = 90; k.Home.VivariumDay(); }
+            Assert.Contains(v.Entries, e => e.Item == "item.viv_frog");
+        }
+
+        [Fact]
+        public void Golet_YazinBalikVerir_KisinBalikYok()
+        {
+            var k = Make(5);
+            var pond = k.World.PlaceItem(k.D("item.pond"), new GridPos(12, 12));
+            Give(k, HomeLife.CatchJar);
+            k.Clock.Restore(10 + 0.5, 1);
+            var got = new HashSet<string>();
+            for (int i = 0; i < 60; i++) { var c = k.Home.Catch(pond); if (c != null) got.Add(c); }
+            Assert.Contains(got, id => k.D(id).Viv?.Move == "swim" && k.D(id).Viv.IsCreature);
+            k.Clock.Restore(30 + 0.5, 1);
+            var winter = new HashSet<string>();
+            for (int i = 0; i < 40; i++) { var c = k.Home.Catch(pond); if (c != null) winter.Add(c); }
+            Assert.DoesNotContain(winter, id => k.D(id).Viv.IsCreature);
+        }
+
+        [Fact]
+        public void Kayit_SusYeriniKorur()
+        {
+            var k = Make();
+            var g = Garden(k);
+            k.Home.SetHabitat(g, HomeLife.Moist);
+            Give(k, "item.viv_bark");
+            k.Home.AddToViv(g, "item.viv_bark");
+            k.Home.MoveInViv(g, 0, 0.3);
+            double pos = k.Home.VivOf(g).Entries[0].Pos;
+            var save = k.Home.Export();
+            var k2 = Make();
+            var g2 = Garden(k2);
+            k2.Home.Import(save);
+            Assert.Equal(pos, k2.Home.VivOf(g2).Entries[0].Pos, 3);
+        }
     }
 }

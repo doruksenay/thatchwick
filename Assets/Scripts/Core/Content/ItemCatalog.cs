@@ -137,12 +137,13 @@ namespace Thatchwick.Core.Content
             if (def.Burns) parts.Add($"Mum: {def.BurnDays / 0.21:0} akşam yanar");
             if (def.IsLivePot) parts.Add("Canlı saksı: sula, güneşte büyür, ot verir");
             if (def.IsNiche) parts.Add("Gömme: kerpiç ya da taş duvara oyulur");
-            if (def.IsVivarium) parts.Add($"Cam bahçe: {def.VivPlants} bitki, {def.VivCreatures} canlı; içi yakından seyredilir");
+            if (def.IsVivarium) parts.Add($"Cam bahçe: {def.VivPlants} bitki, {def.VivCreatures} canlı, {def.VivDecor} süs; içi yakından seyredilir");
             if (def.Viv != null)
             {
                 var hab = new List<string>();
-                foreach (var h in def.Viv.Habitats) hab.Add(h == "nemli" ? "nemli toprak" : h == "kuru" ? "kuru kum" : "tuzlu su");
-                string line = (def.Viv.IsPlant ? "Cam bahçe bitkisi: " : "Cam bahçe canlısı: ") + string.Join(" ya da ", hab);
+                foreach (var h in def.Viv.Habitats) hab.Add(h == "nemli" ? "nemli toprak" : h == "kuru" ? "kuru kum" : h == "tatli" ? "tatlı su" : "tuzlu su");
+                if (hab.Count == 0) hab.Add("her zemin");
+                string line = (def.Viv.IsPlant ? "Cam bahçe bitkisi: " : def.Viv.IsDecor ? "Cam bahçe süsü: " : "Cam bahçe canlısı: ") + string.Join(" ya da ", hab);
                 if (def.Viv.Eats.Count > 0 && content != null)
                 {
                     var food = new List<string>();
@@ -153,6 +154,10 @@ namespace Thatchwick.Core.Content
                 if (def.Viv.Has("cleaner")) line += "; küfü temizler";
                 if (def.Viv.Has("glow")) line += "; gece ışır";
                 if (def.Viv.Has("sings")) line += "; gece öter";
+                if (def.Viv.Has("hide")) line += "; saklanma yeri";
+                if (def.Viv.Has("bask")) line += "; güneşlenme taşı";
+                if (def.Viv.Has("shell")) line += "; boş kabuk";
+                if (def.Viv.Needs.Count > 0) line += "; ister: " + string.Join(", ", def.Viv.Needs.ConvertAll(n => n == "bask" ? "güneşlenme taşı" : n == "shell" ? "boş kabuk" : n == "hide" ? "saklanma yeri" : n));
                 parts.Add(line);
             }
             if (def.Catches.Count > 0) parts.Add("Cam kavanozla böcek ve fidan yakalanır");

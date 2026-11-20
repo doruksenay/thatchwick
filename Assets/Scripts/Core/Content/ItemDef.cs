@@ -215,7 +215,12 @@ namespace Thatchwick.Core.Content
     public sealed class VivDef
     {
         public bool IsPlant;
+        public bool IsDecor;
+        public float Beauty = 1f;
+        public List<string> Needs = new List<string>();
         public List<string> Habitats = new List<string>();
+        public bool FitsHabitat(string h) => Habitats.Count == 0 || Habitats.Contains(h);
+        public bool IsCreature => !IsPlant && !IsDecor;
         public List<string> Eats = new List<string>();
         public List<string> Tags = new List<string>();
         public string Move = "crawl";
@@ -412,6 +417,7 @@ namespace Thatchwick.Core.Content
         /// <summary>Cam bahçe kabı: en çok canlı ve bitki (0 = cam bahçe değil).</summary>
         public int VivCreatures { get; set; }
         public int VivPlants { get; set; }
+        public int VivDecor { get; set; }
         public bool IsVivarium => VivCreatures > 0 || VivPlants > 0;
         /// <summary>Canlı süs bitkisi (ot vermez; sulanır, büyür, mevsiminde çiçek açar).</summary>
         public bool LivePlant { get; set; }

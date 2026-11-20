@@ -538,7 +538,7 @@ namespace Thatchwick.Core.Life
                 {
                     var v = VivOf(item);
                     if (v?.Habitat == null) return "Önce zemini seç (cam bahçeye yakından bak).";
-                    if (v.Habitat == Salt) return v.Moisture > 70 ? "Su hâlâ taze." : _house.Count(SeaWaterItem) > 0 ? null : "Suyu tazelemek için envanterde tuz olmalı.";
+                    if (IsWater(v.Habitat)) return v.Moisture > 70 ? "Su hâlâ taze." : v.Habitat == Fresh || _house.Count(SeaWaterItem) > 0 ? null : "Suyu tazelemek için envanterde tuz olmalı.";
                     double target = v.Habitat == Dry ? 30 : 85;
                     return v.Moisture >= target - 5 ? (v.Habitat == Dry ? "Kum yeterince nemli." : "Toprak zaten nemli.") : null;
                 }

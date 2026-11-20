@@ -142,18 +142,24 @@ namespace Thatchwick.Core.Content
                 item.LivePlant = dto.livePlant;
                 item.VivCreatures = Math.Max(0, dto.vivCreatures);
                 item.VivPlants = Math.Max(0, dto.vivPlants);
+                item.VivDecor = Math.Max(0, dto.vivDecor);
                 if (dto.viv != null)
                 {
                     var v = dto.viv;
                     var vd = new VivDef
                     {
-                        IsPlant = v.kind == "plant", Move = string.IsNullOrWhiteSpace(v.move) ? (v.kind == "plant" ? "sway" : "crawl") : v.move,
+                        IsPlant = v.kind == "plant", IsDecor = v.kind == "decor", Beauty = v.beauty > 0f ? v.beauty : 1f,
+                        Move = string.IsNullOrWhiteSpace(v.move) ? (v.kind == "plant" ? "sway" : v.kind == "decor" ? "static" : "crawl") : v.move,
                         LifeDays = Math.Max(0f, v.lifeDays), Breeds = v.breeds, Becomes = string.IsNullOrWhiteSpace(v.becomes) ? null : v.becomes,
                         BecomeDays = Math.Max(0f, v.becomeDays), Solitary = v.solitary, Color = v.color
                     };
-                    if (v.kind != "plant" && v.kind != "creature") errors.Add($"{dto.id}: cam bahçe türü 'plant' ya da 'creature' olmalı.");
-                    if (v.habitats != null) vd.Habitats.AddRange(v.habitats);
-                    if (vd.Habitats.Count == 0) errors.Add($"{dto.id}: cam bahçe türünün habitatı yok.");
+                    if (v.kind != "plant" && v.kind != "creature" && v.kind != "decor") errors.Add($"{dto.id}: cam bahçe türü 'plant', 'creature' ya da 'decor' olmalı.");
+                    if (v.habitats != null)
+                        foreach (var h in v.habitats)
+                            if (h == "nemli" || h == "kuru" || h == "tuzlu" || h == "tatli") vd.Habitats.Add(h);
+                            else errors.Add($"{dto.id}: bilinmeyen cam bahçe zemini '{h}'.");
+                    if (vd.Habitats.Count == 0 && !vd.IsDecor) errors.Add($"{dto.id}: cam bahçe türünün habitatı yok.");
+                    if (v.needs != null) vd.Needs.AddRange(v.needs);
                     if (v.eats != null) vd.Eats.AddRange(v.eats);
                     if (v.tags != null) vd.Tags.AddRange(v.tags);
                     if (v.avoid != null) vd.Avoid.AddRange(v.avoid);

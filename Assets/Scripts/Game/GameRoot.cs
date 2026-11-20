@@ -1002,6 +1002,16 @@ namespace Thatchwick.Game
                 if (item.BurntOut) c = Color.Lerp(c, new Color(0.45f, 0.42f, 0.4f), 0.35f);                // bitmiş mum
                 if (home.IsStrewnStale(item)) c = Color.Lerp(c, new Color(0.55f, 0.5f, 0.38f), 0.3f);       // bayat ot serpmesi
                 else if (home.IsStrewnFresh(item)) c = Color.Lerp(c, new Color(0.75f, 0.9f, 0.6f), 0.2f);  // taze ot
+                if (item.Def.IsVivarium)   // cam bahçe dünyada zeminine göre renk alır (içi yakın görünümde, belge 47)
+                {
+                    var viv = home.VivOf(item);
+                    if (viv?.Habitat != null)
+                    {
+                        var hc = viv.Habitat == HomeLife.Salt ? new Color(0.45f, 0.65f, 0.75f) : viv.Habitat == HomeLife.Fresh ? new Color(0.5f, 0.7f, 0.55f)
+                               : viv.Habitat == HomeLife.Dry ? new Color(0.9f, 0.8f, 0.6f) : new Color(0.45f, 0.65f, 0.4f);
+                        c = Color.Lerp(c, hc, viv.Entries.Count > 0 ? 0.3f : 0.15f);
+                    }
+                }
             }
             return c;
         }

@@ -14,14 +14,15 @@ namespace Thatchwick.Core.Life
         public double Hunger;
         public double Age;
         public double Growth;
-        public bool IsPlant(ContentDatabase db) => db.Items.TryGet(Item, out var d) && d.Viv != null && d.Viv.IsPlant;
-        public string Encode() => $"{Item}|{Health:0.##}|{Hunger:0.##}|{Age:0.###}|{Growth:0.###}";
+        /// <summary>Bitki ve süsün tabandaki yeri (0 sol, 1 sağ); oyuncu yakın görünümde kaydırır.</summary>
+        public double Pos = 0.5;
+        public string Encode() => FormattableString.Invariant($"{Item}|{Health:0.##}|{Hunger:0.##}|{Age:0.###}|{Growth:0.###}|{Pos:0.###}");
         public static VivEntry Decode(string s)
         {
             var p = s?.Split('|');
             if (p == null || p.Length < 5) return null;
             double D(int i) { double.TryParse(p[i], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var v); return v; }
-            return new VivEntry { Item = p[0], Health = D(1), Hunger = D(2), Age = D(3), Growth = D(4) };
+            return new VivEntry { Item = p[0], Health = D(1), Hunger = D(2), Age = D(3), Growth = D(4), Pos = p.Length > 5 ? D(5) : 0.5 };
         }
     }
 
@@ -29,7 +30,7 @@ namespace Thatchwick.Core.Life
     public sealed class Vivarium
     {
         public string Habitat;            // null = boş kap (henüz zemin seçilmedi)
-        public double Moisture = 70;      // nemli ve kuru: nem; tuzlu: suyun tazeliği
+        public double Moisture = 70;      // nemli ve kuru: nem; tuzlu ve tatlı su: suyun tazeliği
         public double Mold;               // ölü canlı ve fazla nemle birikir; temizleyiciler azaltır
         public readonly List<VivEntry> Entries = new List<VivEntry>();
         public readonly List<string> Log = new List<string>();
@@ -46,8 +47,10 @@ namespace Thatchwick.Core.Life
     /// </summary>
     public sealed partial class HomeLife
     {
-        public const string Moist = "nemli", Dry = "kuru", Salt = "tuzlu";
-        public static readonly string[] Habitats = { Moist, Dry, Salt };
+        public const string Moist = "nemli", Dry = "kuru", Salt = "tuzlu", Fresh = "tatli";
+        public static readonly string[] Habitats = { Moist, Dry, Fresh, Salt };
+        public static bool IsWater(string h) => h == Salt || h == Fresh;
+        public const double PredationChance = 0.55, ShelteredPredationChance = 0.3, UnmetNeedDamage = 8;
         public const string CatchJar = "item.glass_jar";
         public const string SeaWaterItem = "item.salt";
         public const int VivBeautyPerSpecies = 1, VivBalancedBeauty = 3;
@@ -66,12 +69,49 @@ namespace Thatchwick.Core.Life
             return v;
         }
 
-        public static string HabitatName(string h) => h == Moist ? "Nemli toprak" : h == Dry ? "Kuru kum" : h == Salt ? "Tuzlu su" : "Boş";
+        public static string HabitatName(string h) => h == Moist ? "Nemli toprak" : h == Dry ? "Kuru kum" : h == Salt ? "Tuzlu su" : h == Fresh ? "Tatlı su" : "Boş";
         private ItemDef Def(string id) => _content.Items.TryGet(id, out var d) ? d : null;
         private VivDef V(string id) => Def(id)?.Viv;
 
         public int CountPlants(Vivarium v) { int n = 0; foreach (var e in v.Entries) if (V(e.Item)?.IsPlant == true) n++; return n; }
-        public int CountCreatures(Vivarium v) => v.Entries.Count - CountPlants(v);
+        public int CountDecor(Vivarium v) { int n = 0; foreach (var e in v.Entries) if (V(e.Item)?.IsDecor == true) n++; return n; }
+        public int CountCreatures(Vivarium v) { int n = 0; foreach (var e in v.Entries) if (V(e.Item)?.IsCreature == true) n++; return n; }
+
+        /// <summary>Cam bahçedeki süslerin etiketleri (hide, bask, shell).</summary>
+        public HashSet<string> DecorTags(Vivarium v)
+        {
+            var set = new HashSet<string>();
+            foreach (var e in v.Entries) { var s = V(e.Item); if (s != null && s.IsDecor) foreach (var t in s.Tags) set.Add(t); }
+            return set;
+        }
+
+        /// <summary>Canlının karşılanmayan isteği (süs etiketi) ya da null.</summary>
+        public string UnmetNeed(Vivarium v, VivDef s)
+        {
+            if (s == null || s.Needs.Count == 0) return null;
+            var tags = DecorTags(v);
+            foreach (var n in s.Needs) if (!tags.Contains(n)) return n;
+            return null;
+        }
+
+        public static string NeedName(string n) => n == "bask" ? "güneşlenme taşı" : n == "shell" ? "boş kabuk" : n == "hide" ? "saklanma yeri" : n;
+
+        /// <summary>Bitki ya da süsü tabanda kaydırır (yakın görünümde düzenleme).</summary>
+        public void MoveInViv(ItemInstance item, int index, double delta)
+        {
+            var v = VivOf(item);
+            if (v == null || index < 0 || index >= v.Entries.Count) return;
+            var e = v.Entries[index];
+            e.Pos = Math.Max(0.06, Math.Min(0.94, e.Pos + delta));
+        }
+
+        private static double NextPos(Vivarium v, ContentDatabase db)
+        {
+            int n = 0;
+            foreach (var e in v.Entries) if (db.Items.TryGet(e.Item, out var d) && d.Viv != null && !d.Viv.IsCreature) n++;
+            double p = (0.5 + n * 0.618) % 1.0;
+            return 0.08 + p * 0.84;
+        }
 
         /// <summary>Boş kabın zeminini seçer (toprak, kum ya da tuzlu su). Dolu kapta değişmez.</summary>
         public string SetHabitat(ItemInstance item, string habitat)
@@ -82,7 +122,7 @@ namespace Thatchwick.Core.Life
             if (v.Entries.Count > 0) return "İçinde canlı varken zemin değişmez; önce boşalt.";
             if (habitat == Salt && _house.Count(SeaWaterItem) <= 0) return "Tuzlu su için envanterde tuz olmalı.";
             if (habitat == Salt) _house.TryTakeItem(SeaWaterItem);
-            v.Habitat = habitat; v.Moisture = habitat == Dry ? 25 : 80; v.Mold = 0;
+            v.Habitat = habitat; v.Moisture = habitat == Dry ? 25 : IsWater(habitat) ? 100 : 80; v.Mold = 0;
             v.Note($"Zemin: {HabitatName(habitat)}.");
             _world.NotifyChanged();
             return null;
@@ -97,9 +137,10 @@ namespace Thatchwick.Core.Life
             if (sd?.Viv == null) return "Bu bir cam bahçe canlısı ya da fidanı değil.";
             var s = sd.Viv;
             if (v.Habitat == null) return "Önce zemini seç (toprak, kum ya da tuzlu su).";
-            if (!s.Habitats.Contains(v.Habitat)) return $"{sd.DisplayName} {string.Join(" ya da ", s.Habitats.ConvertAll(HabitatName)).ToLowerInvariant()} ister; burası {HabitatName(v.Habitat).ToLowerInvariant()}.";
-            if (s.IsPlant ? CountPlants(v) >= item.Def.VivPlants : CountCreatures(v) >= item.Def.VivCreatures)
-                return s.IsPlant ? $"Bitki yeri dolu ({item.Def.VivPlants})." : $"Canlı yeri dolu ({item.Def.VivCreatures}).";
+            if (!s.FitsHabitat(v.Habitat)) return $"{sd.DisplayName} {string.Join(" ya da ", s.Habitats.ConvertAll(HabitatName)).ToLowerInvariant()} ister; burası {HabitatName(v.Habitat).ToLowerInvariant()}.";
+            if (s.IsPlant && CountPlants(v) >= item.Def.VivPlants) return $"Bitki yeri dolu ({item.Def.VivPlants}).";
+            if (s.IsDecor && CountDecor(v) >= item.Def.VivDecor) return $"Süs yeri dolu ({item.Def.VivDecor}).";
+            if (s.IsCreature && CountCreatures(v) >= item.Def.VivCreatures) return $"Canlı yeri dolu ({item.Def.VivCreatures}).";
             foreach (var e in v.Entries)
             {
                 var o = V(e.Item);
@@ -129,7 +170,8 @@ namespace Thatchwick.Core.Life
                 if (s.Eats.Contains(e.Item)) list.Add($"{name}, {other.ToLowerInvariant()} yer.");
                 if (o.Eats.Contains(speciesId)) list.Add($"{other}, {name.ToLowerInvariant()} yer.");
             }
-            if (!s.IsPlant && s.Eats.Count > 0 && !HasFoodFor(v, s, speciesId)) list.Add($"{name} için yiyecek yok; aç kalır.");
+            if (s.IsCreature && s.Eats.Count > 0 && !HasFoodFor(v, s, speciesId)) list.Add($"{name} için yiyecek yok; aç kalır.");
+            if (s.IsCreature) { var need = UnmetNeed(v, s); if (need != null) list.Add($"{name} {NeedName(need)} ister; yoksa hastalanır."); }
             return list;
         }
 
@@ -138,9 +180,10 @@ namespace Thatchwick.Core.Life
             if (CanAddToViv(item, speciesId) != null) return false;
             if (!_house.TryTakeItem(speciesId)) return false;
             var v = VivOf(item);
-            v.Entries.Add(new VivEntry { Item = speciesId });
+            var entry = new VivEntry { Item = speciesId };
+            if (!V(speciesId).IsCreature) entry.Pos = NextPos(v, _content);
+            v.Entries.Add(entry);
             v.Note($"{Def(speciesId).DisplayName} kondu.");
-            if (_house.Count(CatchJar) < 1 && !V(speciesId).IsPlant) { }   // kavanoz yakalarken harcanmaz; burada da geri verilmez
             _world.NotifyChanged();
             return true;
         }
@@ -157,6 +200,7 @@ namespace Thatchwick.Core.Life
             {
                 v.Note($"{name} doğaya salındı.");
                 by?.AddMoodlet("mood.released", "Doğaya saldı", 3, 0.5);
+                if (V(e.Item)?.IsCreature != true) { _house.AddItem(e.Item, 1); }   // süs ve bitki salınmaz, geri alınır
             }
             else
             {
@@ -171,10 +215,10 @@ namespace Thatchwick.Core.Life
         {
             var v = VivOf(item);
             if (v?.Habitat == null) return "Önce zemini seç.";
-            if (v.Habitat == Salt)
+            if (IsWater(v.Habitat))
             {
                 if (v.Moisture > 70) return "Su hâlâ taze.";
-                if (!_house.TryTakeItem(SeaWaterItem)) return "Suyu tazelemek için envanterde tuz olmalı.";
+                if (v.Habitat == Salt && !_house.TryTakeItem(SeaWaterItem)) return "Suyu tazelemek için envanterde tuz olmalı.";
                 v.Moisture = 100;
                 v.Note("Su tazelendi.");
                 return null;
@@ -187,7 +231,7 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>Habitata göre uygun nem aralığı.</summary>
-        public static (double lo, double hi) MoistRange(string habitat) => habitat == Dry ? (5, 45) : habitat == Salt ? (35, 100) : (40, 95);
+        public static (double lo, double hi) MoistRange(string habitat) => habitat == Dry ? (5, 45) : IsWater(habitat) ? (35, 100) : (40, 95);
 
         public bool NeedsMist(ItemInstance item)
         {
@@ -224,7 +268,8 @@ namespace Thatchwick.Core.Life
             {
                 var s = V(e.Item);
                 if (s == null) continue;
-                if (!s.IsPlant && e.Hunger >= 60) return false;
+                if (s.IsCreature && e.Hunger >= 60) return false;
+                if (s.IsCreature && UnmetNeed(v, s) != null) return false;
                 if (s.IsPlant && e.Health < 50) return false;
                 if (s.Has("pest")) pests++;
                 if (s.Eats.Exists(x => V(x)?.Has("pest") == true)) control = true;
@@ -238,8 +283,9 @@ namespace Thatchwick.Core.Life
             var v = VivOf(item);
             if (v == null) return null;
             if (v.Habitat == null) return "Boş cam bahçe: zemin seç.";
-            string m = v.Habitat == Salt ? $"su tazeliği {v.Moisture:0}" : $"nem {v.Moisture:0}";
-            return $"{HabitatName(v.Habitat)} · {CountPlants(v)} bitki, {CountCreatures(v)} canlı · {m}" + (v.Mold >= 20 ? $" · küf {v.Mold:0}" : "") +
+            string m = IsWater(v.Habitat) ? $"su tazeliği {v.Moisture:0}" : $"nem {v.Moisture:0}";
+            int dec = CountDecor(v);
+            return $"{HabitatName(v.Habitat)} · {CountPlants(v)} bitki, {CountCreatures(v)} canlı{(dec > 0 ? $", {dec} süs" : "")} · {m}" + (v.Mold >= 20 ? $" · küf {v.Mold:0}" : "") +
                    (IsBalanced(v) ? " · dengede" : v.Entries.Count >= 2 ? " · dengesiz" : "");
         }
 
@@ -247,8 +293,14 @@ namespace Thatchwick.Core.Life
         {
             if (!item.Def.IsVivarium || !_vivs.TryGetValue(item.Id, out var v) || v.Entries.Count == 0) return 0;
             var species = new HashSet<string>();
-            foreach (var e in v.Entries) if (e.Health > 30) species.Add(e.Item);
-            double b = species.Count * VivBeautyPerSpecies + (IsBalanced(v) ? VivBalancedBeauty : 0) - (v.Mold >= 50 ? 3 : 0);
+            double decor = 0;
+            foreach (var e in v.Entries)
+            {
+                var s = V(e.Item);
+                if (s != null && s.IsDecor) decor += s.Beauty;
+                else if (e.Health > 30) species.Add(e.Item);
+            }
+            double b = species.Count * VivBeautyPerSpecies + Math.Min(6, decor) + (IsBalanced(v) ? VivBalancedBeauty : 0) - (v.Mold >= 50 ? 3 : 0);
             if (IsNight(_clock.DayFraction)) foreach (var e in v.Entries) if (V(e.Item)?.Has("glow") == true) { b += 2; break; }
             return b;
         }
@@ -287,7 +339,7 @@ namespace Thatchwick.Core.Life
             {
                 var v = kv.Value;
                 if (v.Habitat == null || v.Entries.Count == 0) continue;
-                v.Moisture = Math.Max(0, v.Moisture - gameDays * (v.Habitat == Salt ? SaltFreshDecayPerDay : MoistureDecayPerDay));
+                v.Moisture = Math.Max(0, v.Moisture - gameDays * (IsWater(v.Habitat) ? SaltFreshDecayPerDay : MoistureDecayPerDay));
             }
         }
 
@@ -320,7 +372,7 @@ namespace Thatchwick.Core.Life
             {
                 var s = V(e.Item);
                 if (s == null || !s.IsPlant) continue;
-                bool lightOk = s.Has("shade") ? !sun || v.Habitat == Salt : s.Has("sun") ? sun : true;
+                bool lightOk = s.Has("shade") ? !sun || IsWater(v.Habitat) : s.Has("sun") ? sun : true;
                 if (wetOk && lightOk) { e.Health = Math.Min(100, e.Health + 15 + 5 * cleaners); e.Growth = Math.Min(3, e.Growth + 0.5); }
                 else e.Health -= wetOk ? 8 : 20;
                 if (v.Mold >= 50) e.Health -= 10;
@@ -328,10 +380,11 @@ namespace Thatchwick.Core.Life
 
             // 2. Canlılar: yer, acıkır, yaşlanır. Avcı avını (şansla), otçul bitkiyi yer.
             var eaten = new HashSet<VivEntry>();
+            bool shelter = DecorTags(v).Contains("hide");
             foreach (var e in new List<VivEntry>(v.Entries))
             {
                 var s = V(e.Item);
-                if (s == null || s.IsPlant || eaten.Contains(e)) continue;
+                if (s == null || !s.IsCreature || eaten.Contains(e)) continue;
                 e.Age += 1;
                 if (s.Eats.Count == 0) e.Hunger = Math.Max(0, e.Hunger - 10);   // ateş böceği yetişkini yemez; temizleyici artıkla yaşar
                 else
@@ -348,7 +401,9 @@ namespace Thatchwick.Core.Life
                             f.Health -= s.Has("pest") ? 12 : 8;
                             fed = true; break;
                         }
-                        if (Rng.NextDouble() < 0.55)
+                        // Taş ya da kabuk altında saklanan yürüyen av daha zor yakalanır.
+                        bool hides = shelter && (fs.Move == "crawl" || fs.Move == "burrow" || fs.Move == "bottom");
+                        if (Rng.NextDouble() < (hides ? ShelteredPredationChance : PredationChance))
                         {
                             eaten.Add(f);
                             v.Note($"{Def(e.Item).DisplayName}, {Def(f.Item).DisplayName.ToLowerInvariant()} yedi.");
@@ -359,6 +414,8 @@ namespace Thatchwick.Core.Life
                 }
                 if (!wetOk) e.Health -= v.Habitat == Dry ? 15 : 20;
                 else e.Health = Math.Min(100, e.Health + 5);
+                var unmet = UnmetNeed(v, s);
+                if (unmet != null) e.Health -= UnmetNeedDamage;
                 if (e.Hunger >= 100) e.Health -= 35;
                 if (v.Mold >= 60 && !s.Has("cleaner")) e.Health -= 10;
             }
@@ -381,7 +438,8 @@ namespace Thatchwick.Core.Life
             {
                 var e = v.Entries[i];
                 var s = V(e.Item);
-                bool old = s != null && !s.IsPlant && s.LifeDays > 0 && e.Age >= s.LifeDays;
+                if (s != null && s.IsDecor) continue;
+                bool old = s != null && s.IsCreature && s.LifeDays > 0 && e.Age >= s.LifeDays;
                 if (e.Health > 0 && !old) continue;
                 string name = Def(e.Item)?.DisplayName ?? e.Item;
                 v.Note(old ? $"{name} yaşlılıktan öldü." : s != null && s.IsPlant ? $"{name} kurudu." : $"{name} öldü.");
@@ -390,7 +448,7 @@ namespace Thatchwick.Core.Life
             }
 
             // 5. Küf: fazla nem artırır, temizleyiciler azaltır.
-            if (v.Habitat != Salt && v.Moisture > hi - 5) v.Mold = Math.Min(MoldMax, v.Mold + 8);
+            if (!IsWater(v.Habitat) && v.Moisture > hi - 5) v.Mold = Math.Min(MoldMax, v.Mold + 8);
             v.Mold = Math.Max(0, v.Mold - 6 - 10 * cleaners);
 
             // 6. Üreme: aynı türden iki tok ve sağlıklı canlı, yer varsa. Yaprak biti uğur böceği yoksa hızla çoğalır.
@@ -399,7 +457,7 @@ namespace Thatchwick.Core.Life
             foreach (var kv in counts)
             {
                 if (kv.Value < 2 || CountCreatures(v) >= item.Def.VivCreatures) continue;
-                double chance = V(kv.Key).Has("pest") ? 0.6 : 0.2;
+                double chance = V(kv.Key).Has("pest") || V(kv.Key).Has("swarm") ? 0.6 : 0.2;
                 if (Rng.NextDouble() < chance)
                 {
                     v.Entries.Add(new VivEntry { Item = kv.Key, Hunger = 30 });

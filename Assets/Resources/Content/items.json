@@ -7110,6 +7110,14 @@
             "Summer"
           ],
           "night": true
+        },
+        {
+          "item": "item.viv_mossy_stone",
+          "chance": 0.3
+        },
+        {
+          "item": "item.snail_shell",
+          "chance": 0.2
         }
       ],
       "tags": [
@@ -7330,6 +7338,10 @@
         {
           "item": "item.viv_moss",
           "chance": 0.3
+        },
+        {
+          "item": "item.viv_bark",
+          "chance": 0.5
         }
       ],
       "art": {
@@ -9762,6 +9774,34 @@
             "Summer",
             "Autumn"
           ]
+        },
+        {
+          "item": "item.viv_tadpole",
+          "chance": 0.35,
+          "seasons": [
+            "Spring"
+          ]
+        },
+        {
+          "item": "item.viv_water_flea",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_mossy_stone",
+          "chance": 0.3
+        },
+        {
+          "item": "item.river_pebble",
+          "chance": 0.35
+        },
+        {
+          "item": "item.viv_driftwood",
+          "chance": 0.2
         }
       ],
       "art": {
@@ -11758,6 +11798,93 @@
       "site": "outdoor",
       "belongs": [
         "outdoor"
+      ],
+      "catches": [
+        {
+          "item": "item.viv_water_flea",
+          "chance": 0.6,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_minnow",
+          "chance": 0.45,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_tadpole",
+          "chance": 0.5,
+          "seasons": [
+            "Spring"
+          ]
+        },
+        {
+          "item": "item.viv_stickleback",
+          "chance": 0.35,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_pond_snail",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_loach",
+          "chance": 0.25,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_duckweed",
+          "chance": 0.5,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_hornwort",
+          "chance": 0.4,
+          "seasons": [
+            "Spring",
+            "Summer",
+            "Autumn"
+          ]
+        },
+        {
+          "item": "item.viv_lily",
+          "chance": 0.25,
+          "seasons": [
+            "Summer"
+          ]
+        },
+        {
+          "item": "item.viv_driftwood",
+          "chance": 0.25
+        },
+        {
+          "item": "item.mussel_shell",
+          "chance": 0.3
+        }
       ]
     },
     {
@@ -19508,6 +19635,18 @@
             "Summer",
             "Autumn"
           ]
+        },
+        {
+          "item": "item.viv_flat_stone",
+          "chance": 0.35
+        },
+        {
+          "item": "item.river_pebble",
+          "chance": 0.3
+        },
+        {
+          "item": "item.viv_pot_shard",
+          "chance": 0.1
         }
       ],
       "tags": [
@@ -22043,7 +22182,12 @@
       "placement": "Resource",
       "category": "resource",
       "price": 1,
-      "interactions": []
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [],
+        "color": "#5E6B78"
+      }
     },
     {
       "id": "item.indigo",
@@ -23187,7 +23331,15 @@
       "tags": [
         "collectible"
       ],
-      "interactions": []
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [],
+        "color": "#C9A87A",
+        "tags": [
+          "shell"
+        ]
+      }
     },
     {
       "id": "item.river_pebble",
@@ -23198,7 +23350,12 @@
       "tags": [
         "collectible"
       ],
-      "interactions": []
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [],
+        "color": "#9A8F84"
+      }
     },
     {
       "id": "item.heron_feather",
@@ -25808,7 +25965,8 @@
       "viv": {
         "kind": "plant",
         "habitats": [
-          "nemli"
+          "nemli",
+          "tatli"
         ],
         "color": "#3E6E4E",
         "tags": [
@@ -26116,7 +26274,8 @@
       "viv": {
         "kind": "creature",
         "habitats": [
-          "nemli"
+          "nemli",
+          "tatli"
         ],
         "color": "#5D8A3A",
         "eats": [
@@ -26243,6 +26402,9 @@
         "avoid": [
           "item.viv_firefly",
           "item.viv_frog"
+        ],
+        "needs": [
+          "bask"
         ]
       }
     },
@@ -26294,7 +26456,10 @@
           "cleaner"
         ],
         "move": "crawl",
-        "lifeDays": 40
+        "lifeDays": 40,
+        "needs": [
+          "shell"
+        ]
       }
     },
     {
@@ -26368,7 +26533,8 @@
         "pivotY": 7.0,
         "pending": true,
         "mirror": true
-      }
+      },
+      "vivDecor": 3
     },
     {
       "id": "item.glass_garden_large",
@@ -26419,7 +26585,393 @@
       "site": "indoor",
       "belongs": [
         "living"
-      ]
+      ],
+      "vivDecor": 6
+    },
+    {
+      "id": "item.viv_duckweed",
+      "displayName": "Su mercimeği",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#7FB24A",
+        "tags": [
+          "float"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_hornwort",
+      "displayName": "Boynuz yaprağı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#3F6E3A",
+        "tags": [
+          "shade"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_lily",
+      "displayName": "Nilüfer fidanı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "plant",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#4E7D3A",
+        "tags": [
+          "flower",
+          "float"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_minnow",
+      "displayName": "Golyan balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#A7B3A0",
+        "eats": [
+          "item.viv_water_flea",
+          "*plant"
+        ],
+        "move": "swim",
+        "lifeDays": 40,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_stickleback",
+      "displayName": "Dikenli balık",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#6F7F5A",
+        "eats": [
+          "item.viv_water_flea",
+          "item.viv_tadpole"
+        ],
+        "move": "swim",
+        "lifeDays": 30,
+        "solitary": true
+      }
+    },
+    {
+      "id": "item.viv_loach",
+      "displayName": "Taş balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#8A7A5C",
+        "tags": [
+          "cleaner"
+        ],
+        "move": "bottom",
+        "lifeDays": 40,
+        "needs": [
+          "hide"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_water_flea",
+      "displayName": "Su piresi",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#C9B07A",
+        "tags": [
+          "swarm"
+        ],
+        "move": "swim",
+        "lifeDays": 6,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_tadpole",
+      "displayName": "İribaş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#3E3A30",
+        "eats": [
+          "*plant"
+        ],
+        "move": "swim",
+        "lifeDays": 15,
+        "becomes": "item.viv_frog",
+        "becomeDays": 6
+      }
+    },
+    {
+      "id": "item.viv_pond_snail",
+      "displayName": "Gölet salyangozu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tatli"
+        ],
+        "color": "#6B5A3E",
+        "eats": [
+          "*plant"
+        ],
+        "tags": [
+          "cleaner"
+        ],
+        "move": "crawl",
+        "lifeDays": 30,
+        "breeds": true
+      }
+    },
+    {
+      "id": "item.viv_goby",
+      "displayName": "Kaya balığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 5,
+      "tags": [
+        "critter"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "creature",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#9C8A6A",
+        "eats": [
+          "item.viv_shrimp"
+        ],
+        "move": "bottom",
+        "lifeDays": 40,
+        "needs": [
+          "hide"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_mossy_stone",
+      "displayName": "Yosunlu taş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "vivdecor"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [
+          "nemli",
+          "tatli"
+        ],
+        "color": "#7C8070",
+        "tags": [
+          "hide"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_flat_stone",
+      "displayName": "Yassı taş",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "vivdecor"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [],
+        "color": "#A09A8C",
+        "tags": [
+          "bask",
+          "hide"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_bark",
+      "displayName": "Ağaç kabuğu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "vivdecor"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [
+          "nemli",
+          "kuru"
+        ],
+        "color": "#6B4E32",
+        "tags": [
+          "hide"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_driftwood",
+      "displayName": "Dere odunu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 0,
+      "tags": [
+        "vivdecor"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [],
+        "color": "#B9A98E",
+        "tags": [
+          "hide"
+        ],
+        "beauty": 2
+      }
+    },
+    {
+      "id": "item.viv_pot_shard",
+      "displayName": "Çömlek kırığı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "vivdecor"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [],
+        "color": "#B06A45",
+        "tags": [
+          "hide"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_whelk",
+      "displayName": "Boş deniz kabuğu",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 2,
+      "tags": [
+        "vivdecor"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#E2D3B8",
+        "tags": [
+          "shell"
+        ]
+      }
+    },
+    {
+      "id": "item.viv_coral",
+      "displayName": "Kırmızı mercan dalı",
+      "placement": "Resource",
+      "category": "resource",
+      "price": 15,
+      "tags": [
+        "vivdecor"
+      ],
+      "interactions": [],
+      "viv": {
+        "kind": "decor",
+        "habitats": [
+          "tuzlu"
+        ],
+        "color": "#C23B32",
+        "beauty": 3
+      }
     }
   ],
   "recipes": [
