@@ -4,7 +4,7 @@ title: Cam kavanozu suya daldırma
 kind: sfx
 family: foley
 freq: B
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: jar.scoop
@@ -19,5 +19,7 @@ axes:
 pilot_onayi_bekliyordu:
 - s110
 not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T14:21:00Z'
 ---
 A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle.
