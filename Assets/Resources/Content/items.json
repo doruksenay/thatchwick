@@ -48431,6 +48431,209 @@
         "writing",
         "merchantonly"
       ]
+    },
+    {
+      "id": "item.mine_rotten_prop",
+      "displayName": "Çürümüş maden direği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_rotten_prop_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 112,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_old_chest",
+      "displayName": "Unutulmuş maden sandığı",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_old_mine_chest_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_broken_barrow",
+      "displayName": "Devrik el arabası",
+      "width": 2,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongY": "iso_item_broken_barrow_2x1_se_nw",
+        "pivotX": 56.0,
+        "pivotY": 32.0,
+        "pxW": 112,
+        "pxH": 72,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_crystal_cluster",
+      "displayName": "Kristal öbeği",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_crystal_cluster_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_crystal_small",
+      "displayName": "Küçük kristaller",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_crystal_cluster_small_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 64,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_pool_stones",
+      "displayName": "Islak kıyı taşları",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_pool_edge_stones_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 56,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
+    },
+    {
+      "id": "item.mine_old_lamp_niche",
+      "displayName": "Eski kandil oyuğu",
+      "width": 1,
+      "height": 1,
+      "price": 0,
+      "category": "village",
+      "rooms": [
+        "outdoor"
+      ],
+      "level": 20,
+      "tags": [
+        "scenery",
+        "mine"
+      ],
+      "art": {
+        "alongX": "iso_item_old_lamp_niche_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 96,
+        "mirror": true,
+        "pending": true
+      },
+      "site": "any",
+      "belongs": [
+        "outdoor"
+      ]
     }
   ],
   "recipes": [

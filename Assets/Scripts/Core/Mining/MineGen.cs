@@ -247,7 +247,15 @@ namespace Thatchwick.Core.Mining
                 int opened = 0;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
                     if (cell[x, y]) { Open(map.Get(x0 + x, y0 + y), SupportKind.StoneArch); opened++; }
-                if (opened > 0) k++;
+                if (opened > 0)
+                {
+                    k++;
+                    // Kovuğun duvar dibinde kristal öbeği (ender: kovukların yarısında)
+                    if (rng.NextDouble() < 0.5)
+                        for (int y = 0, done = 0; y < h && done == 0; y++)
+                            for (int x = 0; x < w && done == 0; x++)
+                                if (cell[x, y] && (x == 0 || !cell[x - 1, y])) { map.Props.Add((x0 + x, y0 + y, rng.NextDouble() < 0.4 ? "item.mine_crystal_cluster" : "item.mine_crystal_small")); done = 1; }
+                }
             }
             // Hazır mekânlar: 2-3 tanesi tohumla seçilir.
             int count = 2 + rng.Next(2);
@@ -274,9 +282,31 @@ namespace Thatchwick.Core.Mining
                                 case 'a': Open(t, SupportKind.StoneArch); break;
                             }
                         }
+                    PrefabProps(map, pf, x0, y0, rng);
                     placed++;
                     break;
                 }
+            }
+        }
+
+        /// <summary>Hazır mekânın süsleri: eski galeride çürük direk, göletin kıyısında ıslak taş, kemerli odada unutulmuş sandık
+        /// ve kandil oyuğu, çökmüş geçitte devrik el arabası.</summary>
+        private static void PrefabProps(MineMap map, Prefab pf, int x0, int y0, Random rng)
+        {
+            void Add(char want, string id, int nth)
+            {
+                int seen = 0;
+                for (int y = 0; y < pf.H; y++)
+                    for (int x = 0; x < pf.W; x++)
+                        if (pf.Rows[y][x] == want && seen++ == nth) { map.Props.Add((x0 + x, y0 + y, id)); return; }
+            }
+            switch (pf.Id)
+            {
+                case "old_gallery": Add('c', "item.mine_rotten_prop", 1); Add('.', "item.mine_old_lamp_niche", rng.Next(3)); break;
+                case "old_gallery_bend": Add('c', "item.mine_rotten_prop", 0); break;
+                case "pool": Add('a', "item.mine_pool_stones", 0); Add('a', "item.mine_pool_stones", 3); break;
+                case "collapsed_passage": Add('.', "item.mine_broken_barrow", 0); break;
+                case "arched_room": Add('.', "item.mine_old_chest", 4); Add('a', "item.mine_old_lamp_niche", 1); break;
             }
         }
 

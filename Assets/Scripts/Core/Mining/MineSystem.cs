@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.World;
 
@@ -330,6 +331,25 @@ namespace Thatchwick.Core.Mining
                 if (t.IsOpen) _world.Map.SetFloor(p, FloorType.Dirt);
             }
             _world.AddFixedLink(new GridPos(mouth.X, mouth.Y, 0), WorldPos(m, ex, ey));
+            PlaceProps(m);
+        }
+
+        /// <summary>Eşya tanımı bulucusu (oyun katmanı içerik veritabanını bağlar); null ise süsler konmaz.</summary>
+        public Func<string, ItemDef> PropDef { get; set; }
+
+        /// <summary>Üretecin süs eşyaları (yalnızca yeni üretilen galeride listesi doludur; konunca boşalır).</summary>
+        private void PlaceProps(MineMap m)
+        {
+            if (PropDef == null || m.Props.Count == 0) return;
+            foreach (var (x, y, id) in m.Props)
+            {
+                var def = PropDef(id);
+                var p = WorldPos(m, x, y);
+                if (def == null || !_world.Map.HasTile(p) || _world.GetItemAt(p) != null) continue;
+                if (!_world.CanPlaceFloor(def, p, 0).Ok) continue;   // karo dolu ya da kapalı: süs atlanır
+                _world.PlaceItem(def, p);
+            }
+            m.Props.Clear();
         }
 
         /// <summary>Dünya karosu hangi kazı yerinde (arsa kat -2, galeri kat -1); yoksa null.</summary>

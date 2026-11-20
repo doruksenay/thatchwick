@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Thatchwick.Core.Characters;
@@ -370,6 +371,32 @@ namespace Thatchwick.Game
         }
 
         public static Sprite Plant(ItemInstance item) => Plant(item, out _);
+
+        private static readonly Dictionary<string, Sprite> RockTops = new Dictionary<string, Sprite>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Maden ve kazı kaya karosu (360, 361; çeşitler 620): görselin kesik bloğunun üst yüzü (64x32 elmas) düz karo olarak.
+        /// Tam blok zemin katmanında komşu karoların üstüne taşar; düz üst yüz kayanın türünü ve damarını okutmaya yeter.
+        /// Çeşit (b, c) yoksa a'ya düşer; a da yoksa null (renkli elmas).
+        /// </summary>
+        public static Sprite RockTop(string baseName, int x, int y)
+        {
+            if (!Enabled || string.IsNullOrEmpty(baseName)) return null;
+            EnsureLoaded();
+            uint h = unchecked((uint)(x * 73856093 ^ y * 19349663));
+            h = unchecked((h ^ (h >> 13)) * 1274126177u);
+            string v = (h % 3) == 0 ? "_c" : (h % 3) == 1 ? "_b" : "_a";
+            string name = _art.ContainsKey(baseName + v) ? baseName + v : baseName + "_a";
+            if (RockTops.TryGetValue(name, out var cached) && cached != null) return cached;
+            if (!_art.TryGetValue(name, out var art) || art.Tex == null || art.Rect.width < 64f || art.Rect.height < 53f) return null;
+            // Blok tuvali 64x64: üst yüz yukarıdan 11-43. piksel satırları (Unity dikdörtgeni alttan sayar: 21-53).
+            var r = new Rect(art.Rect.x, art.Rect.y + 21f, 64f, 32f);
+            art.Tex.filterMode = FilterMode.Point;
+            var sprite = Sprite.Create(art.Tex, r, new Vector2(0.5f, 0.5f), Ppu);
+            sprite.name = name + "_top";
+            RockTops[name] = sprite;
+            return sprite;
+        }
 
         /// <summary>
         /// Ağaç ve bitki evresi: 80 px ve daha geniş görselde gövde x=40'ta (ağaç tuvali 96x112), daha dar görselde
