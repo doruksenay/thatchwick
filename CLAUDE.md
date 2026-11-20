@@ -15,6 +15,16 @@ Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, 
 - Yeni arayüz metni düz yazılmaz: anahtar özelliğin kendi alan dosyasına girer (`Assets/Resources/Localization/ui.<alan>.en.json` ve `ui.<alan>.tr.json`, ör. `ui.build.*`; yoksa oluştur), kodda `GameLocalization.T("ui....")`. Ana `ui.en.json` / `ui.tr.json` dosyalarına yeni anahtar ekleme: herkes aynı iki dosyaya yazınca her dalda çakışma çıkıyor. Bir anahtar yalnızca bir dosyada olur (test denetler). Core metin üretecekse `LocText` döndürür.
 - Anahtar ve kimlik karşılaştırmasında `ToUpperInvariant`/`StringComparison.Ordinal` kullan; Türkçe cihazda `ToUpper()` "i"yi "İ" yapar.
 
+## Arayüz (kullanıcı kararı 2026-11-20)
+- Yeni panel, pencere ve HUD öğesi UI Toolkit ile yazılır: `Assets/Scripts/Game/Ui/` altında, `UiHost` kökü ve `KitButton` ile (örnek: `HudBar`). Yeni `OnGUI` paneli ekleme: IMGUI satırları iki günde 618'den 1.156'ya çıktı, IMGUI'de kumanda gezinmesi yok ve taşıma borcu her gün büyüyor.
+- Var olan IMGUI paneline küçük ek (satır, düğme) yapılabilir. Panel büyük ölçüde değişecekse önce UI Toolkit'e taşınır.
+- IMGUI, UI Toolkit'in üstüne çizilir: bir UI Toolkit penceresi açıkken altında kalacak IMGUI penceresini çizme.
+
+## Dallar ve main (kullanıcı kararı 2026-11-20)
+- Kod (`Assets/Scripts`, `Assets/Resources`, `core`, `tools`, `.github`, `Packages`, `ProjectSettings`) `main`'e doğrudan push edilmez: dal + PR. PR, "Core tests" yeşil olmadan birleştirilmez; kod PR'ını kullanıcı birleştirir.
+- Doğrudan `main`'e push yalnızca asset/ses iş dosyaları ve işçi çıktıları içindir (`art/`, `audio/`, `Assets/Art/Iso/`, `Assets/Resources/Audio/`) ve `YAPILACAKLAR.md`.
+- `main`'e zorla push (`--force`) ve `main`'i silme yok.
+
 ## Asset kuyruğu (PixelLab)
 Asset üretimi `art/queue/` altındaki iş dosyalarıyla yürür. Akış ve tetikleme: `art/README.md`. İşçi ajan: `.claude/agents/pixellab-artist.md`. Bütçe kuralları: `art/budget.md` (bağlayıcı).
 
