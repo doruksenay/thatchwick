@@ -313,7 +313,7 @@ namespace Thatchwick.Game
                         if (real == null) { real = IsoArt.Ground(FloorType.Dirt, x, y); beachTint = real != null; }
                     }
                     else real = Map.GetFloorStyle(p) != null ? IsoArt.FloorPart(Map.GetFloorStyle(p), x, y)
-                        : IsoArt.Ground(floor, x, y) ?? IsoArt.FloorPart(Content != null ? BuildParts.DefaultFloor(Content, floor)?.Id : null, x, y);
+                        : NaturalArt(p, floor, x, y) ?? IsoArt.Ground(floor, x, y) ?? IsoArt.FloorPart(Content != null ? BuildParts.DefaultFloor(Content, floor)?.Id : null, x, y);
                     sr.sprite = real != null ? real : SpriteMaterials.Diamond;
                     sr.flipX = flip;
                     var styled = real == null ? StyleColor(p, floor) : null;
@@ -598,6 +598,17 @@ namespace Thatchwick.Game
         }
 
         /// <summary>Karonun merkezinin dünya konumu (kat yüksekliği dahil).</summary>
+        /// <summary>
+        /// Doğal kaya zemini (art/queue 790): taslakta kaya sırtı (çim kalan) ya da taş ocağı olan zemin katı karosu; görsel
+        /// gelene kadar null (bugünkü çim ya da taş çizilir). Yalnızca yer katında ve stilsiz çim/taş zeminde.
+        /// </summary>
+        private static Sprite NaturalArt(GridPos p, FloorType floor, int x, int y)
+        {
+            if (p.Z != 0 || (floor != FloorType.Grass && floor != FloorType.Stone)) return null;
+            var kind = Thatchwick.Core.World.Regions.NaturalGround(p);
+            return kind != null ? IsoArt.NaturalGround(kind, x, y) : null;
+        }
+
         /// <summary>Kıyı karosu için: komşu karo kara mı (harita içinde ve su değil).</summary>
         private bool IsLand(int x, int y) => x >= 0 && y >= 0 && x < Map.Width && y < Map.Height && Map.GetFloor(new GridPos(x, y, 0)) != FloorType.Water;
 

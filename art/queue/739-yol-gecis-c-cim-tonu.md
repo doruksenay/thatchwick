@@ -1,7 +1,7 @@
 ---
 id: "739"
 title: "Yol geçiş seti c çeşidi: çim tonunu ana çime eşitle (renk düzeltme, yeniden çizim yok)"
-status: review
+status: accepted
 claimed_at: 2026-11-20T20:30Z
 approved_by: user        # kullanıcı onayı 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b)
 priority: 10
@@ -52,3 +52,4 @@ Yol kenarındaki karoların ~%40'ı c çeşidi (sayım: a 13, b 20, c 22). a ve 
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-21: kullanıcı kabul etti. Ölçüm: _c_v2 çim ortalaması (115-116, 179, 95), ana çim (115, 179, 95). Kod: IsoArt.PathWang _v2'yi tercih eder (fix/uyku-sabah-kademeli).

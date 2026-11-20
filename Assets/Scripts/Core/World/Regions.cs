@@ -319,7 +319,7 @@ namespace Thatchwick.Core.World
                         }
                         t = sand > 0 ? MapTerrain.Sand : dirt > 1 ? MapTerrain.Dirt : MapTerrain.Rock;
                     }
-                    var f = t == MapTerrain.Dirt ? FloorType.Dirt : t == MapTerrain.Sand ? FloorType.Sand : t == MapTerrain.Stone ? FloorType.Stone
+                    var f = t == MapTerrain.Dirt ? FloorType.Dirt : t == MapTerrain.Sand ? FloorType.Sand : t == MapTerrain.Stone || t == MapTerrain.Quarry ? FloorType.Stone
                         : t == MapTerrain.Water || t == MapTerrain.DeepWater ? FloorType.Water : t == MapTerrain.Bridge ? FloorType.Wood : FloorType.Grass;
                     p.Floor(x, y, x, y, f);
                     if (t == MapTerrain.Path) p.Map.SetRoad(p.P(x, y), RoadType.Path);
@@ -372,6 +372,29 @@ namespace Thatchwick.Core.World
             var data = MapFiles.Get(r.Id);
             if (data?.Markers.items == null) return;
             foreach (var it in data.Markers.items) into.Add(new RegionItem(it.id, r.X + it.x, r.Y + it.y, it.grown));
+        }
+
+        /// <summary>
+        /// Doğal kaya zemini görünümü (art/queue 790): taslakta kaya sırtı olup çim kalan karo "rockbed", taş ocağı "quarry";
+        /// öbür karolar null. Yalnızca görünüm: zemin türü değişmez (kaya sırtı çim, taş ocağı taş).
+        /// </summary>
+        public static string NaturalGround(GridPos p)
+        {
+            var r = At(p);
+            var data = r != null ? MapFiles.Get(r.Id) : null;
+            if (data == null) return null;
+            int x = p.X - r.X, y = p.Y - r.Y;
+            var t = data.At(x, y);
+            if (t == MapTerrain.Quarry) return "quarry";
+            if (t != MapTerrain.Rock) return null;
+            // PaintData ile aynı kural: kumsala ya da toprağa değen kaya sırtı o zemini alır, kaya zemini çizilmez.
+            int sand = 0, dirt = 0;
+            foreach (var (dx, dy) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+            {
+                var n = data.At(x + dx, y + dy);
+                if (n == MapTerrain.Sand) sand++; else if (n == MapTerrain.Dirt) dirt++;
+            }
+            return sand > 0 || dirt > 1 ? null : "rockbed";
         }
 
         /// <summary>Taslaktaki arazi türü (dünya karosu); taslak yoksa ya da bölge dışıysa null.</summary>

@@ -28,6 +28,8 @@ namespace Thatchwick.Core.Jobs
         public const float NightSleepThreshold = 70f;
         public const double BedtimeHour = 21.0;
         public const double WakeHour = 5.0;
+        /// <summary>Gece yatan, uykusu bu saatten önce biterse sabaha kadar yatakta kalır (belge 65c: 21:00'de yatan 04:00'te kalkıyordu).</summary>
+        public const double MorningHour = 6.0;
 
         /// <summary>Günün saati (0–24). Verilirse enerji eşiği saate göre değişir: gece yatılır, gündüz yalnızca çok yorgunken uyunur.</summary>
         public Func<double> HourOfDay { get; set; }
@@ -66,6 +68,8 @@ namespace Thatchwick.Core.Jobs
         private double _stepFraction;
         private bool _using;
         private double _useProgress;
+        // Uykuda verilmiş enerji (kademeli doyurma, belge 65c): bitişte yalnızca kalan verilir.
+        private float _gradualGiven;
         private double _elapsedDays;
         private readonly Dictionary<int, double> _unreachableUntil = new Dictionary<int, double>();
         // Ulaşılamayan kişi (bebek, sohbet arkadaşı) için de aynı bekleme: otonomi her karede yeniden denemesin.
@@ -146,6 +150,35 @@ namespace Thatchwick.Core.Jobs
 
         /// <summary>Eşyanın ya da aletin işe kattığı çarpan (yadigâr): hız, XP ve ihtiyaç doldurma. Null ise etkisiz.</summary>
         public Func<ItemInstance, InteractionDef, ItemBonus> ItemBonus { get; set; }
+
+        /// <summary>Etkileşimin bitişte verdiği toplam doyurma (müzik becerisi ve eşya bonusu dahil).</summary>
+        private float RestoreAmount(ItemInstance item, InteractionDef interaction)
+        {
+            float restore = interaction.Skill == SkillType.Music
+                ? (float)(interaction.Restore * SkillNames.Factor(_character.Skills.GetLevel(SkillType.Music), 0.05)) : interaction.Restore;
+            var bonus = BonusOf(item, interaction);
+            return bonus.Restore != 1.0 ? (float)(restore * bonus.Restore) : restore;
+        }
+
+        /// <summary>Enerji doyuran etkileşim süre boyunca kademeli verir (öbür ihtiyaçlar bitişte, eskisi gibi).</summary>
+        private static bool GivesGradually(InteractionDef i) => i.RestoresNeed && i.Need == NeedType.Energy && i.Restore > 0f;
+
+        private void GiveGradual(InteractionDef interaction, float amount)
+        {
+            if (amount <= 0f) return;
+            _character.Needs.Restore(interaction.Need, amount);
+            _gradualGiven += amount;
+        }
+
+        /// <summary>Gece uykusu bitti ama sabah olmadı: yatakta kal (saat verilmemişse, kritik ihtiyaç varsa ya da tuvalet sıkışmışsa hayır).</summary>
+        private bool ShouldLieIn()
+        {
+            if (HourOfDay == null) return false;
+            double h = HourOfDay();
+            if (h >= MorningHour && h < BedtimeHour) return false;
+            if (h >= BedtimeHour) return false;                 // gece yarısından önce biten uyku kısa şekerlemedir
+            return !_character.Needs.AnyCritical() && !(_character.ComfortNeedsActive && _character.Needs.Get(NeedType.Bladder) < PreSleepBladder);
+        }
 
         private ItemBonus BonusOf(ItemInstance item, InteractionDef interaction) =>
             ItemBonus != null ? ItemBonus(item, interaction) : Jobs.ItemBonus.None;
@@ -1133,11 +1166,17 @@ namespace Thatchwick.Core.Jobs
                     if (gone != null) { Fail(gone); return used + remaining; }
                 }
                 // Müzik: çalgı çalmak seviye başına %5 daha çok keyif verir.
-                float restore = interaction.Skill == SkillType.Music
-                    ? (float)(interaction.Restore * SkillNames.Factor(_character.Skills.GetLevel(SkillType.Music), 0.05)) : interaction.Restore;
+                float restore = RestoreAmount(item, interaction);
                 var bonus = BonusOf(item, interaction);
-                if (bonus.Restore != 1.0) restore = (float)(restore * bonus.Restore);
-                if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, restore);
+                // Gece uykusu sabahtan önce biterse karakter yatakta kalır (kritik ihtiyaç yoksa): enerji şimdiden tamamlanır.
+                if (IsFullSleep(interaction) && ShouldLieIn())
+                {
+                    GiveGradual(interaction, restore - _gradualGiven);
+                    return used + available;
+                }
+                // Kademeli doyurmada uyku boyunca verilen düşülür; geri kalanı şimdi.
+                if (interaction.RestoresNeed) _character.Needs.Restore(interaction.Need, Math.Max(0f, restore - _gradualGiven));
+                _gradualGiven = 0f;
                 foreach (var extra in interaction.ExtraRestore) _character.Needs.Restore(extra.Need, extra.Amount);
                 // İçmek ve yemek tuvaleti doldurur (içecek çok, yemek az).
                 if (interaction.BladderCost > 0f && _character.ComfortNeedsActive)
@@ -1164,6 +1203,13 @@ namespace Thatchwick.Core.Jobs
             }
 
             _useProgress += available;
+            // Enerji (uyku, sandalyede dinlenme) süre boyunca azar azar dolar: bölünen uyku da kazandırır (belge 65c).
+            if (GivesGradually(interaction))
+            {
+                double total = EffectiveDuration(interaction, item);
+                float target = total > 0 ? (float)(RestoreAmount(item, interaction) * Math.Min(1.0, _useProgress / total)) : 0f;
+                if (target > _gradualGiven) GiveGradual(interaction, target - _gradualGiven);
+            }
             if (_steps != null)
             {
                 double whole = EffectiveDuration(interaction, item);
@@ -1633,7 +1679,7 @@ namespace Thatchwick.Core.Jobs
         {
             _character.Asleep = false;
             _using = false;
-            _useProgress = 0;
+            _useProgress = 0; _gradualGiven = 0f;
             _hasWater = false; _fetching = false;
             _path = null; _pathIndex = 0; _stepFraction = 0;
             ClearChain();
@@ -1768,7 +1814,7 @@ namespace Thatchwick.Core.Jobs
             _pathIndex = 0;
             _stepFraction = 0;
             _using = false;
-            _useProgress = 0;
+            _useProgress = 0; _gradualGiven = 0f;
             ClearChain();
             DropReturnJob();
             EndErrand();

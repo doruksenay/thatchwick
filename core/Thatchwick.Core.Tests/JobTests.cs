@@ -92,7 +92,8 @@ namespace Thatchwick.Core.Tests
             runner.Tick(5.0 / JobRunner.TilesPerGameDay + 0.1); // yürüme bitti, kullanım sürüyor
             Assert.Equal(new GridPos(5, 5), c.Position);
             Assert.True(runner.IsUsingItem);
-            Assert.Equal(10.0, (double)c.Needs.Get(NeedType.Energy), 3);
+            // Enerji uyku boyunca kademeli dolar (belge 65c): 0,3 günlük uykunun ~0,1'i geçti, 60'ın ~üçte biri verildi.
+            Assert.InRange((double)c.Needs.Get(NeedType.Energy), 25.0, 32.0);
 
             runner.Tick(0.3);
             Assert.True(runner.IsIdle);

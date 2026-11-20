@@ -39,6 +39,10 @@
     {
       "terrain": "rock",
       "color": "#5C5854"
+    },
+    {
+      "terrain": "quarry",
+      "color": "#A8A090"
     }
   ]
 }

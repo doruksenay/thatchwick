@@ -1,7 +1,7 @@
 ---
 id: "482b"
 title: "Deniz kıyısı toplama düğümleri yeniden (3)"
-status: review
+status: accepted
 claimed_at: 2026-11-20T10:18Z
 approved_by: user        # kullanıcı kararı 2026-11-20: 482 reddedildi, yeniden üretim
 priority: 20
@@ -33,3 +33,6 @@ created: 2026-11-20
 - Raporda 482'in reddedilen çıktısıyla yan yana sayfası (`art/results/482b-yanyana.png`) olmalı.
 
 ## Notlar
+
+<!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı: -->
+- 2026-11-21: kullanıcı kararı (sohbet). **Sahil çizgisi (driftline_v2) kabul**, oyunda kullanılıyor. **Gelgit havuzu v2 saklanır** ("belki kullanırız"; şimdilik oyunda bağlı) ama kayaların üstünde tarifte olmayan yeşil çalılar var, karo blok gibi duruyor: çalısız yenisi 482c. **Deniz kumu v2 reddedildi**: kenarında öbür zemin karolarında olmayan koyu dış çizgi var; yenisi 482c.

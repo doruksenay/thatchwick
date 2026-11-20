@@ -20,7 +20,8 @@ bölge eski kod çizimiyle kurulur.
 | `#BA8C5A` | path | toprak yol |
 | `#966038` | bridge | ahşap köprü |
 | `#184022` | band | kenar bandı: sık ağaç öbekleri (bölge kenarı düz kesilmez) |
-| `#5C5854` | rock | kaya sırtı: iri kaya ve kütük (yükseklik hissi) |
+| `#5C5854` | rock | kaya sırtı: iri kaya ve kütük (yükseklik hissi); zemini doğal kaya (790 görseli gelince) |
+| `#A8A090` | quarry | taş ocağı tabanı: oyunda taş zemin, görünümde kırık kireç taşı (790 görseli gelince) |
 
 ## Nasıl boyarım
 1. Dosyayı bir piksel düzenleyicide aç (Aseprite, Paint.NET, Photoshop: kenar yumuşatma kapalı, kalem aracı).
