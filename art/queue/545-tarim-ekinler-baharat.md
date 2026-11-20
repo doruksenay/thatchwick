@@ -1,7 +1,7 @@
 ---
 id: "545"
 title: "Yeni ekinler 6/7: kimyon, kişniş, anason, çörek otu (12)"
-status: running
+status: review
 claimed_at: 2026-11-20T13:31Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 20
