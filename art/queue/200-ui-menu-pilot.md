@@ -1,7 +1,7 @@
 ---
 id: "200"
 title: Arayüz menü stili pilotu (parşömen + ahşap, ana menü paneli)
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:26Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
@@ -90,3 +90,4 @@ Hiçbir şeyi silme, üzerine yazma. Klasör tarihi üretim günüdür (`yyyy-mm
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
 - 2026-11-18 (tamir): `art/budget.md` planı Tier 2 olarak güncellendi, ajan kuralı "Tier 1 değilse dur" yerine "budget.md planıyla uyuşmuyorsa dur" oldu; iş yeniden `pending`.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -1,7 +1,7 @@
 ---
 id: "315"
 title: Arayüz ikon seti (ihtiyaç, ruh hali, etkinlik, hava, gösterge)
-status: review
+status: accepted
 claimed_at: 2026-11-18T12:46Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: arayuz
@@ -36,3 +36,4 @@ Her ikon 16x16 mı, yarı saydam yok mu, renk sayısı ≤12, hepsi 3x ölçekle
 
 ## Notlar
 - Anahtar → dosya adı eşlemesi kodda `ui_icon_<grup>_<anahtar>` olarak yapılır; anahtar eklemek dosya eklemekle aynı.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

@@ -1,7 +1,7 @@
 ---
 id: "356"
 title: Hayvan sağlığı ve komşu hane ikonları
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:06Z
 approved_by: user        # otomatik akış: kullanıcı onayı (art/budget.md)
 family: arayuz
@@ -38,3 +38,4 @@ Anahtar → dosya adı: `ui_icon_animal_<durum>`, `ui_icon_house_<anahtar>`. Ba�
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).
