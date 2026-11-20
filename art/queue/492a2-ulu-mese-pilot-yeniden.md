@@ -1,7 +1,7 @@
 ---
 id: "492a2"
 title: "Ulu meşe, dört mevsim (pilot, yeniden: ağaç evsiz, mevsimler düzenlemeyle)"
-status: running
+status: blocked
 claimed_at: 2026-11-20T23:20Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 21.11.2026: "bulgularının tamamını tek prda yap" (Project belgesi 66b)
 priority: 10
@@ -44,6 +44,11 @@ teslim edilmez). Dört mevsim yan yana: gövde ve dallar dördünde aynı yerde 
 ## Notlar
 - 492b ve 492c bu işe bağlanır (`depends_on` 492a2). 493t (ağaç ev katmanları) tacın ortasına hizalanır; platform burada çizilmez.
 - Kod: `ItemViews.AddGreatTree` adı `iso_greattree_<tür>_<mevsim>_se`, pivot (80, 36). Kod değişikliği gerekmez.
+
+## Sorular
+- `edit_image_pro_flash` 160x224 kaynakta araç açıklamasına göre görsel başına **9 gen** gösterdi (212-256 px dilimi; 224 px bu dilimde). 3 düzenleme = 27 gen, `cost_est` 6 ve `cost_max` 12'nin çok üstünde. Maliyeti çağrıdan önce okumadan gönderdim; yanıtta 9 gen görünce üç işi hemen iptal ettim (iptalde ücret alınıp alınmadığı `get_balance`ten ayırt edilemedi, paralel şeritler de harcıyor). Mevsim görseli üretilmedi.
+- Karar gerekli: `cost_max` 12 -> 30'a çıkarılsın mı (3x9 = 27 + yaz 1)? Alternatif: tuval 208 px'e düşürülür (6 gen/görsel) ama pivot üstü 185-215 px ölçüsü bozulur.
+- Yaz görseli (platformsuz) üretildi: `art/results/492a2-red/iso_greattree_oak_summer_se.png`; style.py KALDI (doygunluk x1.66), `fit` ile düzeltilebilir. Tek başına teslim edilmedi.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
