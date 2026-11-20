@@ -517,8 +517,7 @@ namespace Thatchwick.Game
         {
             if (on && _hudBar == null)
             {
-                _ui = new Ui.UiHost(transform);
-                if (!_ui.Ready) { _ui.Destroy(); _ui = null; on = false; }
+                if (EnsureUi() == null) on = false;
                 else _hudBar = BuildHudBar(_ui);
             }
             _toolkitHud = on && _hudBar != null;
@@ -577,7 +576,7 @@ namespace Thatchwick.Game
 
         /// <summary>
         /// +18 paketi bu derlemede var mı (karar 20.11.2026): yalnızca bilgisayar (Steam) derlemesinde; Android ve iOS'ta
-        /// hiç sunulmaz, ayarı da görünmez. Steamworks bağlanınca buraya ek paket (DLC) sahipliği denetimi de eklenir.
+        /// hiç sunulmaz, ayarı da görünmez. Steam derlemesinde ek paketin (DLC) sahipliği de aranır (Platform/).
         /// </summary>
         private static bool AdultPackAvailable
         {
@@ -586,13 +585,16 @@ namespace Thatchwick.Game
 #if UNITY_ANDROID || UNITY_IOS
                 return false;
 #else
-                return !Application.isMobilePlatform;
+                // Mağaza derlemesinde ek paketin sahipliği sorulur; mağazasız geliştirme derlemesinde paket açıktır.
+                return !Application.isMobilePlatform
+                    && Platform.PlatformServices.Current.OwnsDlc(Platform.PlatformConfig.AdultPack);
 #endif
             }
         }
 
         private void Awake()
         {
+            InitPlatform();   // hata toplayıcı, mağaza, başarım profili, görüntü ayarları (GameRootPlatform.cs)
             // Kare hızı açıkça sabit: mobilde 30 (pil), masaüstünde 60. Oyun hızı kareden bağımsızdır (Time.deltaTime).
             Application.targetFrameRate = Application.isMobilePlatform ? 30 : 60;
             // +18 paketi yalnızca masaüstünde (Steam) açılabilir; mobilde hiç yoktur (karar 20.11.2026, belge 49).
@@ -1659,6 +1661,7 @@ namespace Thatchwick.Game
             if (_statusHud != null && _statusHud.IsOver(guiPos)) return true;
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
+            if (AchievementsVisible) return true;   // tam ekran pencere: dünyaya dokunma geçmez
             if (_toolkitHud && _ui != null && _ui.IsPointerOver(screenPos)) return true;
             return HudRect.Contains(guiPos);
         }
@@ -1705,7 +1708,7 @@ namespace Thatchwick.Game
                     _pendingWrite = _pendingWrite.ContinueWith(_ =>
                     {
                         try { SaveFiles.WriteAtomic(path, json); }
-                        catch (System.Exception ex) { Debug.LogError($"Kaydetme hatası: {ex.Message}"); }
+                        catch (System.Exception ex) { _saveError = ex.Message; }   // ana iş parçacığı bildirir (TickPlatform)
                     }, System.Threading.Tasks.TaskScheduler.Default);
                     _hasSave = true;
                     return;
@@ -1713,12 +1716,13 @@ namespace Thatchwick.Game
                 WaitPendingWrite();
                 SaveFiles.WriteAtomic(path, json);
                 _hasSave = true;
-                if (!quiet) ShowMessage("Kaydedildi");
+                if (!quiet) ShowMessage(T("ui.save.done"));
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Kaydetme hatası: {ex.Message}");
-                if (!quiet) ShowMessage("Kaydedilemedi (konsola bak)");
+                // Sessiz kayıtta da (otomatik, arka plana alınma) oyuncu bilmeli: kaydedildiğini sanmasın.
+                ErrorReporter.Report("save", ex);
+                ShowMessage(T("ui.save.failed"), 8f);
             }
         }
 
@@ -1779,8 +1783,12 @@ namespace Thatchwick.Game
             }
         }
 
-        private void OnApplicationQuit() => SaveNow(quiet: true);
-        private void OnApplicationPause(bool paused) { if (paused) SaveNow(quiet: true); }
+        private void OnApplicationQuit() { SaveNow(quiet: true); OnSessionPaused(quitting: true); }
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused) { SaveNow(quiet: true); OnSessionPaused(quitting: false); }
+            else ErrorReporter.SessionResumed();
+        }
 
         // Yapı modu ve pazar paneli aynı yeri kullanır: biri açılınca diğeri kapanır.
         private void ToggleBuild()
@@ -2655,6 +2663,7 @@ namespace Thatchwick.Game
         private void Update()
         {
             if (RecoverIfLost()) return;
+            TickPlatform();   // mağaza geri çağrıları, hata ve kayıt bildirimleri, Esc, başarımlar (GameRootPlatform.cs)
 
             if (_creator != null)
             {

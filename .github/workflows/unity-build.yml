@@ -1,0 +1,60 @@
+name: Unity build
+
+# Oynanabilir derleme (Windows 64). Elle (Actions > Run workflow) ya da "v*" etiketi push edilince çalışır.
+# Unity lisans secret'ları yoksa atlanır. Çıktı artifact olarak 14 gün saklanır; Steam'e yükleme ayrı adımdır
+# (docs/yayin-altyapisi.md). Linux koşucusunda Windows derlemesi Mono arka ucuyla yapılır.
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unity-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - id: detect
+        env:
+          HAS_LICENSE: ${{ secrets.UNITY_LICENSE != '' }}
+        run: |
+          echo "has_license=$HAS_LICENSE" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_LICENSE" != "true" ]; then echo "::notice::UNITY_LICENSE secret'ı yok; derleme atlandı."; fi
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        if: steps.detect.outputs.has_license == 'true'
+        with:
+          lfs: true
+
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        if: steps.detect.outputs.has_license == 'true'
+        with:
+          path: Library
+          key: Library-build-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-build-
+            Library-
+
+      - uses: game-ci/unity-builder@4423ee75828dff56037d1d1cfdac6b68e3a6ba00 # v4.8.2
+        if: steps.detect.outputs.has_license == 'true'
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows64
+          buildName: Thatchwick
+          versioning: None
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: steps.detect.outputs.has_license == 'true'
+        with:
+          name: Thatchwick-Windows64-${{ github.sha }}
+          path: build/StandaloneWindows64
+          retention-days: 14

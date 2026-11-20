@@ -1,3 +1,16 @@
 {
+  "ui.error.copied": "Error report copied to the clipboard.",
+  "ui.error.copy": "Copy error report",
+  "ui.error.count": "Errors this session: {count} ({distinct} different)",
+  "ui.error.notice": "Something went wrong, but the game keeps running. The details were saved to the error log (Settings).",
+  "ui.error.open_folder": "Open log folder",
+  "ui.error.prev_session": "The game did not close properly last time. If something looks wrong, copy the error report from Settings.",
+  "ui.save.done": "Saved",
+  "ui.save.failed": "Could not save. Check free disk space; the game will try again.",
+  "ui.settings.display": "Display",
+  "ui.settings.fullscreen": "Full screen",
+  "ui.settings.resolution": "Resolution",
+  "ui.settings.vsync": "VSync",
+  "ui.settings.windowed": "Window",
   "ui.sim.error": "Something went wrong in the simulation ({system}); the game keeps running. Details are in thatchwick_errors.log."
 }
