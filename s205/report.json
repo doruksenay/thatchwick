@@ -1,0 +1,144 @@
+{
+  "job": "s205",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:21:12Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.517,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -26.1,
+          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: still pond water.",
+          "duration": 0.8485561386085454,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.631,
+          "lufs": -19.9,
+          "true_peak_db": -1.0,
+          "rms_db": -22.5,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0267)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: shallow sea water.",
+          "duration": 0.766159009832071,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.475,
+          "lufs": -21.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.0,
+          "note": "tepe sınırında, yükseklik -21.8 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: still pond water.",
+          "duration": 0.784663319848039,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 0.522,
+          "lufs": -20.0,
+          "true_peak_db": -1.0,
+          "rms_db": -20.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: shallow sea water.",
+          "duration": 0.7411524978535834,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.614,
+          "lufs": -19.5,
+          "true_peak_db": -1.0,
+          "rms_db": -21.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: still pond water.",
+          "duration": 0.77408772951296,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 0.465,
+          "lufs": -22.3,
+          "true_peak_db": -1.0,
+          "rms_db": -23.0,
+          "note": "tepe sınırında, yükseklik -22.3 (hedef -18)",
+          "flags": [
+            "c5 ile neredeyse aynı (0.0311)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: shallow sea water.",
+          "duration": 0.7312813333300646,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.533,
+          "lufs": -25.1,
+          "true_peak_db": -1.0,
+          "rms_db": -26.7,
+          "note": "tepe sınırında, yükseklik -25.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0229)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: still pond water.",
+          "duration": 0.8089143701949522,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.618,
+          "lufs": -25.5,
+          "true_peak_db": -1.0,
+          "rms_db": -28.2,
+          "note": "tepe sınırında, yükseklik -25.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped and scooped through shallow water, a glassy clink and a gurgle. Details: shallow sea water.",
+          "duration": 0.8421165087932959,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0267
+          ],
+          [
+            "c1",
+            "c7",
+            0.0229
+          ],
+          [
+            "c5",
+            "c6",
+            0.0311
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0229,
+          "c2": 0.0267,
+          "c3": 0.0366,
+          "c4": 0.0423,
+          "c5": 0.0311,
+          "c6": 0.0311,
+          "c7": 0.0229,
+          "c8": 0.034
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

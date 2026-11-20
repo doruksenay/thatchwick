@@ -1,0 +1,177 @@
+{
+  "job": "s201",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:20:39Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.499,
+          "lufs": -19.0,
+          "true_peak_db": -1.0,
+          "rms_db": -18.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.5450193624887186,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.489,
+          "lufs": -22.7,
+          "true_peak_db": -1.0,
+          "rms_db": -22.2,
+          "note": "tepe sınırında, yükseklik -22.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.014)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.571638283503728,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.478,
+          "lufs": -21.1,
+          "true_peak_db": -1.0,
+          "rms_db": -21.1,
+          "note": "tepe sınırında, yükseklik -21.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0079)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.5603985451652193,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.476,
+          "lufs": -22.7,
+          "true_peak_db": -1.0,
+          "rms_db": -22.3,
+          "note": "tepe sınırında, yükseklik -22.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0138)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.6005144270038728,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.551,
+          "lufs": -21.2,
+          "true_peak_db": -1.0,
+          "rms_db": -19.8,
+          "note": "tepe sınırında, yükseklik -21.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0192)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.6092004714376457,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.451,
+          "lufs": -25.6,
+          "true_peak_db": -1.0,
+          "rms_db": -22.9,
+          "note": "tepe sınırında, yükseklik -25.6 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0252)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.6063386172066503,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.437,
+          "lufs": -22.9,
+          "true_peak_db": -1.0,
+          "rms_db": -22.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0199)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.6474383960020813,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.515,
+          "lufs": -22.6,
+          "true_peak_db": -1.0,
+          "rms_db": -22.8,
+          "note": "tepe sınırında, yükseklik -22.6 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0085)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A cork float suddenly pulled under the water surface: a quick small gulp and splash.",
+          "duration": 0.5799467848606831,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.014
+          ],
+          [
+            "c1",
+            "c3",
+            0.0079
+          ],
+          [
+            "c1",
+            "c4",
+            0.0138
+          ],
+          [
+            "c1",
+            "c5",
+            0.0192
+          ],
+          [
+            "c1",
+            "c6",
+            0.0252
+          ],
+          [
+            "c1",
+            "c7",
+            0.0199
+          ],
+          [
+            "c1",
+            "c8",
+            0.0085
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0079,
+          "c2": 0.0063,
+          "c3": 0.0046,
+          "c4": 0.0138,
+          "c5": 0.0139,
+          "c6": 0.0063,
+          "c7": 0.0139,
+          "c8": 0.0046
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

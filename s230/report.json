@@ -1,0 +1,239 @@
+{
+  "job": "s230",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T14:19:48Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.474,
+          "lufs": -25.5,
+          "true_peak_db": -1.0,
+          "rms_db": -27.5,
+          "note": "tepe sınırında, yükseklik -25.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: crisp root vegetable, thin beech board.",
+          "duration": 0.8443898017892405,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.565,
+          "lufs": -32.3,
+          "true_peak_db": -1.0,
+          "rms_db": -32.5,
+          "note": "tepe sınırında, yükseklik -32.3 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0218)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: crisp root vegetable, thick oak board.",
+          "duration": 0.8118205318053457,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.681,
+          "lufs": -22.6,
+          "true_peak_db": -1.0,
+          "rms_db": -25.9,
+          "note": "tepe sınırında, yükseklik -22.6 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: soft onion, thin beech board.",
+          "duration": 0.8627108696664891,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 0.783,
+          "lufs": -26.1,
+          "true_peak_db": -1.0,
+          "rms_db": -29.4,
+          "note": "tepe sınırında, yükseklik -26.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: soft onion, thick oak board.",
+          "duration": 0.8598791248054551,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.509,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -26.0,
+          "note": "tepe sınırında, yükseklik -23.7 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: leafy cabbage, thick oak board.",
+          "duration": 0.8064423549629286,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 0.516,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -28.9,
+          "note": "tepe sınırında, yükseklik -26.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.031)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: leafy cabbage, thin beech board.",
+          "duration": 0.8715227838462305,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.453,
+          "lufs": -25.9,
+          "true_peak_db": -1.0,
+          "rms_db": -27.9,
+          "note": "tepe sınırında, yükseklik -25.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0255)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: crisp root vegetable, thin beech board.",
+          "duration": 0.8125099565231129,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.516,
+          "lufs": -24.8,
+          "true_peak_db": -1.0,
+          "rms_db": -27.1,
+          "note": "tepe sınırında, yükseklik -24.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.026)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: crisp root vegetable, thick oak board.",
+          "duration": 0.8627503940234535,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c9": {
+          "duration_s": 0.554,
+          "lufs": -25.5,
+          "true_peak_db": -1.0,
+          "rms_db": -27.8,
+          "note": "tepe sınırında, yükseklik -25.5 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0233)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: soft onion, thin beech board.",
+          "duration": 0.7479762569808882,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c10": {
+          "duration_s": 0.649,
+          "lufs": -23.8,
+          "true_peak_db": -1.0,
+          "rms_db": -26.9,
+          "note": "tepe sınırında, yükseklik -23.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0312)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: soft onion, thick oak board.",
+          "duration": 0.8242682868186902,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c11": {
+          "duration_s": 0.538,
+          "lufs": -25.4,
+          "true_peak_db": -1.0,
+          "rms_db": -27.3,
+          "note": "tepe sınırında, yükseklik -25.4 (hedef -18)",
+          "flags": [
+            "c4 ile neredeyse aynı (0.0287)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: leafy cabbage, thick oak board.",
+          "duration": 0.829689248503912,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c12": {
+          "duration_s": 0.546,
+          "lufs": -22.0,
+          "true_peak_db": -1.0,
+          "rms_db": -24.4,
+          "note": "tepe sınırında, yükseklik -22.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.024)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A small knife chopping food on a wooden board: three or four quick, even chops, close and dry, no voices. Details: leafy cabbage, thin beech board.",
+          "duration": 0.826369201834646,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0218
+          ],
+          [
+            "c1",
+            "c6",
+            0.031
+          ],
+          [
+            "c1",
+            "c7",
+            0.0255
+          ],
+          [
+            "c1",
+            "c8",
+            0.026
+          ],
+          [
+            "c1",
+            "c9",
+            0.0233
+          ],
+          [
+            "c1",
+            "c10",
+            0.0312
+          ],
+          [
+            "c1",
+            "c12",
+            0.024
+          ],
+          [
+            "c4",
+            "c11",
+            0.0287
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0218,
+          "c2": 0.016,
+          "c3": 0.0239,
+          "c4": 0.0183,
+          "c5": 0.0176,
+          "c6": 0.0194,
+          "c7": 0.0094,
+          "c8": 0.026,
+          "c9": 0.0094,
+          "c10": 0.0305,
+          "c11": 0.0176,
+          "c12": 0.016
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

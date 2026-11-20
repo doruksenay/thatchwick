@@ -1,0 +1,75 @@
+{
+  "job": "s226",
+  "kind": "sfx",
+  "family": "stinger",
+  "created": "2026-11-20T14:24:38Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 4.627,
+          "lufs": -18.0,
+          "true_peak_db": -7.0,
+          "rms_db": -21.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A warm, joyful little folk sting for a village communal feast at dusk under a great tree, rising and welcoming. Details: lute and recorder.",
+          "duration": 5.186034927236821,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 4.144,
+          "lufs": -18.0,
+          "true_peak_db": -4.7,
+          "rms_db": -22.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A warm, joyful little folk sting for a village communal feast at dusk under a great tree, rising and welcoming. Details: kaval flute and frame drum.",
+          "duration": 5.297014671626339,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 4.72,
+          "lufs": -18.0,
+          "true_peak_db": -11.8,
+          "rms_db": -22.2,
+          "flags": [],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A warm, joyful little folk sting for a village communal feast at dusk under a great tree, rising and welcoming. Details: lute and recorder.",
+          "duration": 4.729802603996806,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 5.104,
+          "lufs": -18.0,
+          "true_peak_db": -6.1,
+          "rms_db": -22.7,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0254)"
+          ],
+          "pass": true,
+          "prompt": "Very short medieval folk music sting, period instruments only (lute, recorder, frame drum, bells). No piano, no synth, no vocals. A warm, joyful little folk sting for a village communal feast at dusk under a great tree, rising and welcoming. Details: kaval flute and frame drum.",
+          "duration": 5.2812624792974745,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c2",
+            "c4",
+            0.0254
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0378,
+          "c2": 0.0254,
+          "c3": 0.0273,
+          "c4": 0.0254
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

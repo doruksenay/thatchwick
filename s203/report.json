@@ -1,0 +1,169 @@
+{
+  "job": "s203",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:20:54Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.905,
+          "lufs": -23.9,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -23.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 0.9595336912929177,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.905,
+          "lufs": -22.7,
+          "true_peak_db": -1.0,
+          "rms_db": -24.9,
+          "note": "tepe sınırında, yükseklik -22.7 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0077)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 0.9211383701111447,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.963,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -24.4,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0203)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 1.0126456311246441,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.776,
+          "lufs": -22.0,
+          "true_peak_db": -1.0,
+          "rms_db": -24.3,
+          "note": "tepe sınırında, yükseklik -22.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0265)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 0.9759972321430627,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.99,
+          "lufs": -22.9,
+          "true_peak_db": -1.0,
+          "rms_db": -24.8,
+          "note": "tepe sınırında, yükseklik -22.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.019)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 1.055014790766342,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.834,
+          "lufs": -21.0,
+          "true_peak_db": -1.0,
+          "rms_db": -21.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 0.9824144460059832,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 0.776,
+          "lufs": -24.0,
+          "true_peak_db": -1.0,
+          "rms_db": -26.7,
+          "note": "tepe sınırında, yükseklik -24.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0139)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 0.9426958017065257,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.799,
+          "lufs": -20.1,
+          "true_peak_db": -1.0,
+          "rms_db": -21.6,
+          "flags": [
+            "c6 ile neredeyse aynı (0.0128)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small fish pulled out of the water with a splash and dripping water, then a wet flap.",
+          "duration": 0.9243704237018027,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0077
+          ],
+          [
+            "c1",
+            "c3",
+            0.0203
+          ],
+          [
+            "c1",
+            "c4",
+            0.0265
+          ],
+          [
+            "c1",
+            "c5",
+            0.019
+          ],
+          [
+            "c1",
+            "c7",
+            0.0139
+          ],
+          [
+            "c6",
+            "c8",
+            0.0128
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0077,
+          "c2": 0.0077,
+          "c3": 0.0203,
+          "c4": 0.0132,
+          "c5": 0.0106,
+          "c6": 0.0128,
+          "c7": 0.0139,
+          "c8": 0.0128
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

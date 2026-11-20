@@ -1,0 +1,87 @@
+{
+  "job": "s204",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:23:54Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.668,
+          "lufs": -27.8,
+          "true_peak_db": -1.0,
+          "rms_db": -26.4,
+          "note": "tepe sınırında, yükseklik -27.8 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A fishing line suddenly going slack and a fish slipping away with a small splash.",
+          "duration": 0.8174772881748853,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.608,
+          "lufs": -27.5,
+          "true_peak_db": -1.0,
+          "rms_db": -28.0,
+          "note": "tepe sınırında, yükseklik -27.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A fishing line suddenly going slack and a fish slipping away with a small splash.",
+          "duration": 0.7950843576171795,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.711,
+          "lufs": -22.0,
+          "true_peak_db": -1.0,
+          "rms_db": -23.1,
+          "note": "tepe sınırında, yükseklik -22.0 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.014)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A fishing line suddenly going slack and a fish slipping away with a small splash.",
+          "duration": 0.7770198296698414,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.732,
+          "lufs": -23.2,
+          "true_peak_db": -1.0,
+          "rms_db": -23.6,
+          "note": "tepe sınırında, yükseklik -23.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0329)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A fishing line suddenly going slack and a fish slipping away with a small splash.",
+          "duration": 0.8758974347907236,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c4",
+            0.0329
+          ],
+          [
+            "c2",
+            "c3",
+            0.014
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0329,
+          "c2": 0.014,
+          "c3": 0.014,
+          "c4": 0.015
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "job": "s200",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T14:20:24Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.353,
+          "lufs": -18.0,
+          "true_peak_db": -2.5,
+          "rms_db": -18.0,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: hazel rod, linen line.",
+          "duration": 1.0777571095944314,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.395,
+          "lufs": -18.0,
+          "true_peak_db": -1.8,
+          "rms_db": -18.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0135)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: willow rod, linen line.",
+          "duration": 0.9246572790370193,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.363,
+          "lufs": -18.0,
+          "true_peak_db": -2.2,
+          "rms_db": -18.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0127)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: willow rod, horsehair line.",
+          "duration": 1.043420241859353,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.437,
+          "lufs": -18.0,
+          "true_peak_db": -2.7,
+          "rms_db": -18.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0081)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: hazel rod, horsehair line.",
+          "duration": 0.9628758443662303,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.456,
+          "lufs": -18.0,
+          "true_peak_db": -2.6,
+          "rms_db": -16.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.013)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: hazel rod, linen line.",
+          "duration": 0.9518554838215932,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.403,
+          "lufs": -18.0,
+          "true_peak_db": -1.8,
+          "rms_db": -18.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0091)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: willow rod, linen line.",
+          "duration": 1.035028879950715,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.366,
+          "lufs": -18.0,
+          "true_peak_db": -1.5,
+          "rms_db": -18.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0115)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: willow rod, horsehair line.",
+          "duration": 0.9777050895296953,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.359,
+          "lufs": -18.0,
+          "true_peak_db": -1.8,
+          "rms_db": -18.0,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0124)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. A fishing line cast from a wooden rod: a short whoosh, then a small float plopping onto calm water a little distant. Details: hazel rod, horsehair line.",
+          "duration": 1.0316575467439375,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0135
+          ],
+          [
+            "c1",
+            "c3",
+            0.0127
+          ],
+          [
+            "c1",
+            "c4",
+            0.0081
+          ],
+          [
+            "c1",
+            "c5",
+            0.013
+          ],
+          [
+            "c1",
+            "c6",
+            0.0091
+          ],
+          [
+            "c1",
+            "c7",
+            0.0115
+          ],
+          [
+            "c1",
+            "c8",
+            0.0124
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0081,
+          "c2": 0.0089,
+          "c3": 0.002,
+          "c4": 0.0061,
+          "c5": 0.0055,
+          "c6": 0.0047,
+          "c7": 0.002,
+          "c8": 0.0055
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

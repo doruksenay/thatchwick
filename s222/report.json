@@ -1,0 +1,79 @@
+{
+  "job": "s222",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:24:24Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 2.203,
+          "lufs": -23.5,
+          "true_peak_db": -1.0,
+          "rms_db": -23.5,
+          "note": "tepe sınırında, yükseklik -23.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A slow, worried creak of old treehouse planks moving in the wind, a loose board knocking once. Details: old weathered planks swaying in wind.",
+          "duration": 2.4186997026139125,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.544,
+          "lufs": -23.9,
+          "true_peak_db": -1.0,
+          "rms_db": -25.3,
+          "note": "tepe sınırında, yükseklik -23.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0349)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A slow, worried creak of old treehouse planks moving in the wind, a loose board knocking once. Details: loose board and straining rope.",
+          "duration": 2.708261760447186,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 2.606,
+          "lufs": -24.5,
+          "true_peak_db": -1.0,
+          "rms_db": -25.5,
+          "note": "tepe sınırında, yükseklik -24.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A slow, worried creak of old treehouse planks moving in the wind, a loose board knocking once. Details: old weathered planks swaying in wind.",
+          "duration": 2.7234083089678736,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 2.233,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -24.0,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A slow, worried creak of old treehouse planks moving in the wind, a loose board knocking once. Details: loose board and straining rope.",
+          "duration": 2.308262567793236,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0349
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0349,
+          "c2": 0.0331,
+          "c3": 0.0331,
+          "c4": 0.0342
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

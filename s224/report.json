@@ -1,0 +1,171 @@
+{
+  "job": "s224",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:22:29Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.452,
+          "lufs": -30.5,
+          "true_peak_db": -1.0,
+          "rms_db": -29.2,
+          "note": "tepe sınırında, yükseklik -30.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: wooden spoon scraping a clay bowl.",
+          "duration": 2.1443950948724346,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.742,
+          "lufs": -24.5,
+          "true_peak_db": -1.0,
+          "rms_db": -27.3,
+          "note": "tepe sınırında, yükseklik -24.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: clay cup set down on a wooden table, ladle into a bowl.",
+          "duration": 2.006535856360442,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 1.203,
+          "lufs": -28.9,
+          "true_peak_db": -1.0,
+          "rms_db": -29.5,
+          "note": "tepe sınırında, yükseklik -28.9 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0219)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: wooden spoon scraping a clay bowl.",
+          "duration": 1.8315610124313817,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.601,
+          "lufs": -24.4,
+          "true_peak_db": -1.0,
+          "rms_db": -28.3,
+          "note": "tepe sınırında, yükseklik -24.4 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0067)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: clay cup set down on a wooden table, ladle into a bowl.",
+          "duration": 2.025329886271569,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.026,
+          "lufs": -25.0,
+          "true_peak_db": -1.0,
+          "rms_db": -26.0,
+          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0292)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: wooden spoon scraping a clay bowl.",
+          "duration": 2.035504049682336,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.249,
+          "lufs": -30.2,
+          "true_peak_db": -1.0,
+          "rms_db": -30.1,
+          "note": "tepe sınırında, yükseklik -30.2 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0069)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: clay cup set down on a wooden table, ladle into a bowl.",
+          "duration": 2.057025111622936,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.132,
+          "lufs": -27.4,
+          "true_peak_db": -1.0,
+          "rms_db": -30.2,
+          "note": "tepe sınırında, yükseklik -27.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0298)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: wooden spoon scraping a clay bowl.",
+          "duration": 1.9796997449526734,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.774,
+          "lufs": -25.0,
+          "true_peak_db": -1.0,
+          "rms_db": -26.1,
+          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0348)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A short medieval meal sound: wooden spoons, clay bowls and cups on a wooden table, close and dry. No voices. Details: clay cup set down on a wooden table, ladle into a bowl.",
+          "duration": 2.0424017056610655,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0219
+          ],
+          [
+            "c1",
+            "c5",
+            0.0292
+          ],
+          [
+            "c1",
+            "c7",
+            0.0298
+          ],
+          [
+            "c1",
+            "c8",
+            0.0348
+          ],
+          [
+            "c2",
+            "c4",
+            0.0067
+          ],
+          [
+            "c2",
+            "c6",
+            0.0069
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0219,
+          "c2": 0.0067,
+          "c3": 0.0188,
+          "c4": 0.0067,
+          "c5": 0.0188,
+          "c6": 0.0069,
+          "c7": 0.0084,
+          "c8": 0.0158
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

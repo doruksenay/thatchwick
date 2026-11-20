@@ -1,0 +1,91 @@
+{
+  "job": "s212",
+  "kind": "spot",
+  "family": "spots",
+  "created": "2026-11-20T14:21:37Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 3.061,
+          "lufs": -24.0,
+          "true_peak_db": -9.5,
+          "rms_db": -27.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. A single slightly larger wave breaking on the sand and drawing back over pebbles.",
+          "duration": 3.2190188192496656,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 2.98,
+          "lufs": -24.0,
+          "true_peak_db": -8.5,
+          "rms_db": -27.4,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0056)"
+          ],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. A single slightly larger wave breaking on the sand and drawing back over pebbles.",
+          "duration": 3.203457807124009,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 2.677,
+          "lufs": -24.0,
+          "true_peak_db": -9.7,
+          "rms_db": -27.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0084)"
+          ],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. A single slightly larger wave breaking on the sand and drawing back over pebbles.",
+          "duration": 2.898369558508147,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 2.558,
+          "lufs": -24.0,
+          "true_peak_db": -7.9,
+          "rms_db": -26.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0332)"
+          ],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. A single slightly larger wave breaking on the sand and drawing back over pebbles.",
+          "duration": 2.720275290964264,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0056
+          ],
+          [
+            "c1",
+            "c3",
+            0.0084
+          ],
+          [
+            "c1",
+            "c4",
+            0.0332
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0056,
+          "c2": 0.0056,
+          "c3": 0.0084,
+          "c4": 0.0251
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "job": "s101",
+  "kind": "sfx",
+  "family": "ui",
+  "created": "2026-11-20T14:20:05Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.421,
+          "lufs": -27.3,
+          "true_peak_db": -1.0,
+          "rms_db": -27.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small old copper coins dropping into a cloth purse, short and pleasant.",
+          "duration": 0.5746590466792973,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.566,
+          "lufs": -23.4,
+          "true_peak_db": -1.0,
+          "rms_db": -26.3,
+          "note": "tepe sınırında, yükseklik -23.4 (hedef -20)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small old copper coins dropping into a cloth purse, short and pleasant.",
+          "duration": 0.6022981429534611,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.563,
+          "lufs": -20.0,
+          "true_peak_db": -2.5,
+          "rms_db": -23.7,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small old copper coins dropping into a cloth purse, short and pleasant.",
+          "duration": 0.6282785041780093,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 0.514,
+          "lufs": -21.0,
+          "true_peak_db": -1.0,
+          "rms_db": -22.4,
+          "flags": [],
+          "pass": true,
+          "prompt": "Soft organic user-interface sound for a cozy medieval game, textures of wood, linen cloth and thread (embroidery theme), very short and gentle. No digital beeps, no synth, no music, no voice. A few small old copper coins dropping into a cloth purse, short and pleasant.",
+          "duration": 0.6222465604248458,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [],
+        "nearest": {
+          "c1": 0.0557,
+          "c2": 0.0729,
+          "c3": 0.0474,
+          "c4": 0.0474
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

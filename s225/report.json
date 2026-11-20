@@ -1,0 +1,159 @@
+{
+  "job": "s225",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:22:46Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.667,
+          "lufs": -22.0,
+          "true_peak_db": -1.0,
+          "rms_db": -23.7,
+          "note": "tepe sınırında, yükseklik -22.0 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a few small silver coins, dropped into a clay jar.",
+          "duration": 1.062846351578414,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.684,
+          "lufs": -22.7,
+          "true_peak_db": -1.0,
+          "rms_db": -24.4,
+          "note": "tepe sınırında, yükseklik -22.7 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a few small silver coins, dropped into a wooden alms box.",
+          "duration": 1.0851840157835757,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c3": {
+          "duration_s": 0.751,
+          "lufs": -19.1,
+          "true_peak_db": -1.0,
+          "rms_db": -21.6,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0128)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a handful of copper coins, dropped into a clay jar.",
+          "duration": 1.0206544705681733,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.75,
+          "lufs": -20.7,
+          "true_peak_db": -1.0,
+          "rms_db": -22.5,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a handful of copper coins, dropped into a wooden alms box.",
+          "duration": 1.0874892068133029,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c5": {
+          "duration_s": 0.65,
+          "lufs": -19.1,
+          "true_peak_db": -1.0,
+          "rms_db": -21.5,
+          "flags": [
+            "c2 ile neredeyse aynı (0.0141)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a few small silver coins, dropped into a clay jar.",
+          "duration": 1.046791001567346,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.735,
+          "lufs": -23.6,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -23.6 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.024)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a few small silver coins, dropped into a wooden alms box.",
+          "duration": 1.0784367249799558,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.939,
+          "lufs": -19.1,
+          "true_peak_db": -1.0,
+          "rms_db": -21.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0343)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a handful of copper coins, dropped into a clay jar.",
+          "duration": 1.099332240682179,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.728,
+          "lufs": -21.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.4,
+          "note": "tepe sınırında, yükseklik -21.8 (hedef -18)",
+          "flags": [
+            "c2 ile neredeyse aynı (0.0314)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Coins clinking as they drop into a wooden charity box, short and clean. Details: a handful of copper coins, dropped into a wooden alms box.",
+          "duration": 1.072172251198832,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c3",
+            0.0128
+          ],
+          [
+            "c1",
+            "c6",
+            0.024
+          ],
+          [
+            "c1",
+            "c7",
+            0.0343
+          ],
+          [
+            "c2",
+            "c5",
+            0.0141
+          ],
+          [
+            "c2",
+            "c8",
+            0.0314
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0128,
+          "c2": 0.0141,
+          "c3": 0.0128,
+          "c4": 0.0294,
+          "c5": 0.0141,
+          "c6": 0.0182,
+          "c7": 0.02,
+          "c8": 0.0182
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

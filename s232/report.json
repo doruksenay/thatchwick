@@ -1,0 +1,179 @@
+{
+  "job": "s232",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:23:04Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 0.622,
+          "lufs": -26.5,
+          "true_peak_db": -1.0,
+          "rms_db": -27.4,
+          "note": "tepe sınırında, yükseklik -26.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: stiff dough, wooden trough.",
+          "duration": 1.256499300732798,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 0.786,
+          "lufs": -26.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.8,
+          "note": "tepe sınırında, yükseklik -26.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0064)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: stiff dough, floured table.",
+          "duration": 1.1557732210944154,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 0.81,
+          "lufs": -25.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.3,
+          "note": "tepe sınırında, yükseklik -25.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0048)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: soft wet dough, floured table.",
+          "duration": 1.138680799403275,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 0.889,
+          "lufs": -25.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.1,
+          "note": "tepe sınırında, yükseklik -25.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0084)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: soft wet dough, wooden trough.",
+          "duration": 1.2197006626687759,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.914,
+          "lufs": -28.0,
+          "true_peak_db": -1.0,
+          "rms_db": -24.4,
+          "note": "tepe sınırında, yükseklik -28.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0076)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: stiff dough, wooden trough.",
+          "duration": 1.2647600606662754,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 0.906,
+          "lufs": -28.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.1,
+          "note": "tepe sınırında, yükseklik -28.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0123)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: stiff dough, floured table.",
+          "duration": 1.1204500497726426,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 0.707,
+          "lufs": -26.1,
+          "true_peak_db": -1.0,
+          "rms_db": -24.5,
+          "note": "tepe sınırında, yükseklik -26.1 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0073)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: soft wet dough, floured table.",
+          "duration": 1.0893915987681497,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 0.68,
+          "lufs": -22.8,
+          "true_peak_db": -1.0,
+          "rms_db": -24.0,
+          "note": "tepe sınırında, yükseklik -22.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0311)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Hands kneading bread dough: a soft thud, a push and a fold, with a faint creak of the wooden trough. Details: soft wet dough, wooden trough.",
+          "duration": 1.085758469421204,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0064
+          ],
+          [
+            "c1",
+            "c3",
+            0.0048
+          ],
+          [
+            "c1",
+            "c4",
+            0.0084
+          ],
+          [
+            "c1",
+            "c5",
+            0.0076
+          ],
+          [
+            "c1",
+            "c6",
+            0.0123
+          ],
+          [
+            "c1",
+            "c7",
+            0.0073
+          ],
+          [
+            "c1",
+            "c8",
+            0.0311
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0048,
+          "c2": 0.0058,
+          "c3": 0.0048,
+          "c4": 0.0072,
+          "c5": 0.0076,
+          "c6": 0.0059,
+          "c7": 0.0059,
+          "c8": 0.0192
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

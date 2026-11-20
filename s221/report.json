@@ -1,0 +1,171 @@
+{
+  "job": "s221",
+  "kind": "sfx",
+  "family": "foley",
+  "created": "2026-11-20T14:22:14Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.178,
+          "lufs": -26.3,
+          "true_peak_db": -1.0,
+          "rms_db": -25.5,
+          "note": "tepe sınırında, yükseklik -26.3 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, light child steps.",
+          "duration": 1.2656150218659359,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.17,
+          "lufs": -25.0,
+          "true_peak_db": -1.0,
+          "rms_db": -22.4,
+          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0304)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, quick scrambling steps.",
+          "duration": 1.3024870083943165,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.313,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -25.2,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, quick scrambling steps.",
+          "duration": 1.5005044044409312,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.204,
+          "lufs": -22.1,
+          "true_peak_db": -1.0,
+          "rms_db": -28.1,
+          "note": "tepe sınırında, yükseklik -22.1 (hedef -18)",
+          "flags": [
+            "c3 ile neredeyse aynı (0.0254)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, light child steps.",
+          "duration": 1.3892025041083178,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.197,
+          "lufs": -25.4,
+          "true_peak_db": -1.0,
+          "rms_db": -26.1,
+          "note": "tepe sınırında, yükseklik -25.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0073)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, light child steps.",
+          "duration": 1.3020668223191978,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c6": {
+          "duration_s": 1.253,
+          "lufs": -25.8,
+          "true_peak_db": -1.0,
+          "rms_db": -25.6,
+          "note": "tepe sınırında, yükseklik -25.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0093)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: simple plank steps nailed to a trunk, quick scrambling steps.",
+          "duration": 1.319730872371085,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c7": {
+          "duration_s": 1.303,
+          "lufs": -21.7,
+          "true_peak_db": -1.0,
+          "rms_db": -27.6,
+          "note": "tepe sınırında, yükseklik -21.7 (hedef -18)",
+          "flags": [
+            "c3 ile neredeyse aynı (0.0341)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, quick scrambling steps.",
+          "duration": 1.4496834442247224,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.2,
+          "lufs": -25.0,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -25.0 (hedef -18)",
+          "flags": [
+            "c3 ile neredeyse aynı (0.0348)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Someone climbing a few rungs up into a treehouse: rope creaking, wood rungs knocking softly against bark. Details: rope ladder with wooden rungs, light child steps.",
+          "duration": 1.269288779422818,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0304
+          ],
+          [
+            "c1",
+            "c5",
+            0.0073
+          ],
+          [
+            "c1",
+            "c6",
+            0.0093
+          ],
+          [
+            "c3",
+            "c4",
+            0.0254
+          ],
+          [
+            "c3",
+            "c7",
+            0.0341
+          ],
+          [
+            "c3",
+            "c8",
+            0.0348
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0073,
+          "c2": 0.0304,
+          "c3": 0.0254,
+          "c4": 0.0107,
+          "c5": 0.0073,
+          "c6": 0.0093,
+          "c7": 0.0334,
+          "c8": 0.0107
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

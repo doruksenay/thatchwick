@@ -1,0 +1,83 @@
+{
+  "job": "s211",
+  "kind": "spot",
+  "family": "spots",
+  "created": "2026-11-20T14:21:26Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.96,
+          "lufs": -24.0,
+          "true_peak_db": -10.2,
+          "rms_db": -29.3,
+          "flags": [],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short call of a single gull, a little distant over the sea. Details: herring gull.",
+          "duration": 1.9558105347969132,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.837,
+          "lufs": -24.0,
+          "true_peak_db": -8.3,
+          "rms_db": -29.1,
+          "flags": [
+            "c1 ile neredeyse aynı (0.028)"
+          ],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short call of a single gull, a little distant over the sea. Details: black-headed gull.",
+          "duration": 1.8625318180848514,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 2.0,
+          "lufs": -24.0,
+          "true_peak_db": -11.4,
+          "rms_db": -30.9,
+          "flags": [
+            "c1 ile neredeyse aynı (0.0269)"
+          ],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short call of a single gull, a little distant over the sea. Details: herring gull.",
+          "duration": 2.025337189704185,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 2.04,
+          "lufs": -24.0,
+          "true_peak_db": -9.2,
+          "rms_db": -27.5,
+          "flags": [],
+          "pass": true,
+          "prompt": "Single isolated nature sound event, natural outdoor recording, nothing else audible, no music, no voice. One short call of a single gull, a little distant over the sea. Details: black-headed gull.",
+          "duration": 2.0604492127258798,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.028
+          ],
+          [
+            "c1",
+            "c3",
+            0.0269
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0269,
+          "c2": 0.0254,
+          "c3": 0.0269,
+          "c4": 0.0254
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}

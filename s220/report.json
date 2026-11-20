@@ -1,0 +1,153 @@
+{
+  "job": "s220",
+  "kind": "sfx",
+  "family": "tools",
+  "created": "2026-11-20T14:21:54Z",
+  "groups": {
+    "main": {
+      "candidates": {
+        "c1": {
+          "duration_s": 1.406,
+          "lufs": -23.2,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "note": "tepe sınırında, yükseklik -23.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, on a plank platform with leaves rustling.",
+          "duration": 1.5388886351543576,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c2": {
+          "duration_s": 1.38,
+          "lufs": -25.8,
+          "true_peak_db": -1.0,
+          "rms_db": -26.8,
+          "note": "tepe sınırında, yükseklik -25.8 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0256)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, up in a tree, slightly hollow plank.",
+          "duration": 1.6484758379084319,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c3": {
+          "duration_s": 1.557,
+          "lufs": -23.4,
+          "true_peak_db": -1.0,
+          "rms_db": -24.2,
+          "note": "tepe sınırında, yükseklik -23.4 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0215)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, on a plank platform with leaves rustling.",
+          "duration": 1.7481609973316694,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c4": {
+          "duration_s": 1.468,
+          "lufs": -21.5,
+          "true_peak_db": -1.0,
+          "rms_db": -22.8,
+          "note": "tepe sınırında, yükseklik -21.5 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0221)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, up in a tree, slightly hollow plank.",
+          "duration": 1.5094064396850504,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.278,
+          "lufs": -21.9,
+          "true_peak_db": -1.0,
+          "rms_db": -23.3,
+          "note": "tepe sınırında, yükseklik -21.9 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, on a plank platform with leaves rustling.",
+          "duration": 1.4458977147226049,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 1.475,
+          "lufs": -22.8,
+          "true_peak_db": -1.0,
+          "rms_db": -23.7,
+          "note": "tepe sınırında, yükseklik -22.8 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: small iron hammer, up in a tree, slightly hollow plank.",
+          "duration": 1.6857689038880341,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c7": {
+          "duration_s": 1.298,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -20.5,
+          "flags": [
+            "c6 ile neredeyse aynı (0.0302)"
+          ],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, on a plank platform with leaves rustling.",
+          "duration": 1.4727153385471183,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c8": {
+          "duration_s": 1.291,
+          "lufs": -19.3,
+          "true_peak_db": -1.0,
+          "rms_db": -20.8,
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval hand tool sound, dry close-mic recording, no reverb, no music, no voice. Two or three hammer blows driving a nail into a wooden plank outdoors, then a short plank creak. Details: wooden mallet on a peg, up in a tree, slightly hollow plank.",
+          "duration": 1.461381737025863,
+          "model": "eleven_text_to_sound_v3"
+        }
+      },
+      "set": {
+        "pairs_dup": [
+          [
+            "c1",
+            "c2",
+            0.0256
+          ],
+          [
+            "c1",
+            "c3",
+            0.0215
+          ],
+          [
+            "c1",
+            "c4",
+            0.0221
+          ],
+          [
+            "c6",
+            "c7",
+            0.0302
+          ]
+        ],
+        "nearest": {
+          "c1": 0.0215,
+          "c2": 0.0238,
+          "c3": 0.0215,
+          "c4": 0.0221,
+          "c5": 0.0238,
+          "c6": 0.0277,
+          "c7": 0.0302,
+          "c8": 0.0299
+        },
+        "ref_distance": {}
+      }
+    }
+  }
+}
