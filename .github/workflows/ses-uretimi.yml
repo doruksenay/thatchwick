@@ -31,6 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Sırada bekleyen çalışma, tetikleyen eski commit'i değil dalın o anki ucunu almalı;
+          # yoksa önceki çalışmanın yükselttiği işleri yeniden yükseltip çakışır (20.11.2026).
+          ref: ${{ github.ref_name }}
           lfs: false
           fetch-depth: 0
       - name: ffmpeg

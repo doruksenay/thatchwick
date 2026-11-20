@@ -27,6 +27,10 @@ WORK = ROOT / ".audio_work"          # adaylar (git dışı)
 STATUSES = ("ready", "claimed", "review", "accepted", "rejected", "blocked", "done")
 RUNNABLE_APPROVALS = ("auto", "kullanici", "kullanıcı", "user")
 DONE_STATES = ("accepted", "done")
+# Bağımlılık için incelemede (review) beklemek yeterli; PixelLab kuyruğuyla aynı kural (CLAUDE.md).
+# İstisna: voice_design kabul edilmeden ses kimliği oluşmaz, ona bağlı işler kabulü bekler.
+DEP_OK_STATES = ("review",) + DONE_STATES
+NEEDS_ACCEPT_KINDS = ("voice_design",)
 
 
 def now_iso() -> str:
@@ -132,7 +136,10 @@ def job_by_id(job_id: str) -> Job | None:
 def deps_satisfied(job: Job, by_id: dict[str, Job]) -> bool:
     for dep in job.get("depends_on") or []:
         d = by_id.get(str(dep))
-        if d is None or d.get("status") not in DONE_STATES:
+        if d is None:
+            return False
+        ok = DONE_STATES if d.get("kind") in NEEDS_ACCEPT_KINDS else DEP_OK_STATES
+        if d.get("status") not in ok:  # rejected, ready, claimed, blocked: bekle
             return False
     return True
 
@@ -172,6 +179,16 @@ def family_of(job: Job) -> dict:
     fam = dict(fams["defaults"])
     fam.update(fams["families"][name])
     fam["name"] = name
+    # İş dosyası aileden uzun süre isteyebilir (ör. 4 sn sinek vızıltısı, foley üst sınırı 3 sn):
+    # süre kapısı iş dosyasının istediği süreyi geçersiz saymasın.
+    if job.get("duration_range"):
+        fam["duration_range"] = [float(x) for x in job.get("duration_range")]
+    else:
+        durs = [job.get("duration_s")] + [L.get("duration_s") for L in (job.get("layers") or [])]
+        durs = [float(d) for d in durs if d]
+        if durs and "duration_range" in fam:
+            lo, hi = fam["duration_range"]
+            fam["duration_range"] = [lo, max(hi, round(max(durs) * 1.3, 2))]
     return fam
 
 
