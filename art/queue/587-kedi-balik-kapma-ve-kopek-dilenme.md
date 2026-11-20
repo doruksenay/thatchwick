@@ -1,7 +1,8 @@
 ---
 id: "587"
 title: "Kedi balık kapma ve köpek dilenme animasyonları (16)"
-status: pending
+status: running
+claimed_at: 2026-11-20T17:15Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 50
 family: hayvan
