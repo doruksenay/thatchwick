@@ -7057,16 +7057,6 @@
           ]
         }
       ],
-      "tags": [
-        "rain_loving"
-      ],
-      "art": {
-        "alongX": "iso_forage_mushroom_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "mirror": true
-      },
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_moss",
@@ -7121,7 +7111,17 @@
           ],
           "night": true
         }
-      ]
+      ],
+      "tags": [
+        "rain_loving"
+      ],
+      "art": {
+        "alongX": "iso_forage_mushroom_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_hazel",
@@ -7189,15 +7189,6 @@
           ]
         }
       ],
-      "art": {
-        "alongX": "iso_forage_herbs_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pxW": 80,
-        "pxH": 72,
-        "mirror": true
-      },
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_violet",
@@ -7246,7 +7237,16 @@
           ],
           "night": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_herbs_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_hive",
@@ -7304,13 +7304,6 @@
           ]
         }
       ],
-      "art": {
-        "alongX": "iso_forage_dry_branch_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "mirror": true
-      },
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_woodlouse",
@@ -7338,7 +7331,14 @@
           "item": "item.viv_moss",
           "chance": 0.3
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_dry_branch_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.salting_barrel",
@@ -9741,13 +9741,6 @@
           ]
         }
       ],
-      "art": {
-        "alongX": "iso_forage_cress_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "mirror": true
-      },
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_water_moss",
@@ -9770,7 +9763,14 @@
             "Autumn"
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_cress_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.resin",
@@ -19475,10 +19475,6 @@
           ]
         }
       ],
-      "tags": [
-        "shore"
-      ],
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_houseleek",
@@ -19513,7 +19509,11 @@
             "Autumn"
           ]
         }
-      ]
+      ],
+      "tags": [
+        "shore"
+      ],
+      "site": "outdoor"
     },
     {
       "id": "item.sieve",
@@ -22808,15 +22808,6 @@
           ]
         }
       ],
-      "art": {
-        "alongX": "iso_forage_chamomile_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pxW": 80,
-        "pxH": 72,
-        "mirror": true
-      },
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_ladybird",
@@ -22842,7 +22833,16 @@
             "Autumn"
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_chamomile_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_linden",
@@ -22904,15 +22904,6 @@
           ]
         }
       ],
-      "art": {
-        "alongX": "iso_forage_sage_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pxW": 80,
-        "pxH": 72,
-        "mirror": true
-      },
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_thyme",
@@ -22937,7 +22928,16 @@
             "Summer"
           ]
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_sage_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.forage_mint",
@@ -22964,15 +22964,6 @@
           ]
         }
       ],
-      "art": {
-        "alongX": "iso_forage_mint_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pxW": 80,
-        "pxH": 72,
-        "mirror": true
-      },
-      "site": "outdoor",
       "catches": [
         {
           "item": "item.viv_caterpillar",
@@ -23000,7 +22991,16 @@
           ],
           "rain": true
         }
-      ]
+      ],
+      "art": {
+        "alongX": "iso_forage_mint_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pxW": 80,
+        "pxH": 72,
+        "mirror": true
+      },
+      "site": "outdoor"
     },
     {
       "id": "item.honeycomb",
@@ -26327,11 +26327,6 @@
       "placement": "Surface",
       "category": "decor",
       "price": 0,
-      "tags": [
-        "glass",
-        "craftonly",
-        "vivarium"
-      ],
       "decorSize": "M",
       "weight": 4,
       "styleSet": "Tüccar",
@@ -26343,13 +26338,6 @@
       ],
       "vivCreatures": 4,
       "vivPlants": 3,
-      "art": {
-        "alongX": "iso_item_glass_garden_se",
-        "pivotX": 16.0,
-        "pivotY": 7.0,
-        "pending": true,
-        "mirror": true
-      },
       "interactions": [
         {
           "id": "watch_viv",
@@ -26368,18 +26356,25 @@
           "durationDays": 0.02,
           "homeAction": "mist"
         }
-      ]
+      ],
+      "tags": [
+        "glass",
+        "craftonly",
+        "vivarium"
+      ],
+      "art": {
+        "alongX": "iso_item_glass_garden_se",
+        "pivotX": 16.0,
+        "pivotY": 7.0,
+        "pending": true,
+        "mirror": true
+      }
     },
     {
       "id": "item.glass_garden_large",
       "displayName": "Büyük cam bahçe",
       "category": "decor_wall",
       "price": 0,
-      "tags": [
-        "glass",
-        "craftonly",
-        "vivarium"
-      ],
       "styleSet": "Asil",
       "material": "glass",
       "beauty": 6,
@@ -26390,13 +26385,6 @@
       "vivPlants": 6,
       "level": 6,
       "finishGroup": "wood",
-      "art": {
-        "alongX": "iso_item_glass_garden_large_se",
-        "pivotX": 40.0,
-        "pivotY": 24.0,
-        "pending": true,
-        "mirror": true
-      },
       "interactions": [
         {
           "id": "watch_viv",
@@ -26415,6 +26403,22 @@
           "durationDays": 0.02,
           "homeAction": "mist"
         }
+      ],
+      "tags": [
+        "glass",
+        "craftonly",
+        "vivarium"
+      ],
+      "art": {
+        "alongX": "iso_item_glass_garden_large_se",
+        "pivotX": 40.0,
+        "pivotY": 24.0,
+        "pending": true,
+        "mirror": true
+      },
+      "site": "indoor",
+      "belongs": [
+        "living"
       ]
     }
   ],
