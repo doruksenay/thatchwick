@@ -4,7 +4,7 @@ title: Köy dili replikleri, Kalın-alçak (pilot)
 kind: voice_lines
 family: voice
 pilot: true
-status: ready
+status: claimed
 approved_by: auto
 depends_on:
 - s143
@@ -17,6 +17,8 @@ inceleme_notlari:
   karar: yeniden
   not: c1'in sesini beğenmedim, daha cozy bir şey arıyorum
 yeniden_sayisi: 1
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T18:53:41Z'
 ---
 Metinler anlamsız köy dilidir (koy_dili.py ile üretildi). Köşeli parantezler v3 ses etiketleri; pilotta işe yarayıp yaramadığı dinlenir.
 
