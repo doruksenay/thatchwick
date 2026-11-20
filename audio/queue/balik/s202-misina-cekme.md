@@ -4,7 +4,7 @@ title: Misina çekme (kısa, çok sık)
 kind: sfx
 family: tools
 freq: A
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: fish.reel
@@ -25,5 +25,7 @@ inceleme_notlari:
   not: daha sık olmalı, hepsi çok yavaş
 yeniden_sayisi: 1
 prompt_influence: 0.7
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T16:46:52Z'
 ---
 Rapid, tight little creaks of a wooden fishing rod and taut line being reeled in quick short tugs, several fast clicks packed close together, very short, no water.
