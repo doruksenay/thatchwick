@@ -572,7 +572,7 @@
   "item.bleached_bench.act.sit": "Sit",
   "item.bleached_bench.name": "Bleached wooden bench",
   "item.bloomery.act.smelt_raw": "Smelt raw ore (3 + 2 charcoal)",
-  "item.bloomery.act.smelt_roasted": "Smelt roasted ore (2 + 2 charcoal)",
+  "item.bloomery.act.smelt_roasted": "Smelt roasted ore (2 + 1 charcoal)",
   "item.bloomery.name": "Bloomery",
   "item.boar_meat.name": "Boar meat",
   "item.boar_stew.name": "Boar stew",

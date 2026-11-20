@@ -459,8 +459,8 @@ namespace Thatchwick.Game
             {
                 sr.color = p.Z < 0 ? EarthColor : VoidColor;
                 if (p.Z < 0 && ShowPlot && Map.IsOwned(p)) sr.color = new Color32(52, 42, 36, 255);
-                // Arsa kazısı (kat -2): kaya karoları türüne ve durumuna göre boyanır (işaretli, çatırdıyor, damar izi).
-                if (p.Z <= -2 && RockTint != null) { var tint = RockTint(p); if (tint.HasValue) sr.color = tint.Value; }
+                // Arsa kazısı (kat -2) ve tepenin altındaki galeri (kat -1): kaya karoları türüne ve durumuna göre boyanır.
+                if (p.Z < 0 && RockTint != null) { var tint = RockTint(p); if (tint.HasValue) sr.color = tint.Value; }
                 return;
             }
             var floor = Map.GetFloor(p);

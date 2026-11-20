@@ -8,9 +8,9 @@ using Thatchwick.Core.Mining;
 namespace Thatchwick.Game
 {
     /// <summary>
-    /// Ocak paneli (M, geçici IMGUI): aile ocağının galeri katı (-1). Tepe bölgesi (yol haritası 48) gelene kadar ocak ekran
-    /// dışındadır: oyuncu karoları buradan işaretler, maden görevli aile üyeleri her sabah işaretli karoları kazar
-    /// (MineSystem.Shift). Çatırdayan karo, su derinliği ve yarının suyu burada görünür. Kurallar Core.Mining'de.
+    /// Maden defteri (M, geçici IMGUI): hane madeninin galeri katı (-1). Galeri tepenin altındadır; karakter ağızdan iner ve
+    /// işleri orada görerek yapar (belge 58d M1). Defter madene inmeden işaret koymak ve durumu görmek içindir: anında sonuç
+    /// veren düğme yoktur. Maden görevli aile üyeleri her sabah işaretli karoları kazar (MineSystem.Shift).
     /// </summary>
     public sealed class MinePanel
     {
@@ -19,7 +19,6 @@ namespace Thatchwick.Game
         private readonly ContentDatabase _content;
         private Vector2 _scroll;
         private string _status;
-        private bool _stoneArch;  // destek türü: taş kemer (çürümez; 3 yontma taş, Taş ustalığı 4)
         private bool _fireMode;   // ateşle kırma kipi: dokunulan sert karoya karşı odun yakılır (belge 23)
 
         /// <summary>Panelden "kendin in" diyen karakter (komut alan); null ise düğme görünmez.</summary>
@@ -27,6 +26,10 @@ namespace Thatchwick.Game
         /// <summary>Ocak açılabilir mi (Madencilik ve akçe); açılmışsa null.</summary>
         public Func<string> OpenBlocker { get; set; }
         public event Action<string> Message;
+        /// <summary>Maden açıldı (oyun katmanı galeriyi dünyaya yerleştirir).</summary>
+        public event Action Opened;
+        /// <summary>"Madene in": komut alan karakter ağızdan iner.</summary>
+        public event Action<Character> GoDown;
 
         public bool Active { get; private set; }
 
@@ -66,6 +69,7 @@ namespace Thatchwick.Game
                     _house.TrySpend(OpenCostAkce);
                     for (int i = 0; i < OpenCostPlanks; i++) _house.TryTakeItem("item.plank");
                     _mines.EnsureMine();
+                    Opened?.Invoke();
                     Message?.Invoke(GameLocalization.T("ui.mine.opened"));
                 }
                 GUI.enabled = true;
@@ -112,35 +116,12 @@ namespace Thatchwick.Game
 
             int creaks = 0;
             foreach (var (_, _, t) in m.All()) if (t.Creaking) creaks++;
-            GUILayout.BeginHorizontal();
-            var supportKind = _stoneArch ? SupportKind.StoneArch : SupportKind.Wood;
-            GUI.enabled = creaks > 0;
-            if (GUILayout.Button($"Çatırdayanlara destek ({creaks})"))
-            {
-                int n = 0; string why = null;
-                foreach (var (x, y, t) in m.All())
-                {
-                    if (!t.Creaking) continue;
-                    if (_mines.PlaceSupport(m, x, y, supportKind, Actor?.Invoke())) n++;
-                    else why = why ?? _mines.CanSupport(m, x, y, supportKind, Actor?.Invoke());
-                }
-                _status = n > 0 ? GameLocalization.T(_stoneArch ? "ui.mine.support.arch_done" : "ui.mine.support.wood_done", ("n", n)) : (why ?? GameLocalization.T("ui.mine.support.none"));
-            }
-            GUI.enabled = true;
-            _stoneArch = GUILayout.Toggle(_stoneArch, " " + GameLocalization.T("ui.mine.support.arch", ("stones", MineSystem.StoneArchStones)));
-            GUI.enabled = m.Water > 0;
-            if (GUILayout.Button("Kovayla su boşalt")) { _mines.Bail(m, Actor?.Invoke()); _status = $"Su: {m.Water:0.#}"; }
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
+            if (creaks > 0) GUILayout.Label(GameLocalization.T("ui.mine.panel.creaks", ("n", creaks)));
+            GUILayout.Label(GameLocalization.T("ui.mine.panel.work_below"));
             bool fire = GUILayout.Toggle(_fireMode, " " + GameLocalization.T("ui.mine.fire.mode", ("wood", MineSystem.FireWood)));
             if (fire != _fireMode) { _fireMode = fire; _status = fire ? GameLocalization.T("ui.mine.fire.help") : null; }
             var c = Actor?.Invoke();
-            if (c != null && GUILayout.Button($"{c.Name} insin: üç saat kaz"))
-            {
-                int dug = _mines.Shift(m, c, 0.125);
-                _status = dug > 0 ? $"{c.Name} {dug} karo kazdı" : "Kazılacak işaretli karo yok (ya da yetişilemiyor).";
-                if (dug > 0) c.AddMoodlet(Thatchwick.Core.Mood.MoodCatalog.Dusty);
-            }
+            if (c != null && GoDown != null && GUILayout.Button(GameLocalization.T("ui.mine.go_down", ("name", c.Name)))) GoDown(c);
             GUILayout.EndArea();
         }
     }

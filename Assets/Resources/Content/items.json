@@ -4454,7 +4454,7 @@
       "displayName": "Çivi",
       "placement": "Resource",
       "category": "resource",
-      "price": 1,
+      "price": 3,
       "interactions": [],
       "tags": [
         "keep"
@@ -18757,14 +18757,14 @@
       "displayName": "Kavrulmuş demir cevheri",
       "placement": "Resource",
       "category": "resource",
-      "price": 6
+      "price": 7
     },
     {
       "id": "item.iron_bloom",
       "displayName": "Ham demir",
       "placement": "Resource",
       "category": "resource",
-      "price": 8
+      "price": 21
     },
     {
       "id": "item.slag",
@@ -19024,7 +19024,7 @@
       "displayName": "Demir külçe",
       "placement": "Resource",
       "category": "resource",
-      "price": 12,
+      "price": 27,
       "tags": [
         "metal"
       ]
@@ -19034,7 +19034,7 @@
       "displayName": "Nal",
       "placement": "Resource",
       "category": "resource",
-      "price": 15,
+      "price": 34,
       "tags": [
         "metal"
       ]
@@ -19044,7 +19044,7 @@
       "displayName": "Dişli takımı",
       "placement": "Resource",
       "category": "resource",
-      "price": 25,
+      "price": 39,
       "tags": [
         "craft"
       ]
@@ -19182,14 +19182,9 @@
               "item": "item.clay",
               "count": 1,
               "chance": 0.4
-            },
-            {
-              "item": "item.iron_ore",
-              "count": 1,
-              "chance": 0.3,
-              "minLevel": 2
             }
-          ]
+          ],
+          "skillWork": "quarry"
         }
       ],
       "width": 2,
@@ -19949,7 +19944,7 @@
       "id": "item.water_gate",
       "displayName": "Su kapağı",
       "category": "farm",
-      "price": 30,
+      "price": 42,
       "level": 1,
       "styleSet": "Zanaatkâr",
       "rooms": [
@@ -20090,7 +20085,7 @@
       "interactions": [
         {
           "id": "smelt_roasted",
-          "displayName": "Kavrulmuş cevheri erit (2 + 2 kömür)",
+          "displayName": "Kavrulmuş cevheri erit (2 + 1 kömür)",
           "durationDays": 0.12,
           "materials": [
             {
@@ -20099,7 +20094,7 @@
             },
             {
               "item": "item.charcoal",
-              "count": 2
+              "count": 1
             }
           ],
           "produce": [
@@ -27045,7 +27040,7 @@
       "id": "item.whittling_knife",
       "displayName": "Oyma bıçağı",
       "category": "kids",
-      "price": 8,
+      "price": 37,
       "placement": "Surface",
       "styleSet": "Köylü",
       "decorSize": "S",
@@ -30479,7 +30474,7 @@
       "id": "item.cezve",
       "displayName": "Cezve",
       "category": "kitchen",
-      "price": 20,
+      "price": 34,
       "level": 4,
       "styleSet": "Köylü",
       "rooms": [
@@ -31605,7 +31600,7 @@
       "id": "item.wall_niche",
       "displayName": "Duvar nişi",
       "category": "decor_wall",
-      "price": 8,
+      "price": 9,
       "placement": "Wall",
       "styleSet": "Köylü",
       "styleTheme": "Yörük",
@@ -31661,7 +31656,7 @@
       "id": "item.wall_niche_lamp",
       "displayName": "Kemerli lamba nişi",
       "category": "decor_wall",
-      "price": 14,
+      "price": 17,
       "placement": "Wall",
       "styleSet": "Zanaatkâr",
       "styleTheme": "Çatkı",
@@ -37028,7 +37023,7 @@
       "id": "item.storm_bell",
       "displayName": "Fırtına çanı",
       "category": "farm",
-      "price": 45,
+      "price": 107,
       "level": 8,
       "lockSkill": "WeatherLore",
       "styleSet": "Zanaatkâr",
@@ -37213,7 +37208,7 @@
       "displayName": "Araba tekerleği",
       "placement": "Resource",
       "category": "resource",
-      "price": 20,
+      "price": 42,
       "tags": [
         "craft"
       ]
@@ -37419,7 +37414,7 @@
       "displayName": "Menteşe",
       "placement": "Resource",
       "category": "resource",
-      "price": 4,
+      "price": 12,
       "tags": [
         "craft"
       ]
@@ -37670,7 +37665,7 @@
       "displayName": "Maden rayı ve arabası",
       "placement": "Resource",
       "category": "resource",
-      "price": 30,
+      "price": 44,
       "tags": [
         "tool"
       ]
@@ -37979,7 +37974,7 @@
       "id": "item.sled",
       "displayName": "Kış kızağı",
       "category": "farm",
-      "price": 25,
+      "price": 44,
       "width": 2,
       "level": 1,
       "styleSet": "Köylü",
@@ -38329,7 +38324,7 @@
       "displayName": "Pirinç toka",
       "placement": "Resource",
       "category": "resource",
-      "price": 6,
+      "price": 22,
       "tags": [
         "trim",
         "shop_smithy"
@@ -46583,7 +46578,7 @@
       "skill": "Smithing",
       "skillXp": 6,
       "displayName": "Çivi döv",
-      "count": 4
+      "count": 12
     },
     {
       "id": "horseshoe",

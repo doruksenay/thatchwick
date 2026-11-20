@@ -804,11 +804,14 @@ namespace Thatchwick.Game
             _plants.FamilyOf = id => _content.Items.TryGet(id, out var cd) ? cd.CropFamily : null;   // nöbet aileye bakar
             _mines = new MineSystem(_world, _household, Thatchwick.Core.Seeds.Derive(_seed, 53, 0));   // kazı katı tohumdan: yüklemede aynı
             if (loaded != null) SaveGame.RestoreMines(loaded, _mines);
+            _mines.ActionTimeScale = _clock.Config.ActionTimeScale;   // ekran dışı vardiya elle kazıyla aynı hızda (belge 58d M0.3)
+            PlaceMineInWorld();
             _animals.Died += OnAnimalDied;
             _roomMood = new RoomMoodSystem(_world) { ArrangerLevel = () => _life != null ? _life.BestSkill(SkillType.Decorating) : 1 };
             // Pazar teklifleri gün ve tohumdan yeniden üretilir: yüklemeden sonra aynı kalsın diye epoch'suz türetilir.
             _market = new Market(_content, _household, _storage, null, seed: legacySeed ? 17 : Thatchwick.Core.Seeds.Derive(_seed, 4));
             if (loaded != null) _market.RestoreState(loaded.MarketDemand, _clock.TotalDays, _clock.Season, loaded.MarketTakenOffers);
+            if (loaded != null) _market.RestoreRawSold(loaded.MarketRawWeek, loaded.MarketRawSold);
             else _market.Tick(0, _clock.TotalDays, _clock.Season);
             _market.OfferAccepted += o => _account.Record(o.IsContract ? "contract" : "barter", _clock.DayIndex);
             _market.OfferAccepted += o => { if (o.Reputation > 0 && _life != null) _life.Upbringing.Reputation.Add(o.Reputation, o.Label ?? "sipariş"); };
@@ -951,7 +954,8 @@ namespace Thatchwick.Game
             _villagePanel = new VillagePanel(_life, _content, _household, _family, _dynasty, () => Commander?.Character);
             _requestPanel = new RequestPanel(_life, () => Commander?.Character)
             {
-                ShowOnMap = c => ShowMessage(GameLocalization.T("ui.where.now", ("name", c.Name), ("place", Thatchwick.Core.World.Regions.At(c.Position) is Thatchwick.Core.World.Region rg ? GameLocalization.T("region." + rg.Id) : GameLocalization.T("ui.where.village"))))
+                ShowOnMap = c => ShowMessage(GameLocalization.T("ui.where.now", ("name", c.Name), ("place", _mines != null && _mines.InMine(c) ? GameLocalization.T("ui.mine.name")
+                    : Thatchwick.Core.World.Regions.At(c.Position) is Thatchwick.Core.World.Region rg ? GameLocalization.T("region." + rg.Id) : GameLocalization.T("ui.where.village"))))
             };
             // İstek teslimi elden: verenin 3 karo yakınında olmalı (yoksa ulak).
             _life.Requests.Near = (a, b) => a != null && b != null && a.Position.Z == b.Position.Z
@@ -2225,18 +2229,18 @@ namespace Thatchwick.Game
         // Arsa kazısı (kat -2): kayaya dokununca kaz ya da işaretle; açık karoda destek, ışık ve su.
         private void AddMineOptions(GridPos tile, List<string> names)
         {
-            if (tile.Z > -2) return;
-            var m = _mines.Get(MineSystem.PlotId);
-            var t = m?.Get(tile.X, tile.Y);
+            if (tile.Z >= 0) return;
+            var m = _mines.SiteAt(tile, out int lx, out int ly);   // arsa kazısı (kat -2) ya da tepenin altındaki galeri (kat -1)
+            var t = m?.Get(lx, ly);
             if (t == null) return;
             var c = Commander.Character;
             var target = tile;
             if (!t.IsOpen)
             {
-                string vein = m.TouchesOpen(tile.X, tile.Y) && t.Ore != null ? $", damar: {(_content.Items.TryGet(t.Ore, out var od) ? od.DisplayName : t.Ore)}" : "";
+                string vein = m.TouchesOpen(lx, ly) && t.Ore != null ? $", damar: {(_content.Items.TryGet(t.Ore, out var od) ? od.DisplayName : t.Ore)}" : "";
                 names.Add($"{MineSystem.RockName(t.Rock)} (sertlik {MineSystem.Hardness(t.Rock)}{vein}){(t.Creaking ? ", ÇATIRDIYOR" : "")}");
                 _menuOptions.Add(new MenuOption { Label = "Kaz", Blocked = _farmWork.CanDo(c, target, TileAction.Dig), Run = () => { if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(target, TileAction.Dig))) ShowMessage("İş sırası dolu."); } });
-                _menuOptions.Add(new MenuOption { Label = t.Marked ? "İşareti kaldır" : "Kazılacak diye işaretle (görevli kazar)", Run = () => { _mines.Mark(m, target.X, target.Y, !t.Marked); _floorsDirty = true; } });
+                _menuOptions.Add(new MenuOption { Label = t.Marked ? "İşareti kaldır" : "Kazılacak diye işaretle (görevli kazar)", Run = () => { _mines.Mark(m, lx, ly, !t.Marked); _floorsDirty = true; } });
                 return;
             }
             names.Add($"Kazı · su derinliği {m.WaterDepth} (yarın {_mines.TomorrowDepth(m)}){(t.Support != SupportKind.None ? ", destekli" : "")}");
@@ -2538,7 +2542,19 @@ namespace Thatchwick.Game
             _mines.Creaked += (m, n) => ShowMessage($"Kazıda {n} karo çatırdıyor: bugün destek kurulmazsa yarın çöker", 5f);
             _mines.SupportRotted += (m, x, y, gone) => ShowMessage(gone ? "Çürüyen bir çatkı çöktü (yenisini kur)" : "Bir ahşap çatkı çürüyor (1 tahta ile yenile)");
             _mines.RelicFound += (c, relic) => { ShowMessage($"{c.Name} bir kalıntı buldu: {(_content.Items.TryGet(relic, out var rd) ? rd.DisplayName : relic)}", 4f); c.AddMoodlet(MoodCatalog.VeinFound); };
-            _mines.Dug += (c, m, x, y, got) => { _floorsDirty = true; if (c != null) c.AddMoodlet(MoodCatalog.Dusty); _life?.OnMineDug(c); };
+            // "Tozlu" artık her vuruşta değil, yer altında 2 saatten sonra (WatchUnderground; belge 58d M0.4).
+            _mines.Dug += (c, m, x, y, got) =>
+            {
+                _floorsDirty = true;
+                if (c != null && m.WaterDepth >= 1) c.AddMoodlet("mood.mine_wet", GameLocalization.T("ui.mine.mood.wet"), -3, 0.1);
+                _life?.OnMineDug(c);
+            };
+            _mines.VeinOpened += (c, m, ore) =>
+            {
+                c.AddMoodlet("mood.vein_opened", GameLocalization.T("ui.mine.mood.vein_opened"), 4, 0.125);
+                ShowMessage(GameLocalization.T("ui.mine.vein_opened", ("name", c.Name), ("ore", _content.Items.TryGet(ore, out var od) ? od.DisplayName : ore)), 3f);
+            };
+            _life.Duties.MineDig = (place, c, n) => _mines.DutyDig(place.Id == "mine:plot" ? MineSystem.PlotId : MineSystem.MineId, c, n);
             _buildService.DeepDigBlocker = p => _mines.ShaftBlocker(_life.BestSkill(SkillType.Mining));
             _keepsakePanel = new KeepsakePanel(_life.Keepsakes, _world, _clock);
             _kitchenPanel = new KitchenPanel(_life, _world, _household, _content, _clock, () => (_selected ?? _player)?.Character,
@@ -2561,15 +2577,17 @@ namespace Thatchwick.Game
                 OpenBlocker = () => _life.BestSkill(SkillType.Mining) < 1 ? "Madencilik gerekir." : null
             };
             _minePanel.Message += m => ShowMessage(m, 4f);
+            _minePanel.Opened += PlaceMineInWorld;
+            _minePanel.GoDown += SendDownMine;
             InitYard();   // sinek, azar, arabalar paneli (belge 57-57e)
             _buildService.DeepShaftOpened += p => { _mines.OpenShaft(p); _floorsDirty = true; };
             _buildService.ProtectedItem = it => _life.Legacy.HeirloomOf(it.Id) != null && MineSystem.InTreasureRoom(_world, it);
             _view.RockTint = p =>
             {
-                var m = _mines.Get(MineSystem.PlotId);
-                var t = m?.Get(p.X, p.Y);
+                var m = _mines.SiteAt(p, out int lx, out int ly);
+                var t = m?.Get(lx, ly);
                 if (t == null || t.IsOpen) return null;
-                if (!m.TouchesOpen(p.X, p.Y)) return new Color32(46, 38, 33, 255);         // görünmeyen kaya (sis)
+                if (!m.TouchesOpen(lx, ly)) return new Color32(46, 38, 33, 255);           // görünmeyen kaya (sis)
                 if (t.Creaking) return new Color32(150, 60, 50, 255);
                 if (t.Marked) return new Color32(170, 150, 80, 255);
                 if (t.Ore != null) return new Color32(110, 96, 120, 255);                  // damar izi
@@ -2584,6 +2602,67 @@ namespace Thatchwick.Game
             };
         }
 
+        /// <summary>Tepedeki maden ağzının dünya karosu (kat 0); bölgesiz eski kayıtta null.</summary>
+        private GridPos? MineMouth()
+        {
+            var hill = Thatchwick.Core.World.Regions.Hill;
+            if (!_regional || !Thatchwick.Core.World.Regions.Exists(_world.Map, hill)) return null;
+            return new GridPos(hill.X + Thatchwick.Core.World.Regions.MineMouthX, hill.Y + Thatchwick.Core.World.Regions.MineMouthY, 0);
+        }
+
+        /// <summary>Açılmış galeriyi tepenin altına yerleştirir ve ağızla bağlar (belge 58d M1). Yüklemede de çağrılır.</summary>
+        private void PlaceMineInWorld()
+        {
+            if (_mines?.Get(MineSystem.MineId) == null || !(MineMouth() is GridPos mouth)) return;
+            _mines.PlaceMine(mouth);
+            _floorsDirty = true;
+        }
+
+        private bool AdultInMine()
+        {
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (!c.IsDead && !c.IsVillager && !c.Away && !MineSystem.NeedsEscort(c) && _mines.InMine(c)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>"Madene in": karakter ağızdan galerinin girişine yürür. Çocuk ve ergen yalnızca madende bir yetişkin varken iner.</summary>
+        private void SendDownMine(Character c)
+        {
+            var mine = _mines.Get(MineSystem.MineId);
+            var actor = _actors.Find(a => a.Character == c);
+            if (mine == null || actor == null || !MineSystem.Placed(mine)) return;
+            if (MineSystem.NeedsEscort(c) && !AdultInMine()) { ShowMessage(GameLocalization.T("ui.mine.child_needs_adult", ("name", c.Name))); return; }
+            var (ex, ey) = MineSystem.MineEntrance;
+            actor.Runner.Command(Job.MoveTo(mine.ToWorld(ex, ey - 1)));
+            _minePanel.Close();
+        }
+
+        /// <summary>
+        /// Yer altında geçen süre (belge 58d M0.4): 2 saat yer altında kalan "Tozlu", 2 saatten uzun kalıp çıkan "Gün ışığı" alır.
+        /// Madendeki son yetişkin çıkınca çocuk ve ergen de peşinden çıkar (karar G).
+        /// </summary>
+        private void WatchUnderground()
+        {
+            if (_mines == null) return;
+            bool adultBelow = AdultInMine();
+            foreach (var a in _actors)
+            {
+                var c = a.Character;
+                if (c.IsDead || c.IsVillager || c.Away) continue;
+                bool below = c.Position.Z < 0 && _mines.SiteAt(c.Position, out _, out _) != null;
+                switch (_mines.NoteUnderground(c, below, _clock.TotalDays))
+                {
+                    case MineSystem.UndergroundEvent.Dusty: c.AddMoodlet(MoodCatalog.Dusty); break;
+                    case MineSystem.UndergroundEvent.Daylight: c.AddMoodlet("mood.daylight", GameLocalization.T("ui.mine.mood.daylight"), 5, 2.0 / 24.0); break;
+                }
+                if (!adultBelow && MineSystem.NeedsEscort(c) && _mines.InMine(c) && MineMouth() is GridPos mouth && a.Runner.IsIdle)
+                    a.Runner.Command(Job.MoveTo(NearestWalkable(mouth, 3)));
+            }
+        }
+
         // Ocakta sabah vardiyası (ekran dışı): maden görevli yetişkinler işaretli karoları kazar.
         private void MineShifts()
         {
@@ -2593,7 +2672,10 @@ namespace Thatchwick.Game
             {
                 if (c.IsDead || c.IsVillager || c.Duty != DutyKind.Mine || !DutyPlanner.CanTakeDuty(c, DutyKind.Mine)) continue;
                 int dug = _mines.Shift(mine, c, 0.25);
-                if (dug > 0) ShowMessage(GameLocalization.T("ui.mine.shift_dug", ("name", c.Name), ("n", dug)));
+                if (dug <= 0) continue;
+                ShowMessage(GameLocalization.T("ui.mine.shift_dug", ("name", c.Name), ("n", dug)));
+                c.AddMoodlet(MoodCatalog.Dusty);                                                                   // 6 saat yer altı
+                c.AddMoodlet("mood.daylight", GameLocalization.T("ui.mine.mood.daylight"), 5, 2.0 / 24.0);
             }
         }
 
@@ -3034,7 +3116,7 @@ namespace Thatchwick.Game
         private void SimSchedules()
         {
             _scheduleTimer += _simDays;
-            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); }
+            if (_scheduleTimer >= 0.03) { _scheduleTimer = 0; UpdateVillagerSchedules(); WatchChildren(); TrackRegions(); GatherForFeast(); WatchUnderground(); }
         }
 
         private readonly List<Actor> _actorScratch = new List<Actor>();

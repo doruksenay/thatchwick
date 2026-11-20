@@ -77,8 +77,8 @@ namespace Thatchwick.Core.Tests
             for (int k = 0; k < 100; k++) { fx1.Apply(novice, quarry, mine); fx2.Apply(master, quarry, mine); }
             Assert.Equal(200, h1.Count("item.stone"));
             Assert.True(h2.Count("item.stone") > 220, $"usta {h2.Count("item.stone")}");
-            Assert.Equal(0, h1.Count("item.iron_ore"));                              // cevher 2. seviye ister
-            Assert.True(h2.Count("item.iron_ore") > 0);
+            Assert.Equal(0, h1.Count("item.iron_ore"));                              // taşlık artık demir vermez (belge 58d M0.2)
+            Assert.Equal(0, h2.Count("item.iron_ore"));
             Assert.Equal(0.04, SkillNames.ExtraYieldPerLevel(SkillType.Foraging), 6);
             Assert.Equal(SkillType.Foraging, db.Items.Get("item.forage_mushroom").Interactions.First().Skill);
             Assert.Equal(SkillType.Horticulture, db.Items.Get("item.tree_apple").Interactions.Single(i => i.Id == "pick").Skill);

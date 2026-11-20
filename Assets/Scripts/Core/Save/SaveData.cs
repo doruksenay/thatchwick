@@ -22,6 +22,8 @@ namespace Thatchwick.Core.Save
         public float[] roomTemperatures;     // sürüm 3: iç oda başına (x, y, z, sıcaklık) dörtlüleri
         public KeyFloat[] marketDemand;
         public int[] marketTakenOffers;
+        public KeyFloat[] marketRawSold;     // ham madde doygunluğu: bu hafta satılan (belge 58d M0.5)
+        public long marketRawWeek = -1;
         public AffectionSave[] affection;
         public DynastySave dynasty;
         /// <summary>Yaşam katmanı (mezar, hava, takvim, köylüler, projeler ...). Eski kayıtta null.</summary>

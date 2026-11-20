@@ -292,13 +292,15 @@ namespace Thatchwick.Core.Work
                     break;   // çizelge sırası önemli: en yakın değil, ilk yapılabilir iş
                 }
             }
-            else if (c.Duty == DutyKind.Mine && TileWork != null && Mines?.Get(Mining.MineSystem.PlotId) is Mining.MineMap plot)
+            else if (c.Duty == DutyKind.Mine && TileWork != null
+                && (Mines != null && Mines.InMine(c) ? Mines.Get(Mining.MineSystem.MineId) : Mines?.Get(Mining.MineSystem.PlotId)) is Mining.MineMap plot)
             {
+                // Galerideki görevli galeride, öbürü arsa kazısında çalışır (belge 58d M1): madendeki iş fiziksel, ekran dışında da sürer.
                 // Önce güvenlik: çatırdayan karoya destek; sonra su; sonra işaretli karoları kaz (en yakını).
                 foreach (var (x, y, t) in plot.All())
                 {
                     if (!t.Creaking) continue;
-                    var tile = new GridPos(x, y, plot.Level);
+                    var tile = plot.ToWorld(x, y);
                     if (TileWork.CanDo(c, tile, TileAction.Support) != null) continue;
                     Consider(MineKey(tile), tile, () => Job.OnTile(tile, TileAction.Support));
                 }
@@ -306,7 +308,7 @@ namespace Thatchwick.Core.Work
                     foreach (var (x, y, t) in plot.All())
                     {
                         if (!t.IsOpen) continue;
-                        var tile = new GridPos(x, y, plot.Level);
+                        var tile = plot.ToWorld(x, y);
                         Consider(MineKey(tile) + 1, tile, () => Job.OnTile(tile, TileAction.Bail));
                         break;
                     }
@@ -314,7 +316,7 @@ namespace Thatchwick.Core.Work
                     foreach (var (x, y, t) in plot.All())
                     {
                         if (!t.Marked) continue;
-                        var tile = new GridPos(x, y, plot.Level);
+                        var tile = plot.ToWorld(x, y);
                         if (TileWork.CanDo(c, tile, TileAction.Dig) != null) continue;
                         Consider(MineKey(tile), tile, () => Job.OnTile(tile, TileAction.Dig));
                     }
