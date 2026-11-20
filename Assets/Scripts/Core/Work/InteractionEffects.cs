@@ -185,14 +185,14 @@ namespace Thatchwick.Core.Work
             if (interaction.RequiresFrost && (TemperatureAt == null || TemperatureAt(item.Position) > 0f)) return "Buz yok: don olunca (kışın) kesilir.";
             if (interaction.NeedsPipedWater && !Piped(item)) return "Su gelmiyor: bir kaynağa bağlı boruya bağla.";
             if (interaction.AddIce > 0f && item.FuelDays + interaction.AddIce > MaxIceDays + 1e-6) return $"{item.Def.DisplayName} buzla dolu.";
-            if (interaction.RequiresWithered && !item.Withered) return "Ekin sararmadı: sökmek için mevsiminin geçmesini bekle ya da hasat et.";
+            if (interaction.RequiresWithered && !item.Withered) return Thatchwick.Core.Localization.CoreText.T("ui.farm.block.not_withered");
             if (interaction.Stakes)
             {
-                if (!item.Def.NeedsStake) return "Bu ekin sırık istemez.";
-                if (item.Staked) return "Sırığı zaten dikili.";
-                if (item.Withered) return "Sararmış ekine sırık dikilmez.";
+                if (!item.Def.NeedsStake) return Thatchwick.Core.Localization.CoreText.T("ui.farm.block.no_stake_needed");
+                if (item.Staked) return Thatchwick.Core.Localization.CoreText.T("ui.farm.block.already_staked");
+                if (item.Withered) return Thatchwick.Core.Localization.CoreText.T("ui.farm.block.stake_withered");
             }
-            if (item.Withered && item.Def.IsCrop && (interaction.Water || interaction.Fertilize > 0f)) return "Ekin sarardı: sök, yan ürününü al.";
+            if (item.Withered && item.Def.IsCrop && (interaction.Water || interaction.Fertilize > 0f)) return Thatchwick.Core.Localization.CoreText.T("ui.farm.block.withered_care");
             if (interaction.Water)
             {
                 if (!item.IsPlant || !item.Def.IsCrop) return "Bu sulanacak bir ekin değil.";
@@ -306,7 +306,7 @@ namespace Thatchwick.Core.Work
                 hideCount = hideId != null ? Math.Max(1, killed.Species.HideCount) : 0;
             }
             if (interaction.Water) { PlantSystem.Water(item); farmNotes.Add("sulandı"); }
-            if (interaction.Stakes && item.Def.NeedsStake && !item.Staked) { item.Staked = true; farmNotes.Add("sırık dikildi"); _world.NotifyChanged(); }
+            if (interaction.Stakes && item.Def.NeedsStake && !item.Staked) { item.Staked = true; farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("ui.farm.note.staked")); _world.NotifyChanged(); }
             if (interaction.Teach)
             {
                 int taught = Teach(character);
@@ -581,12 +581,12 @@ namespace Thatchwick.Core.Work
             if (bite != null) { parts.Add("oltaya bir şey vurdu!"); FishBite?.Invoke(character, item, bite, biteCount); }
             else if (interaction.Skill == SkillType.Fishing && order.Count == 0) parts.Add("bu sefer bir şey çıkmadı");
             if (interaction.TakesFruit) { item.FruitReady = false; item.FruitDays = 0; }
-            if (unstaked) farmNotes.Add("sırık yok: ürün yarım");
+            if (unstaked) farmNotes.Add(Thatchwick.Core.Localization.CoreText.T("ui.farm.note.unstaked"));
             if (keepsPlant && Plants != null)
             {
                 Plants.OnPicked(item);
                 int left = PlantSystem.HarvestsLeft(item);
-                farmNotes.Add(item.Withered ? "son toplama: bitki tohuma kaçtı, sökünce tohum verir"
+                farmNotes.Add(item.Withered ? Thatchwick.Core.Localization.CoreText.T("ui.farm.note.last_picking")
                     : left > 0 ? $"bitki yerinde, {left} toplama daha verir" : "yatak yerinde, yeniden verir");
                 _world.NotifyChanged();
             }
