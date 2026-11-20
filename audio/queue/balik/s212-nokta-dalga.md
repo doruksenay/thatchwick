@@ -4,7 +4,7 @@ title: Nokta sesi, kıyıya vuran dalga
 kind: spot
 family: spots
 freq: B
-status: ready
+status: claimed
 approved_by: user
 depends_on: []
 key: spot.wave
@@ -29,5 +29,7 @@ cost_max: 600
 pilot_onayi_bekliyordu:
 - s131
 not_bagimlilik: '20.11.2026: kullanıcı pilotları onaylanmış saydı; pilot kararı sonra verilecek (Project 45b)'
+claimed_by: runnervm0hi8g
+claimed_at: '2026-11-20T14:21:31Z'
 ---
 A single slightly larger wave breaking on the sand and drawing back over pebbles.
