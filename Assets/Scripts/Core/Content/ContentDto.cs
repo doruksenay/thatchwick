@@ -407,6 +407,8 @@ namespace Thatchwick.Core.Content
         public bool requiresAnimal;      // barınakta hayvan olmalı
         public NeedRestoreDto[] extraRestore; // ana ihtiyaca ek olarak doyurulan ihtiyaçlar
         public string tool;                 // axe/hoe/saw: alet kademesi iş hızını etkiler
+        public int[] bestHours;             // [başlangıç, bitiş] saat: bu aralıkta ilk üründen bestHoursBonus fazla (safran şafakta)
+        public int bestHoursBonus;
         public string moodId;               // etkileşim sonunda verilen ruh hali etkisi
         public string moodText;
         public int moodValue;

@@ -96,6 +96,9 @@ namespace Thatchwick.Core.Life
                     info.Text = $"{inter.DisplayName} ({item.Def.DisplayName})";
                     info.Icon = inter.RestoresNeed ? NeedIcon(inter.Need) : SkillIcon(inter.Skill);
                     if (inter.Id == "water" || inter.Id == "water_pot") info.Icon = "water";   // 018c sulama
+                    // Hasat ve meyve toplama kendi pozunu oynar (belge 59; kare gelene kadar oyun katmanı çapa pozuna düşer).
+                    if (item.Def.IsCrop && inter.RequiresGrown && inter.RemovesItem && inter.Produce.Count > 0) info.Icon = "reap";
+                    else if (inter.TakesFruit && item.IsPlant) info.Icon = "pick";
                     if (!job.Reason.HasValue && inter.RestoresNeed) info.Need = inter.Need;
                     break;
                 case JobKind.Social:

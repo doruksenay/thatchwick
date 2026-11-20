@@ -121,6 +121,8 @@ namespace Thatchwick.Core.Work
         public Func<long> DayIndex { get; set; }
         public Func<int> Year { get; set; }
         public Func<double> Today { get; set; }
+        /// <summary>Günün saati (0-24): en iyi saat kuralı için (safran şafakta); null ise kural çalışmaz.</summary>
+        public Func<double> HourOfDay { get; set; }
         /// <summary>Aşçının bildiği aile tarifinin kuşak sayısı ve adı (yadigâr sofra: 3 kuşaklık tarifle ustalık eseri). Null: yok.</summary>
         public Func<Character, SkillType, (int generations, string name)> FamilyRecipe { get; set; }
         /// <summary>Son işte harcanan kaliteli girdinin en yüksek kalitesi (yeme: doyum ve sofra ruh hali; JobRunner okur).</summary>
@@ -399,6 +401,14 @@ namespace Thatchwick.Core.Work
                     if (per > 0 && _rng.NextDouble() < per * Math.Max(0, character.Skills.GetLevel(interaction.Skill.Value) - 1)) count += 1;
                     double fam = FamilyYieldChance?.Invoke(interaction.Skill.Value) ?? 0;
                     if (fam > 0 && _rng.NextDouble() < fam) count += 1;   // aile tarifi
+                }
+                // En iyi saat (32 §8.10): safran şafakta toplanırsa bir tel fazla; öğle sıcağında tel azalmaz ama fırsat kaçar.
+                if (firstRow && interaction.HasBestHours && HourOfDay != null)
+                {
+                    double hour = HourOfDay();
+                    bool best = hour >= interaction.BestHourFrom && hour < interaction.BestHourTo;
+                    if (best) count += interaction.BestHoursBonus;
+                    farmNotes.Add(best ? "tam saatinde toplandı" : $"en iyisi saat {interaction.BestHourFrom}-{interaction.BestHourTo} arası");
                 }
                 firstRow = false;
                 if (yieldMult > 1f && _content.Items.TryGet(p.ItemId, out var rowDef) && rowDef.PlantsAs == null)

@@ -59,6 +59,8 @@ namespace Thatchwick.Core.Life
         // Köy ve hanedan katmanı (Adım 38-41)
         public VillagerService Villagers { get; }
         public ToolService Tools { get; }
+        /// <summary>Hasat emirleri: tek dokunuş, sürükleme, tarlayı biç, tırpan (belge 59).</summary>
+        public Thatchwick.Core.Work.HarvestOrders Fields { get; }
         public ProjectService Projects { get; }
         public GoalService Goals { get; }
 
@@ -170,6 +172,7 @@ namespace Thatchwick.Core.Life
             Aging.Matured += (id, q, n) => { if (q >= ItemQuality.Heirloom) Say(LocText.Of("quality.n.grandfather_wine", ("n", n), ("item", id)), NoticeLevel.Info); };
             Forage = seed != 0 ? new ForageSystem(world, content, Seeds.Derive(seed, 2)) : new ForageSystem(world, content);
             Villagers = seed != 0 ? new VillagerService(content, population, house, clock, Seeds.Derive(seed, 3)) : new VillagerService(content, population, house, clock);
+            Fields = new Thatchwick.Core.Work.HarvestOrders(world);
             Tools = new ToolService(content, house)
             {
                 AccountLevel = () => AccountLevel != null ? AccountLevel() : int.MaxValue,
@@ -791,6 +794,7 @@ namespace Thatchwick.Core.Life
             fx.DayIndex = () => Clock.DayIndex;
             fx.Year = () => (int)(Clock.DayIndex / Math.Max(1, Clock.Config.DaysPerYear)) + 1;
             fx.Today = () => Clock.TotalDays;
+            fx.HourOfDay = () => Clock.DayFraction * 24.0;
             fx.FamilyRecipe = (c, skill) =>
             {
                 var r = c != null ? Upbringing.Recipes.OldestKnown(c.Id, skill) : null;
@@ -956,6 +960,10 @@ namespace Thatchwick.Core.Life
             effects.AppliedOn += Home.OnApplied;
             effects.AppliedOn += OnSkillWorkApplied;   // beceri işleri ve pasifleri (belge 45)
             effects.AppliedOn += Trees.OnApplied;      // ulu ağaç ve ağaç ev (belge 52)
+            // Hasat emirleri (belge 59): tek dokunuş, sürükleme, tarlayı biç; tırpan yan karoları da biçer.
+            Fields.Apply = effects.Apply;
+            Fields.HasScythe = () => Tools.Tier(Thatchwick.Core.Work.HarvestOrders.ScytheTool) > 0;
+            effects.AppliedOn += Fields.OnApplied;
             effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i) ?? DrinkBlocker(c, it, i) ?? Trees.CanStart(c, it, i);
             Home.Effects = effects;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);

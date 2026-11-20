@@ -83,6 +83,8 @@ namespace Thatchwick.Game
             ["sow"] = new[] { "sow", "hoe" },     // 018c
             ["water"] = new[] { "water" },
             ["farm"] = new[] { "hoe", "sow" },
+            ["reap"] = new[] { "reap", "hoe" },   // 550: orakla biçme; kare gelene kadar çapa
+            ["pick"] = new[] { "pick", "hoe" },   // 550: meyve toplama
             ["work"] = new[] { "work" },
             // 018e (kabul 19.11.2026): sosyal, bakım, sevgi, eğlence, balık; maden üçlüsü.
             ["social"] = new[] { "social" },
@@ -692,6 +694,11 @@ namespace Thatchwick.Game
             _input.Init(cam, _regional ? Iso.RectBounds(farm.X, farm.Y, farm.W, farm.H) : Iso.MapBounds(map.Width, map.Height));
             _input.IsOverUi = IsOverHud;
             _input.Tapped += OnTapped;
+            // Belge 59 karar 2: olgun ekine tek dokunuş biçer; uzun basış etkileşim menüsünü açar; olgun ekinden başlayan
+            // sürükleme kamerayı kaydırmaz, geçilen olgun ekinleri hasada ekler.
+            _input.LongPressed += pos => OnTapped(pos, true);
+            _input.BeginsPaint = pos => !_buildMode.Active && !_menuOpen && RipeCropAt(pos) != null;
+            _input.Painted += OnHarvestPaint;
 
             _household = loaded != null ? loaded.Household : new Household(100);
             _account = loaded != null ? loaded.Account : new AccountProgress();
@@ -1862,7 +1869,47 @@ namespace Thatchwick.Game
             ShowMessage($"{character.Name} {_dynasty.SettlementName} yerleşimine geldi");
         }
 
-        private void OnTapped(Vector2 screenPos)
+        private void OnTapped(Vector2 screenPos) => OnTapped(screenPos, false);
+
+        /// <summary>Ekran konumundaki olgun tarla ekini (yoksa null).</summary>
+        private ItemInstance RipeCropAt(Vector2 screenPos)
+        {
+            var cam = Camera.main;
+            if (cam == null || _world == null || _view == null || Commander == null) return null;
+            var world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
+            var item = _world.GetItemAt(_view.WorldToTile(world - new Vector3(0f, 24f / 32f, 0f))) ?? _world.GetItemAt(_view.WorldToTile(world));
+            return HarvestOrders.IsRipeCrop(item) ? item : null;
+        }
+
+        // Sürükleyerek hasat: parmağın geçtiği her olgun ekin emre eklenir.
+        private void OnHarvestPaint(Vector2 screenPos)
+        {
+            if (Commander == null || _dynastyEnded || _life == null) return;
+            var crop = RipeCropAt(screenPos);
+            if (crop == null) return;
+            bool first = _life.Fields.PendingCount(Commander.Character) == 0;
+            if (first) Commander.Runner.Cancel();
+            if (_life.Fields.Add(Commander.Character, crop) && first)
+                ShowMessage(GameLocalization.T("ui.harvest.paint", ("who", Commander.Character.Name)));
+        }
+
+        // Olgun ekine tek dokunuş: menü açılmaz, hasat emredilir (Çiftçilik 3'te bitişik olgun ekinlerin hepsi).
+        private bool TryOneTapHarvest()
+        {
+            ItemInstance crop = null;
+            foreach (var o in _menuOptions)
+                if (o.Item != null && HarvestOrders.IsRipeCrop(o.Item)) { crop = o.Item; break; }
+            if (crop == null || _life == null) return false;
+            string why = Commander.Runner.WhyCannotStart(crop, HarvestOrders.HarvestOf(crop.Def));
+            if (why != null) { ShowMessage(why); return true; }
+            Commander.Runner.Cancel();
+            int n = _life.Fields.OrderFrom(Commander.Character, crop);
+            if (n > 1) ShowMessage(GameLocalization.T("ui.harvest.field", ("who", Commander.Character.Name), ("n", n)));
+            else if (n == 1) ShowMessage(GameLocalization.T("ui.harvest.one", ("who", Commander.Character.Name), ("crop", crop.Def.DisplayName)));
+            return true;
+        }
+
+        private void OnTapped(Vector2 screenPos, bool forceMenu)
         {
             var cam = Camera.main;
             if (cam == null || Commander == null || _dynastyEnded) return;
@@ -1900,7 +1947,8 @@ namespace Thatchwick.Game
                 if (!Commander.Runner.Queue.TryEnqueue(Job.OnTile(tile, action))) ShowMessage("İş sırası dolu.");
                 return;
             }
-            if (_menuOptions.Count == 0) { Commander.Runner.Command(Job.MoveTo(tile)); return; }
+            if (!forceMenu && TryOneTapHarvest()) return;
+            if (_menuOptions.Count == 0) { _life?.Fields.Cancel(Commander.Character); Commander.Runner.Command(Job.MoveTo(tile)); return; }
             if (_menuOptions.Count == 1) { RunOption(_menuOptions[0]); return; }
 
             // Birden çok seçenek: dokunulan yerde menü aç.
@@ -2040,6 +2088,7 @@ namespace Thatchwick.Game
         {
             if (o.Interaction != null && (o.Interaction.Skill == SkillType.Fishing || o.Interaction.HomeAction == "catch")) OrderFishing();
             if (o.Run != null) { if (o.Blocked == null) o.Run(); else ShowMessage(o.Blocked); return; }
+            _life?.Fields.Cancel(Commander.Character);   // başka bir emir: bekleyen hasat emri düşer
             Commander.Runner.Command(Job.UseItem(o.Item.Id, o.Interaction.Id));
             ShowMessage($"{Commander.Character.Name}: {o.Interaction.DisplayName} ({o.Item.Def.DisplayName})");
         }
@@ -2163,6 +2212,9 @@ namespace Thatchwick.Game
             };
             _farmWork.Build = _buildService;
             _life.Attach(_farmWork);   // kıyıdan ilk balık hatırası (D3b)
+            // Hasat emirleri: sıradaki ekin karakterin iş sırasına eklenir; emir bitince kısa bildirim.
+            _life.Fields.Command = (c, job) => { var actor = _actors.Find(a => a.Character == c); return actor != null && actor.Runner.Queue.TryEnqueue(job); };
+            _life.Fields.Finished += (c, n) => ShowMessage(GameLocalization.T("ui.harvest.done", ("who", c.Name), ("n", n)));
             _farmWork.Plants = _plants;
             _farmWork.Mine = new MineWork(_mines);
             _farmWork.Sown += (c, t, seed) => _account.Count("act:sow");
