@@ -1,7 +1,8 @@
 ---
 id: "581"
 title: "Sofra takımı, baharat rafı, salça tepsisi, piknik ve pazar tezgâhı (11)"
-status: pending
+status: review
+claimed_at: 2026-11-20T15:04Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 30
 family: esya

@@ -33,7 +33,11 @@ namespace Thatchwick.Core.Jobs
         Diagnose = 50, Bandage = 51, Midwife = 52, SetBone = 53, VisitPatient = 54, ElderCare = 55,
         TellWeather = 60, WriteLetter = 61,
         /// <summary>Hayvanın konuştuğunu anlat (belge 55 §3.4): yalnızca bunu yaşayan anlatabilir.</summary>
-        TellAnimalTalk = 70
+        TellAnimalTalk = 70,
+        // Baş başa etkinlikler, birlikte iş ve sofra (belge 58 §10, 60b §3, 62-S8..S10; Cooking.Outings).
+        Picnic = 80, EveningWalk = 81, FishTogether = 82, Fireside = 83, InviteDinner = 84,
+        /// <summary>Birlikte iş: öteki kişinin sürmekte olan işine yardım eder; iş bitene kadar sürer.</summary>
+        HelpWork = 85
     }
 
     /// <summary>Karakterin yapacağı bir iş. Oyuncu komutu ve NPC otonomisi aynı işleri üretir.</summary>

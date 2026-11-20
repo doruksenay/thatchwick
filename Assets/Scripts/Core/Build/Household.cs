@@ -76,7 +76,40 @@ namespace Thatchwick.Core.Build
         /// <summary>Envanter adetleri her değiştiğinde artar; dinleyiciler (bozulma partileri) yalnızca değişince eşitler.</summary>
         public int InventoryVersion { get; private set; }
 
-        public int Count(string itemId) => itemId != null && _totals.TryGetValue(itemId, out int n) ? n : 0;
+        /// <summary>Malzeme grubu çözücü (belge 58 §5.1): "group.fish" → üye eşya kimlikleri, harcama sırasıyla. Null: grup yok.</summary>
+        public Func<string, IReadOnlyList<string>> GroupMembers { get; set; }
+
+        private IReadOnlyList<string> MembersOf(string id) =>
+            GroupMembers != null && id != null && id.StartsWith("group.", StringComparison.Ordinal) ? GroupMembers(id) : null;
+
+        public int Count(string itemId)
+        {
+            var members = MembersOf(itemId);
+            if (members != null)
+            {
+                int sum = 0;
+                foreach (var m in members) sum += Count(m);
+                return sum;
+            }
+            return itemId != null && _totals.TryGetValue(itemId, out int n) ? n : 0;
+        }
+
+        /// <summary>Gruptan harcanacak üye: politikaya göre en düşük (ya da en yüksek) kaliteli stok; eşitse grup sırasındaki ilk üye.</summary>
+        private string PickMember(IReadOnlyList<string> members, TakePolicy policy, int minQuality)
+        {
+            string best = null; int bestQ = 0;
+            foreach (var m in members)
+            {
+                if (!_stacks.TryGetValue(m, out var list)) continue;
+                foreach (var st in list)
+                {
+                    if (st.Count <= 0 || st.Key.Quality < minQuality) continue;
+                    int q = st.Key.Quality;
+                    if (best == null || (policy == TakePolicy.Highest ? q > bestQ : q < bestQ)) { best = m; bestQ = q; }
+                }
+            }
+            return best;
+        }
 
         /// <summary>En az bu kalitedeki adet.</summary>
         public int Count(string itemId, int minQuality)
@@ -204,8 +237,17 @@ namespace Thatchwick.Core.Build
         }
 
         /// <summary>Politikayla bir adet alır; alınan yığının anahtarı döner (kalite, usta).</summary>
-        public bool TryTake(string itemId, TakePolicy policy, out ItemKey taken, int minQuality = 0) =>
-            TakeFrom(Pick(itemId, policy, minQuality, null, null), out taken);
+        public bool TryTake(string itemId, TakePolicy policy, out ItemKey taken, int minQuality = 0)
+        {
+            var members = MembersOf(itemId);
+            if (members != null)
+            {
+                string pick = PickMember(members, policy, minQuality);
+                if (pick == null) { taken = default; return false; }
+                itemId = pick;
+            }
+            return TakeFrom(Pick(itemId, policy, minQuality, null, null), out taken);
+        }
 
         /// <summary>Tam olarak bu anahtardan bir adet alır.</summary>
         public bool TryTakeKey(ItemKey key)

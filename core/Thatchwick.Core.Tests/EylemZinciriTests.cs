@@ -212,7 +212,8 @@ namespace Thatchwick.Core.Tests
             foreach (var item in db.Items.All)
                 foreach (var i in item.Interactions)
                     if (i.ChainDef != null) used.Add(i.ChainDef.Id);
-            var dead = db.Chains.All.Where(c => !used.Contains(c.Id)).Select(c => c.Id).ToList();
+            // Eşya dışı işlerin (sosyal, hayvan, karo) zincirleri iş anahtarıyla bağlanır.
+            var dead = db.Chains.All.Where(c => !used.Contains(c.Id) && c.Jobs.Count == 0).Select(c => c.Id).ToList();
             Assert.True(dead.Count == 0, "Hiçbir etkileşime bağlanmayan zincir: " + string.Join(", ", dead));
 
             Assert.True(db.Chains.TryGet("bath", out var bath));
@@ -226,9 +227,8 @@ namespace Thatchwick.Core.Tests
             var db = ContentFilesTests.LoadDb(out _);
             string dir = Path.GetFullPath(Path.Combine(ContentFilesTests.ContentDir(), "..", "Localization"));
             var errors = new List<string>();
-            var en = LocTable.Parse(File.ReadAllText(Path.Combine(dir, "ui.en.json")), errors, "ui.en.json");
-            var tr = LocTable.Parse(File.ReadAllText(Path.Combine(dir, "ui.tr.json")), errors, "ui.tr.json");
-            Assert.Empty(errors);
+            var en = UiKeys.All("en");   // adım metinleri ui.chains.<dil>.json alan dosyasında
+            var tr = UiKeys.All("tr");
             foreach (var c in db.Chains.All)
                 foreach (var s in c.Steps)
                 {

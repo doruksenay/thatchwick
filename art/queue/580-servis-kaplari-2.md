@@ -1,7 +1,8 @@
 ---
 id: "580"
 title: "Servis kapları 2/2 (30)"
-status: pending
+status: review
+claimed_at: 2026-11-20T15:03Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 30
 family: esya

@@ -107,6 +107,9 @@ namespace Thatchwick.Core.Family
             if (actor.IsDead || target.IsDead) return "Ölüyle bu yapılamaz.";
             if (actor == target) return "Kendisiyle yapamaz.";
             if (actor.Stage == AgeStage.Baby) return "Bebek bunu yapamaz.";
+            // Birlikte iş ve baş başa etkinlikler (Cooking); sistem bağlı değilse iş yapılamaz (metin: işin anahtarı).
+            if (action == SocialAction.HelpWork) return SocialLife == null ? action.ToString() : SocialLife.CanHelp(actor, target);
+            if (Cooking.Outings.Handles(action)) return Outings == null ? action.ToString() : Outings.CanDo(actor, target, action);
             switch (action)
             {
                 case SocialAction.Feed:
@@ -147,6 +150,7 @@ namespace Thatchwick.Core.Family
 
         public double Duration(SocialAction action)
         {
+            if (Outings != null && Cooking.Outings.Handles(action)) return Outings.Duration(action);
             switch (action)
             {
                 case SocialAction.Feed: return 0.05;
@@ -158,8 +162,14 @@ namespace Thatchwick.Core.Family
             }
         }
 
+        /// <summary>Baş başa etkinlikler ve birlikte iş (belge 58 §10, 60b §3).</summary>
+        public Cooking.Outings Outings { get; set; }
+        public Cooking.SocialLife SocialLife { get; set; }
+
         public void Apply(Character actor, Character target, SocialAction action)
         {
+            if (action == SocialAction.HelpWork) { SocialLife?.EndHelp(actor, target); return; }
+            if (Cooking.Outings.Handles(action)) { Outings?.Apply(actor, target, action); return; }
             if (CanDo(actor, target, action) != null) return;   // bu arada koşul bozulduysa sessizce vazgeç
             string msg;
             switch (action)

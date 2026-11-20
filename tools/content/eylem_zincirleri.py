@@ -444,8 +444,204 @@ CHAINS = [
 ]
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Parti 2-10 (Project belgesi 62, 64-yemek): adım yeri, kapanış adımı, etki anı; sofra, mezbaha ve eşya dışı işler.
+# ---------------------------------------------------------------------------------------------------------------------
+
+# (zincir, adım) → ek alanlar. at: adımın yeri (storage, prep, table, water, fire); closing: iş kesilince de oynar;
+# take: malzeme bu adımda envanterden ayrılır.
+STEP_EXTRAS = {
+    ("cook_pot", "gather"): {"at": "storage", "take": True},
+    ("cook_pot", "chop_food"): {"at": "prep"},
+    ("bake", "gather"): {"at": "storage", "take": True},
+    ("bake", "knead"): {"at": "prep"},
+    ("bake", "shape_dough"): {"at": "prep"},
+    ("bath", "dry_off"): {"closing": True},
+    ("bath", "day_clothes"): {"closing": True},
+    ("sleep", "wake_stretch"): {"closing": True},
+    ("sleep", "day_clothes"): {"closing": True},
+}
+
+LABELS += [
+    # sofra ve mezbaha
+    ("sit_down", "Oturuyor", "Sitting down"),
+    ("take_portion", "Tabağına alıyor", "Helping themselves"),
+    ("eat_at_table", "Sofrada yiyor", "Eating at the table"),
+    ("chat_at_table", "Sofrada sohbet ediyor", "Chatting at the table"),
+    ("get_up", "Kalkıyor", "Getting up"),
+    ("stack_plates", "Tabakları topluyor", "Stacking the plates"),
+    ("carry_dishes", "Bulaşığı götürüyor", "Carrying the dishes"),
+    ("wipe_table", "Masayı siliyor", "Wiping the table"),
+    ("scrub_dishes", "Bulaşık yıkıyor", "Washing the dishes"),
+    ("rack_dishes", "Tabakları diziyor", "Racking the plates"),
+    ("lead_animal", "Hayvanı içeri götürüyor", "Leading the animal in"),
+    ("door_closes", "Kapı kapalı", "The door is closed"),
+    ("come_out", "Dışarı çıkıyor", "Coming out"),
+    ("rinse_hands", "Ellerini yıkıyor", "Washing their hands"),
+    ("open_locker", "Et dolabını açıyor", "Opening the meat locker"),
+    ("carry_meat", "Eti kilere taşıyor", "Carrying the meat to the pantry"),
+    ("offer_scrap", "Köpeğe bir lokma veriyor", "Slipping the dog a scrap"),
+    ("pick_eggs", "Yumurtaları topluyor", "Gathering the eggs"),
+    ("sit_stool", "Tabureye oturuyor", "Sitting on the stool"),
+    ("milk_animal", "Sağıyor", "Milking"),
+    ("smoke_hive", "Kovanı dumanlıyor", "Smoking the hive"),
+    ("cut_comb", "Peteği kesiyor", "Cutting the comb"),
+    # eşya dışı işler
+    ("greet", "Selam veriyor", "Greeting"),
+    ("talk", "Konuşuyor", "Talking"),
+    ("laugh_together", "Gülüşüyorlar", "Laughing together"),
+    ("part", "Ayrılıyor", "Taking their leave"),
+    ("pick_up_baby", "Bebeği kucağına alıyor", "Picking up the baby"),
+    ("tend_baby", "Bebekle ilgileniyor", "Tending the baby"),
+    ("put_down_baby", "Bebeği yatırıyor", "Laying the baby down"),
+    ("tell", "Anlatıyor", "Telling"),
+    ("examine", "Bakıyor, yokluyor", "Examining"),
+    ("treat", "Tedavi ediyor", "Treating"),
+    ("reassure", "Yüreklendiriyor", "Reassuring"),
+    ("draw_near", "Yaklaşıyor", "Drawing near"),
+    ("speak_heart", "Gönlünü açıyor", "Speaking from the heart"),
+    ("spread_cloth", "Örtüyü seriyor", "Spreading the cloth"),
+    ("picnic_eat", "Piknik yapıyor", "Having a picnic"),
+    ("pack_basket", "Sepeti topluyor", "Packing the basket"),
+    ("stroll", "Yürüyorlar", "Strolling"),
+    ("pause_view", "Durup bakıyorlar", "Pausing for the view"),
+    ("cast_line", "Oltayı atıyor", "Casting the line"),
+    ("wait_bite", "Balığın vurmasını bekliyor", "Waiting for a bite"),
+    ("land_fish", "Balığı çekiyor", "Landing the fish"),
+    ("lend_hand", "Yardım ediyor", "Lending a hand"),
+    ("invite", "Yemeğe çağırıyor", "Inviting to dinner"),
+    ("offer_hand", "Elini uzatıyor", "Offering a hand"),
+    ("stroke", "Seviyor", "Stroking"),
+    ("brush_coat", "Tımar ediyor", "Brushing the coat"),
+    ("check_hooves", "Tırnaklarına bakıyor", "Checking the hooves"),
+    ("lift_saddle", "Eyeri kaldırıyor", "Lifting the saddle"),
+    ("buckle", "Kolanı sıkıyor", "Tightening the girth"),
+    ("show_command", "Komutu gösteriyor", "Showing the command"),
+    ("reward", "Ödüllendiriyor", "Rewarding"),
+    ("break_soil", "Toprağı kırıyor", "Breaking the soil"),
+    ("turn_soil", "Toprağı çeviriyor", "Turning the soil"),
+    ("level_soil", "Düzlüyor", "Levelling"),
+    ("open_furrow", "Çizi açıyor", "Opening a furrow"),
+    ("drop_seed", "Tohumu bırakıyor", "Dropping the seed"),
+    ("cover_seed", "Üstünü kapatıyor", "Covering it over"),
+    ("wade_in", "Suya giriyor", "Wading in"),
+    ("swing_pick", "Kazmayı vuruyor", "Swinging the pick"),
+    ("clear_rubble", "Molozu çekiyor", "Clearing the rubble"),
+    ("set_prop", "Direği dikiyor", "Setting the prop"),
+    ("wedge_prop", "Kamayı çakıyor", "Wedging it tight"),
+    ("fill_pail", "Kovayı dolduruyor", "Filling the pail"),
+    ("haul_pail", "Suyu dışarı taşıyor", "Hauling the water out"),
+    ("mark_ice", "Buzu çiziyor", "Scoring the ice"),
+    ("saw_ice", "Buzu kesiyor", "Sawing the ice"),
+    ("patch_road", "Yolu onarıyor", "Mending the road"),
+    ("release_fish", "Balığı salıyor", "Releasing the fish"),
+]
+
+
+def _coop_matches():
+    """Yumurta, sağım ve bal ayrı zincir (belge 63 §3.3): barınak türüne göre eşya kimliğiyle eşlenir."""
+    items = json.loads((ROOT / "Assets/Resources/Content/items.json").read_text(encoding="utf-8"))["items"]
+    by = {"eggs": [], "milk": [], "honey": []}
+    for it in items:
+        if not any(i.get("collect") for i in it.get("interactions", []) or []):
+            continue
+        h = it.get("housing")
+        kind = "eggs" if h in ("coop", "dovecote") else "milk" if h == "barn" else "honey" if h == "hive" else None
+        if kind:
+            by[kind].append({"station": it["id"], "flag": "collect"})
+    return by
+
+
+def _extend():
+    for cid, _, steps in CHAINS:
+        for st in steps:
+            extra = STEP_EXTRAS.get((cid, st["id"]))
+            if extra:
+                st.update(extra)
+    coop = _coop_matches()
+    new = [
+        ("eat_serving", [{"flag": "meal", "idPrefix": "eat_serving"}], [
+            S("sit_down", "sit", 1),
+            S("take_portion", "reach", 1, sfx="kitchen.ladle"),
+            S("eat_at_table", "sit_eat", 5),
+            S("chat_at_table", "sit", 1, when="moodGood"),
+            S("get_up", "sit", 0.5),
+        ]),
+        ("clear_table", [{"flag": "meal", "idPrefix": "clear_table"}], [
+            S("stack_plates", "reach", 2),
+            S("carry_dishes", "carry", 2),
+            S("wipe_table", "reach", 1),
+        ]),
+        ("wash_dishes", [{"flag": "meal", "idPrefix": "wash_dishes"}], [
+            S("scrub_dishes", "wash", 4, sfx="work.water"),
+            S("rack_dishes", "reach", 1),
+        ]),
+        ("slaughter", [{"flag": "meal", "idPrefix": "slaughter"}], [
+            S("lead_animal", "carry", 2),
+            S("door_closes", "wait", 6),
+            S("come_out", "step_out", 1),
+            S("rinse_hands", "wash", 1, sfx="work.water"),
+        ]),
+        ("collect_meat", [{"flag": "meal", "idPrefix": "collect_meat"}], [
+            S("open_locker", "reach", 1),
+            S("carry_meat", "carry", 3, at="storage"),
+        ]),
+        ("feed_scrap", [{"flag": "meal", "idPrefix": "feed_scrap"}], [
+            S("offer_scrap", "reach", 1),
+        ]),
+    ]
+    if coop["eggs"]:
+        new.append(("collect_eggs", coop["eggs"], [S("crouch", "bend", 1), S("pick_eggs", "bend", 3), S("basket", "reach", 1)]))
+    if coop["milk"]:
+        new.append(("collect_milk", coop["milk"], [S("sit_stool", "sit", 1), S("milk_animal", "milk", 4), S("basket", "carry", 1)]))
+    if coop["honey"]:
+        new.append(("collect_honey", coop["honey"], [S("smoke_hive", "reach", 1), S("cut_comb", "chop_knife", 3), S("basket", "reach", 1)]))
+    # Özel zincirler genel "eat", "wash_hands" ve "collect_produce" kurallarından önce gelmeli: en başa eklenir.
+    CHAINS[0:0] = new
+    jobs = [
+        ("soc_chat", ["social:Chat", "social:Compliment", "social:Joke", "social:Listen", "social:TellAnimalTalk", "social:Persuade", "social:Mediate"], [
+            S("greet", "social", 1), S("talk", "social", 4), S("laugh_together", "social", 1, when="moodGood"), S("part", "social", 0.5)]),
+        ("soc_baby", ["social:Feed", "social:Lullaby", "social:PlayWithBaby", "social:Soothe", "social:SingLullaby", "social:FirstSteps"], [
+            S("pick_up_baby", "care", 1), S("tend_baby", "care", 4), S("put_down_baby", "care", 1)]),
+        ("soc_tell", ["social:TellStory", "social:TeachLetters", "social:ElderLesson", "social:VillageLesson", "social:ShowWork", "social:TalkTeen"], [
+            S("sit_down", "sit", 1), S("tell", "social", 5), S("get_up", "sit", 0.5)]),
+        ("soc_heal", ["social:Bandage", "social:SetBone", "social:Diagnose", "social:Midwife", "social:VisitPatient", "social:ElderCare"], [
+            S("examine", "care", 2), S("treat", "care", 4), S("reassure", "social", 1)]),
+        ("soc_heart", ["social:Propose", "social:TryForBaby"], [S("draw_near", "love", 1), S("speak_heart", "love", 3)]),
+        ("soc_picnic", ["social:Picnic"], [
+            S("spread_cloth", "bend", 1), S("sit_down", "sit", 1), S("picnic_eat", "sit_eat", 5), S("chat_at_table", "sit", 2), S("pack_basket", "bend", 1)]),
+        ("soc_walk", ["social:EveningWalk"], [S("stroll", "walk2", 5), S("pause_view", "admire", 1)]),
+        ("soc_fish", ["social:FishTogether"], [S("cast_line", "fish", 1), S("wait_bite", "fish", 5), S("land_fish", "fish", 1)]),
+        ("soc_fireside", ["social:Fireside"], [S("sit_down", "sit", 1), S("warm_hands", "warm_hands", 4), S("tell", "social", 2)]),
+        ("soc_help", ["social:HelpWork"], [S("lend_hand", "work", 1)]),
+        ("soc_invite", ["social:InviteDinner"], [S("greet", "social", 1), S("invite", "social", 2)]),
+        ("ani_pet", ["animal:Pet"], [S("offer_hand", "reach", 1), S("stroke", "love", 4)]),
+        ("ani_brush", ["animal:Brush"], [S("brush_coat", "care", 4), S("check_hooves", "bend", 1)]),
+        ("ani_saddle", ["animal:Saddle", "animal:Unsaddle"], [S("lift_saddle", "carry", 1), S("buckle", "bend", 2)]),
+        ("ani_train", ["animal:Train"], [S("show_command", "social", 3), S("reward", "reach", 1)]),
+        ("tile_till", ["tile:Till"], [S("break_soil", "hoe", 2, sfx="work.hoe"), S("turn_soil", "hoe", 3, sfx="work.hoe"), FUMBLE, S("level_soil", "hoe", 1)]),
+        ("tile_sow", ["tile:Sow"], [S("open_furrow", "hoe", 1), S("drop_seed", "sow", 3), S("cover_seed", "bend", 1)]),
+        ("tile_fish", ["tile:Fish"], [S("cast_line", "fish", 1), S("wait_bite", "fish", 5), WHISTLE, S("land_fish", "fish", 1)]),
+        ("tile_bathe", ["tile:Bathe"], [S("undress", "undress", 1, sfx="cloth.rustle"), S("wade_in", "step_in", 1, undress=True), S("wash", "bathe", 4, undress=True, sfx="bath.splash"),
+                                       S("dry_off", "dry_off", 1, undress=True), S("day_clothes", "dress", 1, sfx="cloth.rustle")]),
+        ("tile_dig", ["tile:Dig"], [S("swing_pick", "mine_dig", 5), S("clear_rubble", "mine_bucket", 1)]),
+        ("tile_support", ["tile:Support"], [S("set_prop", "mine_support", 3), S("wedge_prop", "craft_hammer", 1)]),
+        ("tile_bail", ["tile:Bail"], [S("fill_pail", "mine_bucket", 2), S("haul_pail", "carry", 2)]),
+        ("tile_ice", ["tile:CutIce"], [S("mark_ice", "bend", 1), S("saw_ice", "saw", 4)]),
+        ("tile_repair", ["tile:Repair"], [S("patch_road", "hoe", 3)]),
+        ("tile_stock", ["tile:Stock"], [S("release_fish", "bend", 2)]),
+    ]
+    for cid, keys, steps in jobs:
+        CHAINS.append((cid, {"jobs": keys}, steps))
+
+
+_extend()
+
+
 def chain_line(cid, match, steps):
-    return "    " + json.dumps({"id": cid, "match": match, "steps": steps}, ensure_ascii=False)
+    head = {"id": cid, "jobs": match["jobs"]} if isinstance(match, dict) else {"id": cid, "match": match}
+    head["steps"] = steps
+    return "    " + json.dumps(head, ensure_ascii=False)
 
 
 def write_life():
@@ -463,22 +659,24 @@ def write_life():
 
 
 def write_labels():
+    """Adım metinleri kendi alan dosyasına yazılır (ui.chains.<dil>.json); ana ui tablosundaki eski anahtarlar taşınır."""
     used = {s["id"] for _, _, steps in CHAINS for s in steps}
     known = {k for k, _, _ in LABELS}
     missing = sorted(used - known)
     if missing:
         raise SystemExit("Metni olmayan adımlar: " + ", ".join(missing))
     for lang, col in (("tr", 1), ("en", 2)):
-        path = LOC / f"ui.{lang}.json"
-        raw = path.read_text(encoding="utf-8")
+        main = LOC / f"ui.{lang}.json"
+        raw = main.read_text(encoding="utf-8")
         nl = "\r\n" if "\r\n" in raw else "\n"
         table = json.loads(raw)
-        table = {k: v for k, v in table.items() if not k.startswith("chain.step.")}
-        for row in LABELS:
-            if row[0] in used:
-                table["chain.step." + row[0]] = row[col]
-        out = json.dumps(dict(sorted(table.items())), ensure_ascii=False, indent=2)
-        path.write_text(out.replace("\n", nl) + nl, encoding="utf-8", newline="")
+        if any(k.startswith("chain.step.") for k in table):
+            table = {k: v for k, v in table.items() if not k.startswith("chain.step.")}
+            out = json.dumps(dict(sorted(table.items())), ensure_ascii=False, indent=2)
+            main.write_text(out.replace("\n", nl) + nl, encoding="utf-8", newline="")
+        area = {"chain.step." + row[0]: row[col] for row in LABELS if row[0] in used}
+        out = json.dumps(dict(sorted(area.items())), ensure_ascii=False, indent=2)
+        (LOC / f"ui.chains.{lang}.json").write_text(out.replace("\n", nl) + nl, encoding="utf-8", newline="")
 
 
 if __name__ == "__main__":

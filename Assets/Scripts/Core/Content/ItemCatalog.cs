@@ -219,11 +219,11 @@ namespace Thatchwick.Core.Content
             var crop = def.IsCrop ? def : def.PlantsAs != null && content != null && content.Items.TryGet(def.PlantsAs, out var planted) && planted.IsCrop ? planted : null;
             if (crop != null)
             {
-                if (crop.Cycle == CropCycle.Repeat) parts.Add($"Devşirme: {crop.MaxHarvests} kez verir, sonra sararır; tohumu sökünce çıkar");
-                else if (crop.Cycle == CropCycle.Cut) parts.Add($"Kes, yine gelir: {crop.MaxHarvests} kesim, sonra tohuma kaçar");
-                else if (crop.Cycle == CropCycle.Perennial) parts.Add("Kalıcı yatak: bir kez dikilir, her yıl mevsiminde verir");
-                if (crop.NeedsStake) parts.Add("Sırık ister (sırıksız ürün yarım)");
-                if (crop.GiantAs != null) parts.Add("2×2 olgun ve sulu tarlada küçük şansla dev ürün olur");
+                if (crop.Cycle == CropCycle.Repeat) parts.Add(Thatchwick.Core.Localization.CoreText.T("ui.farm.tip.repeat", ("n", crop.MaxHarvests)));
+                else if (crop.Cycle == CropCycle.Cut) parts.Add(Thatchwick.Core.Localization.CoreText.T("ui.farm.tip.cut", ("n", crop.MaxHarvests)));
+                else if (crop.Cycle == CropCycle.Perennial) parts.Add(Thatchwick.Core.Localization.CoreText.T("ui.farm.tip.perennial"));
+                if (crop.NeedsStake) parts.Add(Thatchwick.Core.Localization.CoreText.T("ui.farm.tip.stake"));
+                if (crop.GiantAs != null) parts.Add(Thatchwick.Core.Localization.CoreText.T("ui.farm.tip.giant"));
             }
             if (def.HarvestRadius > 0) parts.Add($"Güç alınca her sabah {def.HarvestRadius} karo çevresindeki olgun ekini biçer");
             if (def.SeedRadius > 0) parts.Add($"Güç alınca her sabah {def.SeedRadius} karo çevresindeki boş toprağa tohum eker");

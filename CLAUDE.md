@@ -8,13 +8,13 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 - `.meta` dosyalarını Unity üretir; Unity'siz ortamda `.meta` yazma.
 - Hata bildirimi: `ErrorReporter.Report("kaynak", ex)` (günlük, tekilleştirme, oyuncuya uyarı). Yakalanmamış istisna ve `Debug.LogError` kendiliğinden günlüğe düşer; hatayı yutan boş `catch` yazma. Başarım, mağaza ve ayar altyapısı: `docs/yayin-altyapisi.md`.
 - Görsel şartname bağlayıcıdır: `docs/gorsel-yonerge.md`.
-- İçerik (eşya, hayvan, ekin, yemek, alet) eklerken dönem kurallarına uy: hayali bir ortaçağ yerleşimi; Yeni Dünya bitkisi/hayvanı yok (patates, domates, mısır, balkabağı, tütün, hindi), ortaçağ sonrası icat yok (gazyağı, balya, mibzer vb.). Gerçekçilik: mevsim, ömür oranı (1 gün ≈ yarım yıl), türün gerçek davranışı. Ayrıntı: Project belgesi `20-donem-tutarliligi-ve-gercekcilik.md`.
+- İçerik (eşya, hayvan, ekin, yemek, alet) eklerken dönem kurallarına uy: hayali bir ortaçağ yerleşimi; Yeni Dünya bitkisi/hayvanı yok (patates, domates, mısır, balkabağı, tütün, hindi), ortaçağ sonrası icat yok (gazyağı, balya, mibzer vb.). Bilinçli istisnalar (kullanıcı kararı): kahve, siyah çay, avokado (yalnızca gezgin tüccar), domates (yalnızca salça ve salçalı yemekler; Project belgesi 60a); yeni istisna `KorumaTests.PeriodExceptions`'a nedeniyle yazılır. Gerçekçilik: mevsim, ömür oranı (1 gün ≈ yarım yıl), türün gerçek davranışı. Ayrıntı: Project belgesi `20-donem-tutarliligi-ve-gercekcilik.md`.
 
 ## Dil ve yerelleştirme
 Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, Almanca. Kurallar: `docs/yerellestirme.md`.
 - İçeriğe (items/life/appearance.json) yeni metin ekleyince İngilizcesini `Assets/Resources/Localization/content.en.json`'a aynı turda yaz. Eksikleri `python tools/loc/check.py` listeler; eksik varsa CI'da `LocalizationTests` kırılır.
 - Yeni arayüz metni düz yazılmaz: anahtar özelliğin kendi alan dosyasına girer (`Assets/Resources/Localization/ui.<alan>.en.json` ve `ui.<alan>.tr.json`, ör. `ui.build.*`; yoksa oluştur), kodda `GameLocalization.T("ui....")`. Ana `ui.en.json` / `ui.tr.json` dosyalarına yeni anahtar ekleme: herkes aynı iki dosyaya yazınca her dalda çakışma çıkıyor. Bir anahtar yalnızca bir dosyada olur (test denetler). Core metin üretecekse `LocText` döndürür.
-- Koddaki sabit Türkçe metin dosya başına artamaz (`KorumaTests`, taban `tools/loc/sabit_metin_tabani.json`). Metni anahtara taşıyınca tabanı düşür: `THATCHWICK_SABIT_METIN_YAZ=1 tools/offline-tests/run.sh KorumaTests`.
+- Koda yeni sabit Türkçe metin eklenmez: PR'da `tools/loc/sabit_metin.py` dalın kendi eklediğine bakar ve "test" denetimini kırar (`tools/offline-tests/run.sh` sonunda da çalışır). Core'da `LocText.Of(...)`; dizgi döndüren eski imzalarda `CoreText.T("ui...")`. Bilerek sabit kalan metin (ad havuzu gibi) satır sonuna `// loc-yok: <neden>` ile geçer.
 - Anahtar ve kimlik karşılaştırmasında `ToUpperInvariant`/`StringComparison.Ordinal` kullan; Türkçe cihazda `ToUpper()` "i"yi "İ" yapar.
 
 ## Arayüz (kullanıcı kararı 2026-11-20)
@@ -24,6 +24,7 @@ Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, 
 
 ## Dallar ve main (kullanıcı kararı 2026-11-20)
 - Kod (`Assets/Scripts`, `Assets/Resources`, `core`, `tools`, `.github`, `Packages`, `ProjectSettings`) `main`'e doğrudan push edilmez: dal + PR. PR, "Core tests" yeşil olmadan birleştirilmez; kod PR'ını kullanıcı birleştirir.
+- Kırmızı PR birleştirilmez; kullanıcı istese bile önce nedenini söyle. `main` kırmızıysa önce o düzeltilir (kırmızı `main` sonraki bütün PR'ları da kırmızı gösterir).
 - Doğrudan `main`'e push yalnızca asset/ses iş dosyaları ve işçi çıktıları içindir (`art/`, `audio/`, `Assets/Art/Iso/`, `Assets/Resources/Audio/`) ve `YAPILACAKLAR.md`.
 - `main`'e zorla push (`--force`) ve `main`'i silme yok.
 

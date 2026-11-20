@@ -321,10 +321,14 @@ namespace Thatchwick.Core.Tests
             x.Animals.Restore(9, x.Db.Animals.Get("animal.cow"), new GridPos(3, 4), stall.Id, 100f, 30, 0, 0);
             var butcher = new Character(1, "Doruk", new GridPos(3, 4), true);
             butcher.SetAge(40);
-            var slaughter = stall.Def.Interactions.Single(i => i.Slaughter);
-            Assert.Null(x.Effects.CanStart(butcher, stall, slaughter));
-            x.Effects.Apply(butcher, stall, slaughter);
-            Assert.Equal(2, x.House.Count("item.hide"));
+            // Kesim artık mezbahada, oyuncunun seçtiği hayvanla (belge 60a-Z3, 60b-M3): ürünler depoya düşer, oradan kilere taşınır.
+            var mezbaha = new Thatchwick.Core.Cooking.Slaughterhouse(x.Animals, x.House, x.Db);
+            var hook = x.Db.Items.Get("item.slaughter_hook");
+            Assert.True(mezbaha.Mark(x.Animals.Animals.Single(a => a.Id == 9), true));
+            mezbaha.OnApplied(butcher, null, hook.Interactions.Single(i => i.MealAction == Thatchwick.Core.Cooking.Slaughterhouse.SlaughterAction));
+            Assert.Equal(0, x.House.Count("item.meat"));   // henüz depoda
+            mezbaha.OnApplied(butcher, null, hook.Interactions.Single(i => i.MealAction == Thatchwick.Core.Cooking.Slaughterhouse.CollectAction));
+            Assert.InRange(x.House.Count("item.hide"), 1, 2);   // acemi ikinci deriyi yırtabilir
             Assert.Equal(4, x.House.Count("item.meat"));
 
             Assert.Contains(x.Db.Items.Get("item.tanning_rack").Interactions, i => i.IsCraft && i.Produce.Any(p => p.ItemId == "item.leather"));

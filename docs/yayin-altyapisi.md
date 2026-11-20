@@ -112,11 +112,13 @@ Sürüm numarası ayarların altında (`ProjectSettings > bundleVersion`, şu an
 Secret'lar yokken Unity işleri hata vermeden atlanır. Eklendiği an kendiliğinden çalışır.
 Lisans dosyasını üretmek Unity Hub kurulu bir makine ister (GameCI "activation" belgesi).
 
-Koruma testleri (`KorumaTests`):
-- **Sabit metin sayacı:** `Assets/Scripts` altında dosya başına sabit Türkçe metin satırı sayısı
-  `tools/loc/sabit_metin_tabani.json`'daki tabanı aşamaz. Yeni metin anahtarla girer. Metin taşıdıkça tabanı düşür:
-  `THATCHWICK_SABIT_METIN_YAZ=1 tools/offline-tests/run.sh KorumaTests`.
-- **Dönem kuralı:** içerik adlarında (İngilizce tablo) yasak sözcük olamaz; bilinçli istisnalar testte listelidir.
+Korumalar:
+- **Yeni sabit metin denetimi** (`tools/loc/sabit_metin.py`): PR'ın `Assets/Scripts` altına eklediği satırlarda
+  Türkçe harfli sabit metin varsa "test" denetimi kırılır. Yalnızca PR'ın kendi farkına bakar (taşınan kod
+  sayılmaz), `main`'de çalışmaz. İlk sürümü dosya başına sayaçtı; kırmızı bir PR birleşince `main`'i ve sonraki
+  bütün PR'ları kırdığı için değiştirildi. Bilerek sabit kalan metin: satır sonuna `// loc-yok: <neden>`.
+- **Dönem kuralı** (`KorumaTests`): içerik adlarında (İngilizce tablo) yasak sözcük olamaz; bilinçli istisnalar
+  testte listelidir.
 
 ## 6. `main` koruması
 

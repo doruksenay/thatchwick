@@ -20,6 +20,12 @@ namespace Thatchwick.Core.Content
         /// Elde görünen eşya: "consume" (etkileşimin harcadığı), "produce" (ürettiği), "item.xyz" (belirli eşya) ya da null.
         /// </summary>
         public string Held { get; set; }
+        /// <summary>Adımın yeri (storage, prep, table, water, fire); null: eşyanın başı. Karakter oraya yürür (belge 62 §2.4).</summary>
+        public string At { get; set; }
+        /// <summary>Kapanış adımı: iş yarıda kesilince de oynar (Sims'teki gibi güvenli noktada kesme, 58-S1).</summary>
+        public bool Closing { get; set; }
+        /// <summary>Malzeme bu adımda envanterden alınır; iş kesilirse geri konur.</summary>
+        public bool Take { get; set; }
         /// <summary>Adımın toplam süredeki payı (ağırlık). Zincir toplam süreyi değiştirmez, böler.</summary>
         public double Share { get; set; } = 1.0;
         /// <summary>Adım yalnızca bu koşul sağlanırsa oynar (bkz. <see cref="ChainConditions"/>); boşsa her zaman.</summary>
@@ -64,6 +70,13 @@ namespace Thatchwick.Core.Content
     public sealed class ActionChainDef : IContentDef
     {
         public string Id { get; set; }
+        /// <summary>Eşya dışı işler: "social:Chat", "animal:Pet", "tile:Hoe" (büyük/küçük harf duyarsız).</summary>
+        public List<string> Jobs { get; } = new List<string>();
+        public bool MatchesJob(string key)
+        {
+            foreach (var j in Jobs) if (string.Equals(j, key, StringComparison.OrdinalIgnoreCase)) return true;
+            return false;
+        }
         public List<ActionStepDef> Steps { get; } = new List<ActionStepDef>();
         /// <summary>Kendiliğinden bağlanma kuralları (herhangi biri tutarsa). Boşsa zincir yalnızca adıyla bağlanır.</summary>
         public List<ChainMatch> Matches { get; } = new List<ChainMatch>();
@@ -81,7 +94,7 @@ namespace Thatchwick.Core.Content
         public static readonly string[] All =
         {
             "bath", "slaughter", "craft", "produce", "harvest", "collect", "water", "fertilize", "eatContents", "fillDecor",
-            "feed", "pet", "teach", "heal", "eat", "drink", "sleep", "toilet", "repair"
+            "feed", "pet", "teach", "heal", "eat", "drink", "sleep", "toilet", "repair", "meal"
         };
 
         public static bool IsKnown(string flag) => Array.IndexOf(All, flag) >= 0;
@@ -90,6 +103,7 @@ namespace Thatchwick.Core.Content
         {
             switch (flag)
             {
+                case "meal": return i.MealAction != null;
                 case "bath": return i.Bath;
                 case "slaughter": return i.Slaughter;
                 case "craft": return i.IsCraft;
@@ -133,7 +147,10 @@ namespace Thatchwick.Core.Content
         /// <summary>Eşya ısı kaynağı (ocak, mangal): ateşle ilgili adımlar.</summary>
         public const string Fire = "fire";
 
-        public static readonly string[] All = { SkillLow, SkillHigh, MoodGood, MoodBad, CarriedWater, Fire };
+        /// <summary>Çocuk ve yaşlı: kendi kareleriyle oynanan adımlar (60a-Z2).</summary>
+        public const string Child = "child", Elder = "elder";
+
+        public static readonly string[] All = { SkillLow, SkillHigh, MoodGood, MoodBad, CarriedWater, Fire, Child, Elder };
 
         public static bool IsKnown(string when) => Array.IndexOf(All, when) >= 0;
 

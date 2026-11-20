@@ -197,7 +197,7 @@ namespace Thatchwick.Game
 
         private void FillChest(Ui.ListWindow.Model model, Character c, ClothingService svc)
         {
-            var dirty = svc.Basket(HouseholdMembers());
+            var dirty = svc.Basket(LivingHouseholdMembers());
             model.Info = T("ui.wardrobe.chest_info", ("outfit", OutfitName(_wardrobeOutfit)), ("scrap", _household.Count(Thatchwick.Core.Life.LifeSystems.ClothScrapId)),
                 ("dirty", dirty.Count));
             var tailor = BestMember(Thatchwick.Core.Characters.SkillType.Tailoring) ?? c;
@@ -225,7 +225,8 @@ namespace Thatchwick.Game
                 }));
         }
 
-        private IEnumerable<Character> HouseholdMembers()
+        // GameRoot.HouseholdMembers ölüleri de sayar (main'den geldi); çamaşır sepeti yalnızca yaşayanlara bakar.
+        private IEnumerable<Character> LivingHouseholdMembers()
         {
             foreach (var m in _population.Members) if (!m.IsVillager && !m.IsDead) yield return m;
         }
