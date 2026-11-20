@@ -36,9 +36,17 @@ namespace Thatchwick.Core.Jobs
         public float AutonomyThresholdFor(NeedType need)
         {
             if (need != NeedType.Energy || HourOfDay == null) return AutonomyThreshold;
-            double h = HourOfDay();
-            return h >= BedtimeHour || h < WakeHour ? NightSleepThreshold : AutonomyThreshold;
+            return IsNightHour ? NightSleepThreshold : AutonomyThreshold;
         }
+
+        /// <summary>Saat gece aralığında mı (<see cref="BedtimeHour"/>–<see cref="WakeHour"/>). Saat verilmemişse hayır.</summary>
+        public bool IsNightHour { get { if (HourOfDay == null) return false; double h = HourOfDay(); return h >= BedtimeHour || h < WakeHour; } }
+
+        /// <summary>Gece enerji için kısa şekerleme (sandalyede uyuklama) puan çarpanı: yatak varken gece yatağa gidilir (belge 65c B2).</summary>
+        public const double NightNapPenalty = 0.05;
+
+        /// <summary>Tam uyku mu (yatak): enerji doyurur ve en az 0,1 gün sürer (eylem zincirindeki "sleep" tanımıyla aynı).</summary>
+        public static bool IsFullSleep(InteractionDef i) => i.RestoresNeed && i.Need == NeedType.Energy && i.DurationDays >= 0.1;
 
         private const int MaxIterations = 64;
 
@@ -1604,6 +1612,8 @@ namespace Thatchwick.Core.Jobs
                     // Pişirme hevesi (açık kural): İyi ya da Mutlu karakter sıcak yemeği yeğler.
                     bool eager = eagerMood && interaction.Skill == SkillType.Cooking;
                     if (eager) score *= MoodBehavior.EagerCookBonus;
+                    // Gece yorgun: sandalyede uyuklamak yerine yatağa (yatak yoksa sandalye yine seçilir).
+                    if (need == NeedType.Energy && IsNightHour && !IsFullSleep(interaction)) score *= NightNapPenalty;
                     bool better = bestInteraction == null
                         || score > bestScore + 1e-9
                         || (Math.Abs(score - bestScore) <= 1e-9 && distance < bestDistance);

@@ -55,5 +55,30 @@ namespace Thatchwick.Core.Tests
             var noClock = new JobRunner(c, new WorldState(new GridMap(4, 4)));
             Assert.Equal(JobRunner.AutonomyThreshold, noClock.AutonomyThresholdFor(NeedType.Energy));
         }
+
+        private static Thatchwick.Core.Content.ItemDef Seat(string id, float restore, double days) => new Thatchwick.Core.Content.ItemDef
+        {
+            Id = id, DisplayName = id,
+            Interactions = new System.Collections.Generic.List<Thatchwick.Core.Content.InteractionDef>
+            {
+                new Thatchwick.Core.Content.InteractionDef { Id = "rest", DisplayName = "Dinlen", Need = NeedType.Energy, Restore = restore, DurationDays = days }
+            }
+        };
+
+        [Fact]
+        public void Gece_YorgunKarakter_SandalyeYerineYatagaGider()
+        {
+            var world = new WorldState(new GridMap(12, 12));
+            var chair = world.PlaceItem(Seat("chair", 8f, 0.02), new GridPos(2, 1));
+            var bed = world.PlaceItem(Seat("bed", 65f, 0.3), new GridPos(9, 9));
+            var c = new Character(1, "Wat", new GridPos(1, 1));
+            c.SetAge(30);
+            c.Needs.Set(NeedType.Energy, 55f);
+            double hour = 22;
+            var r = new JobRunner(c, world) { Autonomous = true, HourOfDay = () => hour };
+            r.Tick(0.001);
+            Assert.NotNull(r.Queue.Current);
+            Assert.Equal(bed.Id, r.Queue.Current.ItemId);
+        }
     }
 }
