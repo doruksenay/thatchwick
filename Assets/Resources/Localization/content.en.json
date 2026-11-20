@@ -4675,5 +4675,11 @@
   "villager.zeynep.event.zeynep_1": "Zeynep told you which herbs to gather before winter.",
   "villager.zeynep.event.zeynep_2": "Zeynep showed you a hidden mushroom spot in the forest.",
   "villager.zeynep.event.zeynep_3": "Zeynep gave you a jar of honey.",
-  "villager.zeynep.role": "Herbalist"
+  "villager.zeynep.role": "Herbalist",
+  "item.handkerchief_red.name": "Embroidered handkerchief (red)",
+  "recipe.handkerchief_red.name": "Sew embroidered handkerchief (red)",
+  "item.handkerchief_blue.name": "Embroidered handkerchief (blue)",
+  "recipe.handkerchief_blue.name": "Sew embroidered handkerchief (blue)",
+  "item.handkerchief_white.name": "Embroidered handkerchief (white)",
+  "recipe.handkerchief_white.name": "Sew embroidered handkerchief (white)"
 }

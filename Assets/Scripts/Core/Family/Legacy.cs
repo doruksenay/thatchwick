@@ -128,6 +128,8 @@ namespace Thatchwick.Core.Family
 
         public event Action<SealEntry> SealsChanged;
         public event Action<Heirloom, string> HeirloomLost;
+        /// <summary>Yadigâr satıldı (eşler arası tetik T2, Project belgesi 67c).</summary>
+        public event Action<Heirloom> HeirloomSold;
         public event Action<Character, Character> MarriedOutHappened;
 
         public Legacy(Population population, int seed = 61)
@@ -468,6 +470,7 @@ namespace Thatchwick.Core.Family
             if (h == null) return;
             Heirlooms.Remove(h);
             HeirloomLost?.Invoke(h, $"{h.DisplayName} satıldı; yadigârın geçmişi silindi.");
+            HeirloomSold?.Invoke(h);
         }
 
         /// <summary>Dünyada artık olmayan eşya yadigârlarını düşürür (yıkım, yangın, kesim). Kaybolanları döner.</summary>

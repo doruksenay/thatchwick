@@ -210,6 +210,14 @@ namespace Thatchwick.Game
             ["reap"] = "hoe", ["thresh"] = "hoe", ["bend"] = "sow", ["milk"] = "care",
             ["sit_eat"] = "eat", ["reach"] = "craft_hand", ["carry"] = "work", ["pour"] = "water", ["kindle"] = "work", ["wash"] = "care",
             ["admire"] = "idle", ["wake_stretch"] = "idle", ["warm_hands"] = "idle", ["sit"] = "idle",
+            // İlişki sistemi pozları (işler 737-741, 747-749): kareler gelene kadar en yakın eldeki poz.
+            ["argue"] = "social", ["fight_ready"] = "social", ["brawl"] = "social", ["fight_win"] = "social", ["fight_lose"] = "sit",
+            ["sulk"] = "idle", ["apologize"] = "social", ["cane_threat"] = "social", ["scoff"] = "social", ["gossip"] = "social",
+            ["laugh"] = "fun", ["laugh_smile"] = "social", ["laugh_big"] = "fun", ["giggle"] = "social", ["listen_nod"] = "social",
+            ["listen_arms"] = "idle", ["shrug"] = "social", ["tell_story"] = "social", ["gasp"] = "social", ["clap"] = "fun", ["think"] = "idle",
+            ["kiss"] = "love", ["kiss_cheek"] = "love", ["hold_hands"] = "love", ["offer_handkerchief"] = "care", ["serve_coffee"] = "care",
+            ["drink_grimace"] = "drink", ["put_ring"] = "love", ["cut_ribbon"] = "craft_hand", ["henna"] = "care", ["halay"] = "fun",
+            ["procession"] = "fun", ["throw_jar"] = "work",
         };
 
         /// <summary>Boşta hareket türü → poz (belge 60b §4.1). Karesi yoksa karakter yalnızca balonla tepki verir.</summary>
@@ -617,6 +625,7 @@ namespace Thatchwick.Game
                 new Ui.HudBar.Item { Text = () => T("ui.hud.storage"), On = () => _storagePanel.Active, Click = () => _storagePanel.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.mine"), On = () => _minePanel.Active, Click = () => _minePanel.Toggle() },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.carts"), On = () => _cartPanel != null && _cartPanel.Active, Click = () => _cartPanel?.Toggle() },
+                new Ui.HudBar.Item { Text = () => T("ui.rel.hud"), On = () => _relationsPanel != null && _relationsPanel.Active, Click = ToggleRelations },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.family"), On = () => _familyPanel.Active, Click = ToggleFamily },
                 new Ui.HudBar.Item { Text = () => T("ui.hud.village"), On = () => _villagePanel.Active, Click = ToggleVillage },
                 new Ui.HudBar.Item
@@ -2642,6 +2651,7 @@ namespace Thatchwick.Game
             _minePanel.Opened += PlaceMineInWorld;
             _minePanel.GoDown += SendDownMine;
             InitYard();   // sinek, azar, arabalar paneli (belge 57-57e)
+            InitRelations();   // ilişki paneli, kısa pozlar, kavga bulutu (belge 67)
             _buildService.DeepShaftOpened += p => { _mines.OpenShaft(p); _floorsDirty = true; };
             _buildService.ProtectedItem = it => _life.Legacy.HeirloomOf(it.Id) != null && MineSystem.InTreasureRoom(_world, it);
             _view.RockArt = MineRockArt;
@@ -3442,6 +3452,11 @@ namespace Thatchwick.Game
             var sceneFrame = sceneKey != null ? ActionFrameFor(actor, sceneKey, seed) : null;
             if (sceneFrame == null && !moving && actor.Character.Stage != AgeStage.Baby) sceneFrame = IdleFrameFor(actor, seed);
             var real = walkFrame ?? sceneFrame ?? ((actor.Runner.IsUsingItem || actor.Runner.IsAtStop || IsPerformingInPlace(actor)) && !moving ? actor.ActionFrame : null) ?? IsoArt.Character(actor.Character, actor.Direction);
+            // Kavga (belge 67a §5.2): toz bulutu kavgayı başlatanın yerine çizilir, hedef bulutun içinde kaybolur.
+            bool brawlHidden = false;
+            var brawl = moving ? null : BrawlFrame(actor, seed, ref brawlHidden, pos, Iso.SortOrder(pos.y, 1, level));
+            if (brawl != null) real = brawl;
+            if (brawlHidden) actor.Renderer.enabled = false;
             var wanted = real != null ? real : PersonSprites.Get(actor.Character.Appearance, LookFor(actor));
             if (wanted != actor.LastSprite) { actor.Renderer.sprite = wanted; actor.LastSprite = wanted; }
             // Ekranda daha aşağıdaki (öndeki) nesne üste çizilir; aynı karoda karakter eşyanın önünde.
@@ -3859,6 +3874,7 @@ namespace Thatchwick.Game
             if (HudToggle(T("ui.hud.storage"), _storagePanel.Active)) _storagePanel.Toggle();
             if (HudToggle(T("ui.hud.mine"), _minePanel.Active)) _minePanel.Toggle();
             if (_cartPanel != null && HudToggle(T("ui.hud.carts"), _cartPanel.Active)) _cartPanel.Toggle();
+            if (_relationsPanel != null && HudToggle(T("ui.rel.hud"), _relationsPanel.Active)) ToggleRelations();
             if (HudToggle(T("ui.hud.family"), _familyPanel.Active)) ToggleFamily();
             if (HudToggle(T("ui.hud.village"), _villagePanel.Active)) ToggleVillage();
             { int unread = _life.Requests.UnreadCount; if (HudToggle(unread > 0 ? T("ui.hud.requests_unread", ("count", unread)) : T("ui.hud.requests"), _requestPanel.Active)) ToggleRequests(); }

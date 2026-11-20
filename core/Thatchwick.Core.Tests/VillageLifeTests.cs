@@ -8,6 +8,7 @@ using Thatchwick.Core.Content;
 using Thatchwick.Core.Family;
 using Thatchwick.Core.Jobs;
 using Thatchwick.Core.Life;
+using Thatchwick.Core.Relations;
 using Thatchwick.Core.Save;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
@@ -179,18 +180,22 @@ namespace Thatchwick.Core.Tests
             var v = r.Life.Villagers;
             var orhan = v.CharacterOf("villager.orhan");
             r.House.AddItem("item.honey", 2); r.House.AddItem("item.herb", 2); r.House.AddItem("item.turnip", 2);
+            // Gönül tercihleri etkisiz olsun (×1): Aylin'de bunların hiçbiri yok.
+            var neutral = new AttractionPrefs { Like1 = AttractionTag.Musician, Like2 = AttractionTag.GoodCook, Dislike = AttractionTag.Craftsman };
+            r.Life.Relations.SetPrefs(orhan, neutral); r.Life.Relations.SetPrefs(r.Head, neutral);
 
             Assert.True(v.Give(r.Head, "villager.orhan", "item.herb", out var msg));    // sevmez
             Assert.Contains("hoşlanmadı", msg);
-            Assert.Equal(0, r.Family.Affection(r.Head.Id, orhan.Id));                    // -15 ama sıfır altına inmez
+            Assert.Equal(-15, r.Family.Affection(r.Head.Id, orhan.Id));                  // 67d: arkadaşlık eksiye iner (Gergin değil, Tanıdık)
             Assert.False(v.Give(r.Head, "villager.orhan", "item.honey", out msg));       // aynı gün
             Assert.Contains("bugün", msg);
 
             r.Clock.Restore(1.1, 1);
             Assert.True(v.Give(r.Head, "villager.orhan", "item.honey", out msg));       // bayılır
             Assert.Contains("bayıldı", msg);
-            Assert.Equal(40, r.Family.Affection(r.Head.Id, orhan.Id));
-            Assert.Equal(15, v.StateOf("villager.orhan").Romance);                       // baş kadın, Orhan erkek: romantik yakınlık da artar
+            Assert.Equal(25, r.Family.Affection(r.Head.Id, orhan.Id));                  // -15 + 40
+            Assert.Equal(12, r.Life.Relations.Romance(r.Head.Id, orhan.Id));             // romantik çift başına (67 H1): -3 + 15
+            Assert.Equal(0, v.StateOf("villager.orhan").Romance);                        // köylü başına eski sayı artık kullanılmıyor
         }
 
         [Fact]
@@ -210,33 +215,53 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
-        public void Evlilik_ArkadaslikVeRomantikYakinlikIkisiBirdenGerekir()
+        public void Evlilik_GonulYolu_MendilIstemeNisanDugun()
         {
+            // Gönül yolu (Project belgesi 67b §3, karar 67b): Flört → Sevgili (mendil) → İsteme → Nişan → Düğün.
             var r = NewRig();
             r.Life.Villagers.SpawnMissing();
             var v = r.Life.Villagers;
+            var rel = r.Life.Relations;
             var orhan = v.CharacterOf("villager.orhan");
+            var neutral = new AttractionPrefs { Like1 = AttractionTag.Musician, Like2 = AttractionTag.GoodCook, Dislike = AttractionTag.Craftsman };
+            rel.SetPrefs(orhan, neutral); rel.SetPrefs(r.Head, neutral);
 
-            // Yalnız arkadaşlık (5 sohbet) yetmez.
-            for (int i = 0; i < 5; i++) r.Family.Apply(r.Head, orhan, SocialAction.Chat);
-            Assert.Equal(100, r.Family.Affection(r.Head.Id, orhan.Id));
-            Assert.Contains("romantik", r.Family.CanDo(r.Head, orhan, SocialAction.Propose));
+            // Sohbet tek başına evlendirmez: evlilik yalnız nişanlı çiftin düğün gününde.
+            for (int d = 0; d < 6; d++) { r.Clock.Restore(d + 0.3, 1); r.Family.Apply(r.Head, orhan, SocialAction.Chat); }
+            Assert.True(r.Family.Affection(r.Head.Id, orhan.Id) >= 20);
+            Assert.Contains("rel.why.courtship_path", r.Family.CanDo(r.Head, orhan, SocialAction.Propose));
 
-            // Yedi günde yedi sevdiği hediye romantik yakınlığı doldurur.
-            r.House.AddItem("item.honey", 7);
-            for (int d = 0; d < 7; d++)
+            // Hediyelerle romantik yükselir ama sevgili olmadan 59'da durur.
+            r.House.AddItem("item.honey", 30);
+            for (int d = 6; d < 14; d++) { r.Clock.Restore(d + 0.5, 1); Assert.True(v.Give(r.Head, "villager.orhan", "item.honey", out _)); }
+            Assert.Equal(RelationRules.RomanceLockWithoutCouple, rel.Romance(r.Head.Id, orhan.Id));
+
+            // Mendil: kabul edilene kadar (ret yeniden denemeyi engellemez).
+            r.House.AddItem("item.handkerchief_red", 5);
+            for (int i = 0; i < 5 && rel.Status(r.Head.Id, orhan.Id) != CoupleStatus.Sweetheart; i++)
+                if (r.Family.CanDo(r.Head, orhan, SocialAction.GiveHandkerchief) == null) r.Family.Apply(r.Head, orhan, SocialAction.GiveHandkerchief);
+            Assert.Equal(CoupleStatus.Sweetheart, rel.Status(r.Head.Id, orhan.Id));
+            Assert.NotNull(r.Family.CanDo(r.Head, orhan, SocialAction.AskHand));   // 7 gün sevgili olmalı
+
+            for (int d = 14; d < 22; d++) { r.Clock.Restore(d + 0.5, 1); v.Give(r.Head, "villager.orhan", "item.honey", out _); }
+            Assert.True(rel.Romance(r.Head.Id, orhan.Id) >= RelationService.AskRomance);
+            Assert.Null(r.Family.CanDo(r.Head, orhan, SocialAction.AskHand));
+            r.Family.Apply(r.Head, orhan, SocialAction.AskHand);
+            // Gelin (Aylin) oyuncu hanesinde: kahveyi oyuncu seçer.
+            var coffee = rel.Decisions.Single(x => x.Kind == DecisionKind.Coffee);
+            Assert.True(rel.Decide(coffee.Id, 2));
+
+            // Sahneler: isteme, nişan, kına, düğün.
+            for (double t = 22.5; t < 40 && r.Head.SpouseId != orhan.Id; t += 0.004)
             {
-                r.Clock.Restore(d + 0.5, 1);
-                Assert.True(v.Give(r.Head, "villager.orhan", "item.honey", out _));
+                r.Clock.Restore(t, 1);
+                rel.Tick();
             }
-            Assert.Equal(100, v.StateOf("villager.orhan").Romance);
-            Assert.Null(r.Family.CanDo(r.Head, orhan, SocialAction.Propose));
-
-            r.Family.Apply(r.Head, orhan, SocialAction.Propose);
             Assert.Equal(orhan.Id, r.Head.SpouseId);
             Assert.False(orhan.IsVillager);
             Assert.Equal(1, r.Life.Marriages);
             Assert.True(r.Life.Goals.IsDone("goal.marry1"));
+            Assert.Equal(RelationService.WarmthStart, rel.Warmth(r.Head.Id, orhan.Id));
         }
 
         [Fact]

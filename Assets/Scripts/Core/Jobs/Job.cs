@@ -37,7 +37,12 @@ namespace Thatchwick.Core.Jobs
         // Baş başa etkinlikler, birlikte iş ve sofra (belge 58 §10, 60b §3, 62-S8..S10; Cooking.Outings).
         Picnic = 80, EveningWalk = 81, FishTogether = 82, Fireside = 83, InviteDinner = 84,
         /// <summary>Birlikte iş: öteki kişinin sürmekte olan işine yardım eder; iş bitene kadar sürer.</summary>
-        HelpWork = 85
+        HelpWork = 85,
+        // İlişki sistemi (Project belgeleri 67, 67a-d; Relations.RelationService): olumsuz, flört ve gönül yolu, muhabbet, bilgi, heyet.
+        Argue = 90, Jab = 91, Fight = 92, Sulk = 93, Apologize = 94, MakeUp = 95, CaneThreat = 96,
+        Wink = 100, RomanticCompliment = 101, HoldHands = 102, Hug = 103, KissCheek = 104, Kiss = 105, GiveFlowers = 106,
+        GiveHandkerchief = 107, ReturnHandkerchief = 108, AskHand = 109, BreakEngagement = 110, CelebrateAnniversary = 111,
+        JoinChat = 120, Gossip = 121, SpreadRumor = 122, DenyRumor = 123, Lobby = 124
     }
 
     /// <summary>Karakterin yapacağı bir iş. Oyuncu komutu ve NPC otonomisi aynı işleri üretir.</summary>

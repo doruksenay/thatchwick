@@ -169,7 +169,11 @@ namespace Thatchwick.Core.Tests
         {
             var x = Village();
             var murat = x.Named("villager.murat");
-            x.Life.Villagers.StateOf(murat).Romance = NeighborHouseService.CourtedRomance;   // oyuncu kur yapıyor
+            // Oyuncu hanesinden biri kur yapıyor (67d: romantik çift başına).
+            var suitor = new Character(x.Pop.NextId(), "Aylin", new GridPos(2, 2)) { Sex = Sex.Female };
+            suitor.SetAge(35);
+            x.Pop.Add(suitor);
+            x.Life.Relations.SetRomance(suitor.Id, murat.Id, NeighborHouseService.CourtedRomance);
             var mother = Villager(x, "Anna", Sex.Female, 70);
             var bro = Villager(x, "Piers", Sex.Male, 35, mother: mother.Id);
             var sis = Villager(x, "Mabel", Sex.Female, 33, mother: mother.Id);
@@ -182,7 +186,12 @@ namespace Thatchwick.Core.Tests
                 Assert.NotEqual(a.Sex, b.Sex);
                 Assert.True(AgeStages.CanMarry(a.Stage) && AgeStages.CanMarry(b.Stage));
             };
-            for (int d = 0; d < 300; d++) x.Houses.TryVillageMarriage();
+            // İlişki sistemi bağlı: rastgele köy evliliği önce nişan, birkaç gün sonra düğün (oyuncu davetli).
+            for (int d = 0; d < 300; d++)
+            {
+                x.Houses.TryVillageMarriage();
+                for (int k = 0; k < 25; k++) { x.Clock.Restore(d + k * 0.04, 1); x.Life.Relations.Tick(); }
+            }
             Assert.True(weddings > 0);
             Assert.False(murat.SpouseId.HasValue);
             Assert.False(bro.SpouseId == sis.Id);

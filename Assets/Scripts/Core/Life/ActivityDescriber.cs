@@ -118,7 +118,15 @@ namespace Thatchwick.Core.Life
                         case SocialAction.TellAnimalTalk: info.Text = "Hayvanın konuştuğunu anlatıyor"; break;
                         case SocialAction.Propose: info.Icon = "love"; info.Text = "Evlenme teklif ediyor"; break;
                         case SocialAction.TryForBaby: info.Icon = "love"; info.Text = "Çocuk istiyor"; break;
-                        default: info.Text = (Thatchwick.Core.Family.FamilyService.SkillSocial(job.Action)?.Label ?? "Sosyal iş") + " (beceri)"; break;
+                        default:
+                            // İlişki sistemi işleri (belge 67): metin anahtarlı, simge poza göre.
+                            if (Thatchwick.Core.Relations.RelationService.Handles(job.Action))
+                            {
+                                info.Icon = RelationIcon(job.Action);
+                                info.Text = Localization.CoreText.T("rel.doing." + Thatchwick.Core.Relations.RelationRules.Snake(job.Action.ToString()));
+                                break;
+                            }
+                            info.Text = (Thatchwick.Core.Family.FamilyService.SkillSocial(job.Action)?.Label ?? "Sosyal iş") + " (beceri)"; break;
                     }
                     break;
                 case JobKind.Animal:
@@ -177,5 +185,18 @@ namespace Thatchwick.Core.Life
             foreach (var j in runner.Queue.Jobs) list.Add(DescribeJob(j, world));
             return list;
         }
-    }
+    
+        /// <summary>İlişki işinin eylem simgesi (oyun katmanı poz listesine çevirir).</summary>
+        private static string RelationIcon(SocialAction a)
+        {
+            switch (a)
+            {
+                case SocialAction.Fight: case SocialAction.Argue: case SocialAction.Jab: case SocialAction.CaneThreat: return "social";
+                case SocialAction.Wink: case SocialAction.RomanticCompliment: case SocialAction.HoldHands: case SocialAction.Hug:
+                case SocialAction.KissCheek: case SocialAction.Kiss: case SocialAction.GiveFlowers: case SocialAction.GiveHandkerchief:
+                case SocialAction.CelebrateAnniversary: return "love";
+                default: return "social";
+            }
+        }
+}
 }

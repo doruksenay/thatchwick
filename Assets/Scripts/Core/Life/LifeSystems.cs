@@ -92,6 +92,7 @@ namespace Thatchwick.Core.Life
             if (ev == null || !ev.Scolding) return;
             if (ev.Reputation != 0) Upbringing.Reputation.Add(ev.Reputation, Text(LocText.Of("roam.rep.gossip")));
             Requests?.Memory.Add(ev.Villager, Thatchwick.Core.Life.Requests.HouseMemory.Gaze, "gaze:" + ev.Child.Id);
+            RelationsOnGaze(ev);   // dedikodu ve eşler arası tetik T4 (belge 67c)
             if (!ev.Escort) return;
             foreach (var m in Household())
             {
@@ -418,6 +419,7 @@ namespace Thatchwick.Core.Life
             population.MemberDied += OnMemberDied;
             WireOddScenes();          // haritada görünen sahneler (belge 55)
             WireOddityEvents(seed);   // küçük easter egg'ler (belge 55); bütün alt sistemler kurulduktan sonra
+            InitRelations(seed);      // ilişki sistemi (belgeler 67, 67a-d)
         }
 
         /// <summary>
@@ -615,6 +617,7 @@ namespace Thatchwick.Core.Life
             Ledger.OnDied(dead);
             Graves.Bury(dead, Clock.TotalDays);
             int mourners = Mood.Mourn(dead, Population.Members);
+            RelationsOnDeath(dead);   // yas ilişkiye göre, arkadaşa yas (belge 67 H5)
             Say(mourners > 0
                 ? $"{dead.Name} toprağa verildi; {mourners} kişi yasta."
                 : $"{dead.Name} toprağa verildi.", NoticeLevel.Danger, dead.Id);
@@ -765,6 +768,7 @@ namespace Thatchwick.Core.Life
                 Upbringing.Weddings.Celebrate(actor, target, false);   // itibar düğün ölçeğinden (belge 34-D2)
                 Goals.Update();
             };
+            AttachRelations(family);
         }
 
         public void Attach(JobRunner runner)
@@ -792,6 +796,7 @@ namespace Thatchwick.Core.Life
             // Üşüyen ocağı kendisi yakar (Denge 41): ısı sistemi bağlıysa envanterden kütük atar.
             runner.Stoke = item => _heat != null && _heat.TryStoke(item.Id, House);
             runner.HasFirewood = () => _heat != null && House.Count(FirewoodId) > 0;
+            AttachRelations(runner);   // kavgada yerinde tutma, sahneler, görevli iş (belge 67)
         }
         // ---- ustalık (belge 45 ortak basamak Sv 10) ----
         private readonly Random _masteryRng;
@@ -1367,6 +1372,7 @@ namespace Thatchwick.Core.Life
                 UpdateClothing();
                 UpdateAilments();
                 UpdateYardMood();
+                RelationsMoodStep();   // hisler, muhabbet halkaları, imece (belge 67)
             }
 
             TickYard(gameDays);
@@ -1392,6 +1398,7 @@ namespace Thatchwick.Core.Life
             Coffee.Tick(Clock.TotalDays, Population.Members);
             CookingTick(gameDays);
             Trees.Tick();   // mevsimin son akşamı Bereket Sofrası (belge 52)
+            RelationsTick(gameDays);   // gönül yolu sahneleri, kararlar, köyün sosyal ağı (belge 67)
 
             long day = Clock.DayIndex;
             if (day != _lastDay)
@@ -1592,6 +1599,7 @@ namespace Thatchwick.Core.Life
             var founder = FounderId != null ? FounderId() : null;
             if (founder.HasValue) Legacy.CheckDescendants(founder.Value, Clock.TotalDays);
             Upbringing.OnNewDay();
+            RelationsNewDay(day);   // azalma, hisler, eşler, bilgi, heyet (belge 67)
             Requests.OnNewDay();
             Trees.OnNewDay();
             YardDay(day);
@@ -1657,7 +1665,8 @@ namespace Thatchwick.Core.Life
                 tailor = _tailor?.Export(),
                 ailments = _ailments?.Export(),
                 ailmentSetting = _ailments != null ? (int)_ailments.Setting + 1 : 0,
-                yard = ExportYard()
+                yard = ExportYard(),
+                relations = ExportRelations()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1672,7 +1681,8 @@ namespace Thatchwick.Core.Life
 
         public void Restore(LifeSaveData data)
         {
-            if (data == null) { Home.Import(null); Trees.Import(null); ImportYard(null); Population.RecomputeAll(); return; }
+            if (data == null) { Home.Import(null); Trees.Import(null); ImportYard(null); ImportRelations(null); Population.RecomputeAll(); return; }
+            ImportRelations(data.relations);
             Weather.Seed = data.weatherSeed == 0 ? Weather.Seed : data.weatherSeed;
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);

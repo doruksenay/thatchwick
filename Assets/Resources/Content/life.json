@@ -3676,6 +3676,16 @@
     {"id": "tile_bail", "jobs": ["tile:Bail"], "steps": [{"id": "fill_pail", "pose": "mine_bucket", "share": 2}, {"id": "haul_pail", "pose": "carry", "share": 2}]},
     {"id": "tile_ice", "jobs": ["tile:CutIce"], "steps": [{"id": "mark_ice", "pose": "bend"}, {"id": "saw_ice", "pose": "saw", "share": 4}]},
     {"id": "tile_repair", "jobs": ["tile:Repair"], "steps": [{"id": "patch_road", "pose": "hoe", "share": 3}]},
-    {"id": "tile_stock", "jobs": ["tile:Stock"], "steps": [{"id": "release_fish", "pose": "bend", "share": 2}]}
+    {"id": "tile_stock", "jobs": ["tile:Stock"], "steps": [{"id": "release_fish", "pose": "bend", "share": 2}]},
+    {"id": "soc_quarrel", "jobs": ["social:Argue", "social:Jab"], "steps": [{"id": "raise_voice", "pose": "argue", "share": 3}, {"id": "scoff", "pose": "scoff"}]},
+    {"id": "soc_fight", "jobs": ["social:Fight"], "steps": [{"id": "raise_voice", "pose": "argue", "share": 2}, {"id": "square_up", "pose": "fight_ready"}, {"id": "brawl", "pose": "brawl", "share": 4}]},
+    {"id": "soc_sulk", "jobs": ["social:Sulk"], "steps": [{"id": "turn_away", "pose": "sulk", "share": 2}]},
+    {"id": "soc_mend", "jobs": ["social:Apologize", "social:MakeUp"], "steps": [{"id": "greet", "pose": "social"}, {"id": "bow_head", "pose": "apologize", "share": 3}]},
+    {"id": "soc_cane", "jobs": ["social:CaneThreat"], "steps": [{"id": "shake_cane", "pose": "cane_threat", "share": 2}]},
+    {"id": "soc_flirt", "jobs": ["social:Wink", "social:RomanticCompliment", "social:GiveFlowers", "social:Hug", "social:CelebrateAnniversary"], "steps": [{"id": "lean_in", "pose": "social"}, {"id": "speak_heart", "pose": "love", "share": 3}]},
+    {"id": "soc_kiss", "jobs": ["social:Kiss", "social:KissCheek"], "steps": [{"id": "lean_in", "pose": "social"}, {"id": "kiss", "pose": "kiss", "share": 2}]},
+    {"id": "soc_hands", "jobs": ["social:HoldHands"], "steps": [{"id": "hold_hands", "pose": "hold_hands", "share": 3}]},
+    {"id": "soc_kerchief", "jobs": ["social:GiveHandkerchief", "social:ReturnHandkerchief", "social:AskHand", "social:BreakEngagement"], "steps": [{"id": "greet", "pose": "social"}, {"id": "offer_handkerchief", "pose": "offer_handkerchief", "share": 3}, {"id": "speak_heart", "pose": "love"}]},
+    {"id": "soc_whisper", "jobs": ["social:Gossip", "social:SpreadRumor", "social:DenyRumor", "social:Lobby", "social:JoinChat"], "steps": [{"id": "greet", "pose": "social"}, {"id": "whisper", "pose": "gossip", "share": 3}]}
   ]
 }
