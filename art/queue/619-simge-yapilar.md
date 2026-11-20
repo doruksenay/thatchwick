@@ -1,7 +1,8 @@
 ---
 id: "619"
 title: "Simge yapılar (bölge başına 1-2; 9 eşya)"
-status: pending
+status: running
+claimed_at: 2026-11-20T18:06Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("dediklerini uygula tamamen"; belge 64a §4 Aşama A madde 6)
 family: yapi
 style_gate: false
