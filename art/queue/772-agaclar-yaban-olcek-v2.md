@@ -1,7 +1,7 @@
 ---
 id: "772"
 title: "Ağaç stil ve ölçek pilotu: meşe, çam, elma (genç, olgun, meyveli; _v2)"
-status: review
+status: accepted   # kısmi: meşe olgun + elma (genç, olgun, meyveli) kabul; çamlar ret, genç meşe teslim edilmedi → 772c (kullanıcı kararı 2026-11-21 sohbet)
 claimed_at: 2026-11-20T23:21Z
 approved_by: user        # kullanıcı 21.11.2026: ölçek ("ağaçları ... yeniden üret", belge 66) ve stil birliği ("ciddi stil tutarsızlığı var ağaçlarda"; seçim: kabarık kümeli taç, hepsi tek seferde)
 priority: 10
@@ -68,3 +68,7 @@ Bu iş pilottur: üç farklı ağaç tipiyle (yayvan yaprak döken, iğne yaprak
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+
+## Kullanıcı kararı (2026-11-21)
+Kısmi kabul. **Kabul:** `iso_tree_oak_grown_se_v2`, `iso_tree_apple_{young,grown,fruit}_se_v2` (kabarık kümeli taç çapasına uyuyor, boy tabloda). **Ret:** `iso_tree_pine_grown_se_v2` (iğne yapraklı değil: uzun gövdeye dizili yuvarlak kümeler ve arkasında gölgeye benzeyen koyu lekeler) ve `iso_tree_pine_young_se_v2` (iri yapraklı fidan, yasak "botanik" çizim); ikisi `art/results/772-red/` altına taşındı. Neden büyük olasılıkla `create_map_object`'in stil görseli almaması (stil yalnızca metinden). Çamlar ve genç meşe 772c'de, referans görsel alan araçla.
+
