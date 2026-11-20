@@ -34,17 +34,19 @@ permissions:
   contents: write
   actions: write      # zincir: iş kaldıysa bir sonraki turu kendisi başlatır
   pull-requests: write  # tools/art değiştiyse sonuç PR olarak açılır
+  issues: write         # her iş bitince "art-bildirim" konusuna yorum (tools/art/notify.py)
 
 jobs:
   work:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    # Paralel üretim (art/budget.md "Paralel üretim", kullanıcı kararı 2026-11-18): her tur 3 şeritte 3 işi aynı anda
-    # yürütür. Her şerit sıradaki uygun işi sahiplenir; çakışan sahiplenmede push reddedilir, şerit geri alıp sonrakini dener.
+    # Paralel üretim (art/budget.md "Paralel üretim"; kullanıcı kararı 2026-11-18, 2026-11-21'de Pixel Architect ile
+    # en yükseğe çıktı): her tur 10 şeritte 10 işi aynı anda yürütür. PixelLab aynı anda 20 işe izin verir; şerit başına
+    # en çok 2 eşzamanlı çağrı (art/budget.md). Her şerit sıradaki uygun işi sahiplenir; çakışan sahiplenmede push reddedilir, şerit geri alıp sonrakini dener.
     strategy:
       fail-fast: false
       matrix:
-        lane: [0, 1, 2]
+        lane: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     env:
       LANE: ${{ matrix.lane }}
     steps:
@@ -87,7 +89,7 @@ jobs:
           git config user.name "thatchwick-art-worker"
           git config user.email "art-worker@users.noreply.github.com"
           remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          sleep $(( LANE * 20 ))                         # şeritler aynı anda sahiplenmeye kalkmasın
+          sleep $(( LANE * 6 ))                          # şeritler aynı anda sahiplenmeye kalkmasın
           claimed=""
           for attempt in 1 2 3 4 5; do
             git pull --ff-only --quiet "$remote" main    # tetikten sonra main ilerlediyse en uca gel
@@ -156,6 +158,7 @@ jobs:
               "Bash(python:*)" "Bash(python3:*)" "Bash(uv run:*)" "Bash(mkdir -p:*)" "Bash(cp -n:*)" "Bash(ls:*)"
 
       - name: Denetle ve push et
+        id: push
         if: always() && steps.claim.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -203,6 +206,18 @@ jobs:
           else
             echo "::error::Denetimden beklenmeyen çıktı: '$target'; hiçbir şey push edilmedi."; exit 1
           fi
+
+      # Kullanıcı kararı 2026-11-21: her iş bitince kullanıcı bilgilendirilir (konu yorumu, depo sahibi anılır).
+      - name: Bildirim
+        if: always() && steps.claim.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB: ${{ steps.claim.outputs.job }}
+          PUSH_OUTCOME: ${{ steps.push.outcome }}
+          NOTIFY_USER: ${{ github.repository_owner }}
+        run: |
+          git pull --rebase -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main || true
+          python tools/art/notify.py "$JOB" "$PUSH_OUTCOME" || echo "::warning::Bildirim gönderilemedi."
 
       - name: Özet
         if: always() && steps.claim.outputs.run == 'true'
