@@ -1,7 +1,8 @@
 ---
 id: "734"
 title: "Çalı ve ahşap bodrum merdiveni (2)"
-status: pending
+status: running
+claimed_at: 2026-11-20T17:44Z
 approved_by: user        # kullanıcı kararı 2026-11-20: "bunların hepsini yap. ilk asseti iş dosyasına yaz o başlasın" (belge 64b kalanlar, Unity incelemesi: şehirde kahverengi kutular)
 priority: 10
 family: esya
