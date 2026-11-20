@@ -409,7 +409,7 @@ namespace Thatchwick.Core.Jobs
         /// <summary>Şu an başlanabilecek, başka bir yiyecekle doyuran bir etkileşim var mı (sofra çeşidi cezası için).</summary>
         private bool HasOtherFood(string foodId)
         {
-            foreach (var item in _world.Items)
+            foreach (var item in _world.NeedItems)
                 foreach (var interaction in item.Def.Interactions)
                 {
                     if (interaction.RestoreFor(NeedType.Hunger) <= 0f || interaction.ConsumeItem == null || interaction.ConsumeItem == foodId) continue;
@@ -970,7 +970,7 @@ namespace Thatchwick.Core.Jobs
                     && TryStartNeedItem(NeedType.Bladder)) return true;          // yatmadan önce tuvalet
                 if (TryStartNeedItem(need)) return true;
             }
-            _autonomyIdleUntil = _elapsedDays + AutonomyRetryDays;
+            _autonomyIdleUntil = _elapsedDays + AutonomyRetry;
             return false;
         }
 
@@ -979,6 +979,12 @@ namespace Thatchwick.Core.Jobs
         /// Kritik ihtiyaç (açlık, enerji, ısınma) bekletilmez.
         /// </summary>
         public const double AutonomyRetryDays = 0.002;
+
+        /// <summary>
+        /// Bekleme süresi (oyun günü). Oyun katmanı bunu gerçek süreye göre ayarlar (hız 3x ve hızlı gecede oyun günü
+        /// cinsinden sabit süre gerçek zamanda kısalır ve arama sıklaşırdı).
+        /// </summary>
+        public double AutonomyRetry { get; set; } = AutonomyRetryDays;
         private double _autonomyIdleUntil;
 
         /// <summary>Tuvalet bunun altına inince yürüdüğü işi ya da uykuyu bırakıp tuvalete koşar; iş sonra sürer.</summary>
@@ -1073,22 +1079,24 @@ namespace Thatchwick.Core.Jobs
             double bestScore = double.MinValue;
             int bestDistance = int.MaxValue;
             float missing = Math.Max(1f, 100f - _character.Needs.Get(need));
-            foreach (var item in _world.Items)
+            // Yalnızca bu ihtiyaç için aday eşyalar taranır (WorldState.NeedItemsFor); tanım düzeyindeki elemeler
+            // (iş olan, beceri isteyen etkileşimler) ItemDef.AutonomyInteractions'ta önceden yapılmıştır. Eskiden her aramada
+            // dünyadaki bütün eşyaların bütün etkileşimleri geziliyordu (çekirdek sürenin üçte ikisi).
+            var candidates = _world.NeedItemsFor(need);
+            for (int ci = 0; ci < candidates.Count; ci++)
             {
-                foreach (var interaction in item.Def.Interactions)
+                var item = candidates[ci];
+                // Eşyaya bağlı elemeler etkileşimlerden önce bir kez: kullanabilir mi (arsa, bölge), ulaşılır mı.
+                if (_unreachableUntil.Count > 0 && _unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
+                if (!MayUseForNeeds(_world, _character, item)) continue;
+                foreach (var interaction in item.Def.AutonomyInteractions(need))
                 {
                     float restore = interaction.RestoreFor(need);
-                    if (restore <= 0f) continue;
                     // Otonomi iş yapmaz (ağaç kesmez, hasat etmez, üretmez, yem koymaz); yalnızca ihtiyaç giderir.
                     // Malzeme ya da hayvan gerektiren ihtiyaç etkileşimi (şalgam yemek, köpekle oynamak) koşul sağlanıyorsa seçilir.
-                    if (interaction.RemovesItem || interaction.RequiresGrown || interaction.Produce.Count > 0
-                        || interaction.IsCraft || interaction.AddFeed > 0 || interaction.Collect) continue;
                     if (interaction.HasEffects && (Effects == null || Effects.CanStart(_character, item, interaction) != null)) continue;
-                    if (interaction.MinSkillLevel > 0) continue;
                     if (interaction.RequiresLit && !item.IsLit) continue;
                     if (IsUnlitHeatSource(item, interaction) && !CanStoke) continue;   // sönük ocağa ancak odun varsa gidilir (yakar)
-                    if (!MayUseForNeeds(_world, _character, item)) continue;
-                    if (_unreachableUntil.TryGetValue(item.Id, out var until) && until > _elapsedDays) continue;
 
                     int distance = Math.Max(
                         Math.Abs(item.Position.X - _character.Position.X),

@@ -73,8 +73,34 @@ namespace Thatchwick.Core.World
         private readonly Dictionary<GridPos, ItemInstance> _tileIndex = new Dictionary<GridPos, ItemInstance>();
         private bool _tileIndexValid;
 
+        // Otonomi adayları: herhangi bir ihtiyacı gideren eşyalar, dünya listesiyle aynı sırada (eşit puanda ilk gelen
+        // kazandığı için sıra korunur). Otonomi 1.500 eşyanın hepsi yerine yalnızca bunları tarar.
+        private readonly List<ItemInstance> _needItems = new List<ItemInstance>();
+
+        /// <summary>Herhangi bir ihtiyacı gideren etkileşimi olan eşyalar (<see cref="Items"/> ile aynı sırada).</summary>
+        public IReadOnlyList<ItemInstance> NeedItems => _needItems;
+
+        // İhtiyaç başına adaylar (otonominin o ihtiyaç için seçebileceği etkileşimi olan eşyalar), aynı sırada.
+        private static readonly int NeedTypeCount = System.Enum.GetValues(typeof(Characters.NeedType)).Length;
+        private readonly List<ItemInstance>[] _needBuckets = NewBuckets();
+        private static List<ItemInstance>[] NewBuckets()
+        {
+            var b = new List<ItemInstance>[NeedTypeCount];
+            for (int i = 0; i < b.Length; i++) b[i] = new List<ItemInstance>();
+            return b;
+        }
+
+        /// <summary>Otonominin verilen ihtiyaç için seçebileceği eşyalar (<see cref="Items"/> ile aynı sırada).</summary>
+        public IReadOnlyList<ItemInstance> NeedItemsFor(Characters.NeedType need) => _needBuckets[(int)need];
+
         private void AddToIndex(ItemInstance item)
         {
+            if (item.Def.RestoresAnyNeed)
+            {
+                _needItems.Add(item);
+                for (int n = 0; n < NeedTypeCount; n++)
+                    if (item.Def.AutonomyInteractions((Characters.NeedType)n).Length > 0) _needBuckets[n].Add(item);
+            }
             _touched.Add(item.Id);
             if (item.ParentId.HasValue) _touched.Add(item.ParentId.Value);
             _items.Add(item);
@@ -85,6 +111,12 @@ namespace Thatchwick.Core.World
         private void RemoveFromIndex(ItemInstance item)
         {
             if (!_items.Remove(item)) return;
+            if (item.Def.RestoresAnyNeed)
+            {
+                _needItems.Remove(item);
+                for (int n = 0; n < NeedTypeCount; n++)
+                    if (item.Def.AutonomyInteractions((Characters.NeedType)n).Length > 0) _needBuckets[n].Remove(item);
+            }
             _touched.Add(item.Id);
             if (item.ParentId.HasValue) _touched.Add(item.ParentId.Value);
             if (_byId.TryGetValue(item.Id, out var known) && ReferenceEquals(known, item)) _byId.Remove(item.Id);

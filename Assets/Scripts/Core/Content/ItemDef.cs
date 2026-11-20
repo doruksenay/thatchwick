@@ -251,6 +251,66 @@ namespace Thatchwick.Core.Content
         public string DisplayName { get; set; }
         public List<InteractionDef> Interactions { get; set; } = new List<InteractionDef>();
 
+        // Bu tanımın herhangi bir ihtiyacı gideren etkileşimi var mı (otonomi adayı). Etkileşim listesi yükleme sırasında
+        // büyüyebildiği için sonuç liste boyuyla birlikte saklanır.
+        private int _needCheckedCount = -1;
+        private bool _restoresAnyNeed;
+
+        /// <summary>
+        /// Herhangi bir ihtiyacı gideren etkileşimi olan eşya (yatak, sandalye, yiyecek ...). Otonomi yalnızca bunları tarar;
+        /// dünyadaki eşyaların çoğu (ağaç, dekor, çit) aday değildir.
+        /// </summary>
+        public bool RestoresAnyNeed
+        {
+            get
+            {
+                if (_needCheckedCount == Interactions.Count) return _restoresAnyNeed;
+                _restoresAnyNeed = false;
+                foreach (var i in Interactions)
+                    if ((i.RestoresNeed && i.Restore > 0f) || HasPositive(i.ExtraRestore)) { _restoresAnyNeed = true; break; }
+                _needCheckedCount = Interactions.Count;
+                return _restoresAnyNeed;
+            }
+        }
+
+        // İhtiyaç başına otonominin seçebileceği etkileşimler (tanım düzeyindeki elemeler önceden yapılır).
+        private InteractionDef[][] _autonomy;
+        private int _autonomyCount = -1;
+        private static readonly InteractionDef[] NoInteractions = new InteractionDef[0];
+        private static readonly int NeedTypeCount = System.Enum.GetValues(typeof(Characters.NeedType)).Length;
+
+        /// <summary>
+        /// Otonominin bu ihtiyaç için seçebileceği etkileşimler, <see cref="Interactions"/> sırasıyla: ihtiyacı gideren ve iş
+        /// olmayan (eşyayı kaldırmayan, hasat etmeyen, üretmeyen, yem koymayan, toplamayan, beceri istemeyen) etkileşimler.
+        /// Duruma bağlı elemeler (yanıyor mu, kullanabilir mi, ulaşılır mı) çağıranda kalır.
+        /// </summary>
+        public InteractionDef[] AutonomyInteractions(Characters.NeedType need)
+        {
+            if (_autonomy == null || _autonomyCount != Interactions.Count)
+            {
+                var lists = new List<InteractionDef>[NeedTypeCount];
+                foreach (var i in Interactions)
+                {
+                    if (i.RemovesItem || i.RequiresGrown || i.Produce.Count > 0 || i.IsCraft || i.AddFeed > 0 || i.Collect || i.MinSkillLevel > 0) continue;
+                    for (int n = 0; n < NeedTypeCount; n++)
+                        if (i.RestoreFor((Characters.NeedType)n) > 0f) (lists[n] ?? (lists[n] = new List<InteractionDef>())).Add(i);
+                }
+                var result = new InteractionDef[NeedTypeCount][];
+                for (int n = 0; n < NeedTypeCount; n++) result[n] = lists[n] != null ? lists[n].ToArray() : NoInteractions;
+                _autonomy = result;
+                _autonomyCount = Interactions.Count;
+            }
+            int k = (int)need;
+            return k >= 0 && k < _autonomy.Length ? _autonomy[k] : NoInteractions;
+        }
+
+        private static bool HasPositive(List<NeedRestoreDef> extra)
+        {
+            if (extra == null) return false;
+            foreach (var e in extra) if (e.Amount > 0f) return true;
+            return false;
+        }
+
         /// <summary>Dönmemiş haldeki kapladığı karo sayısı (1x1, bir yatak 2x1 ...).</summary>
         public int Width { get; set; } = 1;
         public int Height { get; set; } = 1;
