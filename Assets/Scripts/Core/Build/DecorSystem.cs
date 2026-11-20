@@ -102,6 +102,7 @@ namespace Thatchwick.Core.Build
                 if (_world.GetItem(s.Id) == null) continue;
                 double chance = CollapseChance(_world.LoadOf(s.Id), s.Def.MaxLoad);
                 if (CollapseFactor != null) chance *= CollapseFactor(s);   // cilalı, demir destekli raf (belge 45)
+                chance *= ItemQuality.DamageFactor(s.Quality);              // usta işi raf daha az çöker (belge 53)
                 if (NextRoll() < chance) Collapse(s);
             }
         }
@@ -125,7 +126,7 @@ namespace Thatchwick.Core.Build
                 }
                 else
                 {
-                    fallen.Add(new StoredItem(d.Def.Id, ItemCondition.Damaged));
+                    fallen.Add(new StoredItem(d.Def.Id, ItemCondition.Damaged) { Quality = d.Quality, Maker = d.Maker });
                     report.Damaged++;
                 }
             }
@@ -135,7 +136,7 @@ namespace Thatchwick.Core.Build
             {
                 // Duvar rafı duvardan kopar: hasarlı olarak döküntüye düşer.
                 _world.RemoveSingle(surface);
-                fallen.Add(new StoredItem(surface.Def.Id, ItemCondition.Damaged));
+                fallen.Add(new StoredItem(surface.Def.Id, ItemCondition.Damaged) { Quality = surface.Quality, Maker = surface.Maker });
             }
             else surface.Condition = ItemCondition.Damaged;
 
@@ -284,8 +285,8 @@ namespace Thatchwick.Core.Build
                     {
                         if (def.HasTag(Decor.DistinctTag) && HasContent(item, f)) break;   // sergi rafı: her eşyadan bir tane (belge 45)
                         double age = ageOf != null ? Math.Max(0, ageOf(f)) : 0;
-                        if (!house.TryTakePreferOwn(f, out bool own)) break;
-                        item.Contents.Add(new StoredItem(f, age, own));
+                        if (!house.TryTakePreferOwn(f, out bool own, out var key, TakePolicy.Highest)) break;
+                        item.Contents.Add(new StoredItem(f, age, own) { Quality = key.Quality, Maker = key.Maker });
                         added++;
                     }
             return added;
@@ -355,8 +356,7 @@ namespace Thatchwick.Core.Build
             {
                 if (!content.Items.TryGet(c.ItemId, out var food)) { gone++; continue; }
                 if (Decor.Freshness(food, c.Age) == Decor.Rotten) { gone++; continue; }
-                house.AddItem(c.ItemId, 1, c.Condition);
-                if (!c.Own && item.Def.IsFillDecor) house.MarkBought(c.ItemId, 1);
+                house.Add(new ItemKey(c.ItemId, c.Quality, c.Condition, !c.Own && item.Def.IsFillDecor, c.Maker), 1);
                 ret++;
             }
             item.Contents.Clear();

@@ -304,10 +304,14 @@ namespace Thatchwick.Core.Tests
             string said = null;
             c.Effects.Applied += (ch, inter, summary) => said = summary;
             Do(c, crop, "harvest");
-            // Birinci sınıf: 4 x 1,5 = 6 şalgam; tohum 1.
-            Assert.Equal(6, c.House.Count("turnip"));
+            // Has (belge 53): adet bonusu yarıya indi, 4 x 1,2 = 4,8 şalgam; değerin kalanı kaliteye geçti. Tohum 1, kalitesiz.
+            Assert.InRange(c.House.Count("turnip"), 4, 5);
             Assert.Equal(1, c.House.Count("seed_turnip"));
-            Assert.Contains("kalite: Birinci sınıf", said);
+            if (c.Db.Items.Get("turnip").HasQuality)
+            {
+                Assert.True(c.House.Count("turnip", ItemQuality.Fine) > 0);
+                Assert.Contains("★", said);
+            }
         }
 
         [Fact]

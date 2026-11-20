@@ -61,6 +61,8 @@ namespace Thatchwick.Core.Tests
             foreach (RoamPermission p in Enum.GetValues(typeof(RoamPermission))) keys.Add(ChildRoaming.PermissionText(p).Key);
             for (int i = 0; i < ChildRoaming.ScoldCount; i++) keys.Add(ChildRoaming.Scold(i).Key);
             for (int i = 0; i < ChildRoaming.KindCount; i++) keys.Add(ChildRoaming.Kind(i).Key);
+            for (int q = 0; q <= Thatchwick.Core.Content.ItemQuality.Max; q++) keys.Add(Thatchwick.Core.Content.ItemQuality.NameKey(q));
+            keys.Add("content.act.embellish_carve"); keys.Add("content.act.embellish_stitch");
             AssertKeys(keys);
         }
 
@@ -72,9 +74,9 @@ namespace Thatchwick.Core.Tests
             {
                 "Core/Life/Requests/RequestService.cs", "Core/Life/Requests/RequestCatalog.cs", "Core/Work/TimedDuties.cs",
                 "Core/Upbringing/ChildRoaming.cs", "Core/Life/LifeSystems.cs", "Game/RequestPanel.cs", "Game/FamilyPanel.cs",
-                "Game/VillagePanel.cs", "Game/GameRoot.cs"
+                "Game/VillagePanel.cs", "Game/GameRoot.cs", "Core/Life/QualityBook.cs", "Game/MarketPanel.cs", "Game/UiSkin.cs"
             };
-            var rx = new Regex("(?:LocText\\.Of|\\bL|\\bT|GameLocalization\\.T)\\(\\s*\"((?:core\\.req|req|duty|roam|ui\\.req|ui\\.duty|ui\\.roam)\\.[a-z0-9_.]*[a-z0-9_])\"");
+            var rx = new Regex("(?:LocText\\.Of|\\bL|\\bT|GameLocalization\\.T)\\(\\s*\"((?:core\\.req|req|duty|roam|ui\\.req|ui\\.duty|ui\\.roam|quality|ui\\.quality|ui\\.market)\\.[a-z0-9_.]*[a-z0-9_])\"");
             var keys = new List<string>();
             foreach (var f in files)
             {

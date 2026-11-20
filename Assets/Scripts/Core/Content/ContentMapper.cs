@@ -47,6 +47,8 @@ namespace Thatchwick.Core.Content
                     NeedsOil = dto.needsOil,
                     Comfort = dto.comfort,
                     SpoilDays = dto.spoilDays,
+                    QualityClassName = string.IsNullOrWhiteSpace(dto.quality) ? null : dto.quality.Trim().ToLowerInvariant(),
+                    AgeStepDays = Math.Max(0f, dto.ageDays),
                     Preserves = dto.preserves,
                     Variants = dto.variants != null ? new List<string>(dto.variants) : new List<string>(),
                     ForageMax = dto.forageMax,
@@ -347,7 +349,8 @@ namespace Thatchwick.Core.Content
                                     Chance = p.chance <= 0f ? 1f : p.chance,
                                     MinLevel = p.minLevel,
                                     MaxLevel = p.maxLevel,
-                                    Seasons = ParseSeasons(p.seasons, $"{dto.id}.{i.id}", errors)
+                                    Seasons = ParseSeasons(p.seasons, $"{dto.id}.{i.id}", errors),
+                                    MinQuality = Math.Max(0, Math.Min(ItemQuality.NormalMax, p.quality))
                                 });
                             }
                         }
@@ -377,6 +380,7 @@ namespace Thatchwick.Core.Content
 
             ApplyRecipes(file.recipes, db, errors);
             ApplyPlantSkills(db);
+            ApplyQualityClasses(db);
             ApplyAnimals(file.animals, db, errors);
             ApplyBuildParts(file.buildParts, db, errors);
             ApplyEffects(file.effects, db, errors);
@@ -404,6 +408,70 @@ namespace Thatchwick.Core.Content
             foreach (var d in db.Items.All)
                 if (!d.LockSkill.HasValue && d.PlantsAs != null && db.Items.TryGet(d.PlantsAs, out var plant) && plant.CraftSkill.HasValue) d.CraftSkill = plant.CraftSkill;
         }
+
+        // Kalite taşıyan eşyalar (53 §4.2): yiyecek, içecek, hayvan ürünü, tekstil ve deri zinciri (Goods); tarifle yapılan
+        // mobilya, eyer, giysi, oyuncak (Crafted). Ham madde, yakıt, tohum ve yapı malzemesi kalitesiz (Dwarf Fortress dersi).
+        private static readonly string[] GoodsTags = { "food", "drink", "fish", "cloth", "fiber", "leather", "hide", "coffee", "potion", "remedy" };
+        private static readonly string[] GoodsIds = { "item.wool", "item.coffee_roasted", "item.coffee_beans", "item.vinegar", "item.honeycomb", "item.raw_hide" };
+        private static readonly string[] NoQualityTags = { "seed", "feed", "fertilizer", "fuel", "stone", "metal", "ice", "keepsake", "relic", "salvage" };
+        private static readonly string[] CraftedResourceTags = { "saddle", "clothing" };
+        // Yapılan eşyada kalite: oturma, yatak, sandık, masa, halı, oyuncak, süs. Makine, su yapısı ve bahçe yapısı kalitesiz.
+        private static readonly string[] CraftedCategories = { "seating", "sleep", "storage", "surfaces", "rug", "kids", "decor", "decor_wall" };
+
+        private static void ApplyQualityClasses(ContentDatabase db)
+        {
+            var crafted = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var d in db.Items.All)
+                foreach (var i in d.Interactions)
+                    if (i.IsCraft) foreach (var p in i.Produce) if (p.ItemId != null) crafted.Add(p.ItemId);
+            foreach (var d in db.Items.All)
+            {
+                switch (d.QualityClassName)
+                {
+                    case "none": d.QualityClass = ItemQualityClass.None; continue;
+                    case "goods": d.QualityClass = ItemQualityClass.Goods; continue;
+                    case "crafted": d.QualityClass = ItemQualityClass.Crafted; continue;
+                }
+                d.QualityClass = ItemQualityClass.None;
+                if (d.PlantsAs != null || d.Id.StartsWith("item.seed_", StringComparison.Ordinal)) continue;
+                bool blocked = false;
+                foreach (var t in NoQualityTags) if (d.HasTag(t)) { blocked = true; break; }
+                if (blocked) continue;
+                bool resource = d.Category == "resource" || d.Category == "forage";
+                if (resource)
+                {
+                    foreach (var t in GoodsTags) if (d.HasTag(t)) { d.QualityClass = ItemQualityClass.Goods; break; }
+                    if (d.QualityClass == ItemQualityClass.None && Array.IndexOf(GoodsIds, d.Id) >= 0) d.QualityClass = ItemQualityClass.Goods;
+                    if (d.QualityClass == ItemQualityClass.None && crafted.Contains(d.Id))
+                        foreach (var t in CraftedResourceTags) if (d.HasTag(t)) { d.QualityClass = ItemQualityClass.Crafted; break; }
+                }
+                else if (crafted.Contains(d.Id) && Array.IndexOf(CraftedCategories, d.Category) >= 0 && !d.IsPlant && !d.HasTag("light"))
+                    d.QualityClass = ItemQualityClass.Crafted;
+            }
+            // Oyma süsle (Marangozluk 6, ahşap) ve İşle (Dokumacılık 6, kumaş): yerleşik yapılan eşyaya +1 kalite (53 §4.6).
+            foreach (var d in db.Items.All)
+            {
+                if (d.QualityClass != ItemQualityClass.Crafted || d.Placement == ItemPlacement.Resource || d.IsRug) continue;   // halı etkileşimsiz kalır
+                string mat = d.EffectiveMaterial;
+                if (mat == Decor.Wood && db.Items.Contains(CarveMaterial))
+                    d.Interactions.Add(new InteractionDef
+                    {
+                        Id = "embellish_carve", DisplayName = GeneratedText("content.act.embellish_carve", "Oyma süsle"), DurationDays = 0.2,
+                        Skill = Characters.SkillType.Carpentry, SkillXp = 20f, MinSkillLevel = EmbellishLevel, Embellish = true,
+                        Consume = { new ConsumeDef { ItemId = CarveMaterial, Count = 1 } }
+                    });
+                else if (mat == Decor.Cloth && db.Items.Contains(StitchMaterial))
+                    d.Interactions.Add(new InteractionDef
+                    {
+                        Id = "embellish_stitch", DisplayName = GeneratedText("content.act.embellish_stitch", "İşle (nakış)"), DurationDays = 0.2,
+                        Skill = Characters.SkillType.Weaving, SkillXp = 20f, MinSkillLevel = EmbellishLevel, Embellish = true,
+                        Consume = { new ConsumeDef { ItemId = StitchMaterial, Count = 1 } }
+                    });
+            }
+        }
+
+        public const int EmbellishLevel = 6;
+        public const string CarveMaterial = "item.beeswax", StitchMaterial = "item.yarn";
 
         private static void ApplyBuildParts(BuildPartDto[] parts, ContentDatabase db, List<string> errors)
         {

@@ -193,7 +193,7 @@ namespace Thatchwick.Core.Life.Requests
             Call("cagri.feud", "*", false, null,
                 P(SkillType.Charm, 6, hours: 2),
                 P(SkillType.Music, 9, hours: 2),
-                P(SkillType.Cooking, 5, item: "item.stew_good", count: 2, hours: 2)),
+                P(SkillType.Cooking, 5, item: "item.stew_plain", count: 2, hours: 2)),
             Call("cagri.well", "*", false, null,
                 P(SkillType.Masonry, 4, item: "item.stone", count: 6, hours: 4),
                 P(SkillType.Engineering, 3, item: "item.plank", count: 3, hours: 3),

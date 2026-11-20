@@ -27,7 +27,7 @@ namespace Thatchwick.Core.Life.Requests
     [Serializable]
     public sealed class ObjectiveSave
     {
-        public int kind, count, progress, level, villager, duty;
+        public int kind, count, progress, level, villager, duty, minQuality;
         public int skill = -1;
         public string item, act, region;
     }
@@ -71,6 +71,7 @@ namespace Thatchwick.Core.Life.Requests
         public string template, title, text, giverName, giverDef, ignoreText, vowedByName, storyKey;
         public double postedDay, acceptedDay = -1, deadline = double.MaxValue, days, villageProgress, vowedDay;
         public bool read, stretch, master;
+        public int deliveredQuality = -1;   // sipariş derecesi (53); eski kayıtta -1
         public ObjectiveSave[] objectives;
         public RewardSave reward;
         public CallPathSave[] paths;
@@ -89,7 +90,7 @@ namespace Thatchwick.Core.Life.Requests
                 id = r.Id, kind = (int)r.Kind, template = r.TemplateId, title = LocCodec.Encode(r.Title), text = LocCodec.Encode(r.Text), giverId = r.GiverId, giverName = r.GiverName,
                 giverDef = r.GiverDefId, houseId = r.HouseId, postedDay = r.PostedDay, acceptedDay = r.AcceptedDay,
                 deadline = r.HasDeadline ? r.Deadline : NoDeadline, days = r.Days, state = (int)r.State, read = r.Read, assignedTo = r.AssignedTo,
-                penalty = r.Penalty, skill = r.Skill.HasValue ? (int)r.Skill.Value : -1, level = r.Level, stretch = r.Stretch, master = r.Master,
+                penalty = r.Penalty, skill = r.Skill.HasValue ? (int)r.Skill.Value : -1, level = r.Level, stretch = r.Stretch, master = r.Master, deliveredQuality = r.DeliveredQuality,
                 chosenPath = r.ChosenPath, solverId = r.SolverId, ignoreText = LocCodec.Encode(r.IgnoreText), season = r.Season, dayFrom = r.DayFrom, dayTo = r.DayTo,
                 villageProgress = r.VillageProgress, stage = r.Stage, vowedBy = r.VowedBy, vowedByName = r.VowedByName, vowedDay = r.VowedDay,
                 storyStep = r.StoryStep, storyKey = r.StoryKey,
@@ -117,7 +118,7 @@ namespace Thatchwick.Core.Life.Requests
                 Id = e.id, Kind = (RequestKind)e.kind, TemplateId = e.template, Title = LocCodec.Decode(e.title), Text = LocCodec.Decode(e.text), GiverId = e.giverId, GiverName = e.giverName,
                 GiverDefId = N(e.giverDef), HouseId = e.houseId, PostedDay = e.postedDay, AcceptedDay = e.acceptedDay,
                 Deadline = e.deadline < 0 ? double.MaxValue : e.deadline, Days = e.days, State = (RequestState)e.state, Read = e.read,
-                AssignedTo = e.assignedTo, Penalty = e.penalty, Skill = Skill(e.skill), Level = e.level, Stretch = e.stretch, Master = e.master,
+                AssignedTo = e.assignedTo, Penalty = e.penalty, Skill = Skill(e.skill), Level = e.level, Stretch = e.stretch, Master = e.master, DeliveredQuality = e.deliveredQuality,
                 ChosenPath = e.chosenPath, SolverId = e.solverId, IgnoreText = LocCodec.Decode(e.ignoreText), Season = e.season, DayFrom = e.dayFrom, DayTo = e.dayTo,
                 VillageProgress = e.villageProgress, Stage = e.stage, VowedBy = e.vowedBy, VowedByName = N(e.vowedByName), VowedDay = e.vowedDay,
                 StoryStep = e.storyStep, StoryKey = N(e.storyKey), Reward = LoadReward(e.reward)
@@ -152,7 +153,7 @@ namespace Thatchwick.Core.Life.Requests
                 arr[i] = new ObjectiveSave
                 {
                     kind = (int)o.Kind, item = o.ItemId, count = o.Count, progress = o.Progress, skill = o.Skill.HasValue ? (int)o.Skill.Value : -1,
-                    level = o.Level, act = o.ActId, region = o.Region, villager = o.VillagerId, duty = (int)o.DutyKind
+                    level = o.Level, act = o.ActId, region = o.Region, villager = o.VillagerId, duty = (int)o.DutyKind, minQuality = o.MinQuality
                 };
             }
             return arr;
@@ -168,7 +169,8 @@ namespace Thatchwick.Core.Life.Requests
                 {
                     Kind = (ObjectiveKind)o.kind, ItemId = N(o.item), Count = o.count, Progress = o.progress, Skill = Skill(o.skill), Level = o.level,
                     ActId = N(o.act), Region = N(o.region), VillagerId = o.villager,
-                    DutyKind = Enum.IsDefined(typeof(TimedDutyKind), o.duty) ? (TimedDutyKind)o.duty : TimedDutyKind.None
+                    DutyKind = Enum.IsDefined(typeof(TimedDutyKind), o.duty) ? (TimedDutyKind)o.duty : TimedDutyKind.None,
+                    MinQuality = Math.Max(0, o.minQuality)
                 });
             }
         }

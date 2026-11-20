@@ -69,7 +69,8 @@ namespace Thatchwick.Game
                 if (plan.Open.ContainsKey(id) || (left >= 0 && left < 2)) GUI.color = new Color(1f, 0.75f, 0.6f);
                 GUILayout.BeginHorizontal();
                 IsoArt.IconCell(id, 20f);
-                GUILayout.Label($"{def.DisplayName} {_house.Count(id)}: {string.Join(", ", where)}{days}");
+                string qual = def.HasQuality ? UiSkin.QualityBreakdown(_house, id) : "";
+                GUILayout.Label($"{def.DisplayName} {_house.Count(id)}{(qual.Length > 0 ? " " + qual : "")}: {string.Join(", ", where)}{days}", UiSkin.Rich);
                 GUILayout.EndHorizontal();
                 GUI.color = old;
             }

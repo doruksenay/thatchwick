@@ -1878,7 +1878,7 @@
       ],
       "loves": [
         "item.honey",
-        "item.stew_fine"
+        "item.stew_plain"
       ],
       "likes": [
         "tag:fuel",
@@ -2016,7 +2016,7 @@
         "trait.sociable"
       ],
       "loves": [
-        "item.stew_good",
+        "item.stew_plain",
         "item.pea"
       ],
       "likes": [
@@ -2197,7 +2197,7 @@
       ],
       "loves": [
         "item.honey",
-        "item.stew_fine"
+        "item.stew_plain"
       ],
       "likes": [
         "tag:drink",
@@ -2330,7 +2330,7 @@
         "trait.introvert"
       ],
       "loves": [
-        "item.stew_fine"
+        "item.stew_plain"
       ],
       "likes": [
         "tag:leather",
@@ -2418,7 +2418,7 @@
         "trait.diligent"
       ],
       "loves": [
-        "item.stew_fine"
+        "item.stew_plain"
       ],
       "likes": [
         "tag:stone",

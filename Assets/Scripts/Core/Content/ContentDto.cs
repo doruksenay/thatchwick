@@ -156,6 +156,8 @@ namespace Thatchwick.Core.Content
         public string[] growSeasons; // ekin: büyüyebildiği mevsimler (boş = kış dışı hepsi)
         public int comfort;          // oda konforuna katkı
         public float spoilDays;      // taze yiyecek: bu kadar günde çürür; 0 = çürümez
+        public string quality;       // kalite sınıfı (53): "none" | "goods" | "crafted"; boşsa etiket ve tariften
+        public float ageDays;        // mahzende olgunlaşma: bu kadar günde bir kalite basamağı (53, karar 4); 0 = olgunlaşmaz
         public float preserves;      // kiler: yiyecek bozulma çarpanı (0,4 = %60 yavaş); 0 = kiler değil
         public string[] variants;    // renk/malzeme varyantları (Adım 43)
         public string[] forageSeasons; // yabani toplanabilir: görüneceği mevsimler
@@ -444,5 +446,6 @@ namespace Thatchwick.Core.Content
         public int minLevel;   // etkileşimin becerisinde bu seviye ve üstü (0 = sınır yok)
         public int maxLevel;   // bu seviye ve altı (0 = sınır yok)
         public string[] seasons; // yalnızca bu mevsimlerde (boş = her mevsim): balık türleri
+        public int quality;    // en az bu kalite (53): elle toplanan zeytin Seçme; 0 = kurala göre
     }
 }

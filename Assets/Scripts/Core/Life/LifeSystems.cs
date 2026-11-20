@@ -47,6 +47,10 @@ namespace Thatchwick.Core.Life
         public WeatherSystem Weather { get; }
         public FestivalService Festivals { get; }
         public SpoilageService Spoilage { get; }
+        /// <summary>Kalite defteri: "En iyi malzeme", "Ustalık eseri dene", eser kaydı ve yadigâr (Project belgesi 53).</summary>
+        public QualityBook QualityBook { get; } = new QualityBook();
+        /// <summary>Mahzende olgunlaşma ve dede şarabı (53, karar 4).</summary>
+        public AgingService Aging { get; }
         public ForageSystem Forage { get; }
 
         // Köy ve hanedan katmanı (Adım 38-41)
@@ -152,6 +156,8 @@ namespace Thatchwick.Core.Life
             Weather = new WeatherSystem(clock.Config, seed: 1);
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
+            Aging = new AgingService(content, house, world) { Today = () => Clock.TotalDays };
+            Aging.Matured += (id, q, n) => { if (q >= ItemQuality.Heirloom) Say(LocText.Of("quality.n.grandfather_wine", ("n", n), ("item", id)), NoticeLevel.Info); };
             Forage = seed != 0 ? new ForageSystem(world, content, Seeds.Derive(seed, 2)) : new ForageSystem(world, content);
             Villagers = seed != 0 ? new VillagerService(content, population, house, clock, Seeds.Derive(seed, 3)) : new VillagerService(content, population, house, clock);
             Tools = new ToolService(content, house)
@@ -696,6 +702,8 @@ namespace Thatchwick.Core.Life
             runner.ItemBonus = (it, i) => HomeLife.Combine(Legacy.BonusFor(it, i), Home.BonusFor(it, i));
             runner.InteractionCompleted += (c, interaction) => Injuries.OnWorkDone(c, interaction);
             runner.InteractionCompleted += OnMasterCraft;
+            // Ustalık eseri denemesi iki kat sürer (53 §4.6).
+            runner.DurationFactor = (c, item, i) => QualityBook.WillAttempt(c, item, i, Clock.DayIndex) ? 2.0 : 1.0;
             runner.ItemUsed += (c, item, interaction) => Upbringing.OnItemUsed(c, item);
             runner.ItemUsed += (c, item, interaction) => { if (interaction.Id == ReadBoardInteraction) ReadBoard(c); };
             runner.WorkDone += Requests.OnWork;
@@ -707,21 +715,48 @@ namespace Thatchwick.Core.Life
         private readonly Random _masteryRng;
         private readonly Dictionary<int, long> _masterworkDay = new Dictionary<int, long>();
 
-        /// <summary>Usta bir tarifi bitirince %25 ustalık eseri: bir fazla ürün, "Ustalık eseri" moodlet'i, kronik, itibar (günde bir).</summary>
+        /// <summary>
+        /// Usta eli (belge 45 Sv 10): usta bir tarifi bitirince %25 bir fazla ürün. Asıl ustalık eseri artık bilinçli denemedir
+        /// (tezgâhta "Ustalık eseri dene", belge 53 §4.6); onun moodlet'i, kroniği ve itibarı <see cref="OnMasterworkMade"/>'de.
+        /// </summary>
         public void OnMasterCraft(Character c, InteractionDef interaction)
         {
             if (c == null || c.IsVillager || !Progress.Mastery.IsMasterCraft(c, interaction)) return;
             if (_masteryRng.NextDouble() >= Progress.Mastery.MasterworkChance) return;
             var product = interaction.Produce[0].ItemId;
             House.AddItem(product, 1);
+            Say(LocText.Of("quality.n.master_hand", ("name", c.Name), ("item", product)), NoticeLevel.Info, c.Id);
+        }
+
+        /// <summary>Kalite kaynaklarını etkilere bağlar (GameRoot ve testler çağırır): defter, gün, yıl, aile tarifi, eser olayı.</summary>
+        public void AttachEffects(Thatchwick.Core.Work.InteractionEffects fx)
+        {
+            if (fx == null) return;
+            fx.Quality = QualityBook;
+            fx.DayIndex = () => Clock.DayIndex;
+            fx.Year = () => (int)(Clock.DayIndex / Math.Max(1, Clock.Config.DaysPerYear)) + 1;
+            fx.Today = () => Clock.TotalDays;
+            fx.FamilyRecipe = (c, skill) =>
+            {
+                var r = c != null ? Upbringing.Recipes.OldestKnown(c.Id, skill) : null;
+                return r != null ? (r.Generations, r.Name) : (0, null);
+            };
+            fx.MasterworkMade += OnMasterworkMade;
+        }
+
+        /// <summary>Ustalık eseri (53): "Ustalık eseri" moodlet'i, kronik, bildirim ve itibar (günde bir).</summary>
+        public void OnMasterworkMade(Character c, string itemId, int quality)
+        {
+            if (c == null) return;
             c.AddMoodlet(Thatchwick.Core.Mood.MoodCatalog.MasterWork);
-            string name = Content.Items.TryGet(product, out var d) ? d.DisplayName : product;
-            Say($"{Progress.Mastery.DisplayName(c)} bir ustalık eseri çıkardı: {name} ({c.Name} imzalı).", NoticeLevel.Info, c.Id);
+            var note = LocText.Of(quality >= ItemQuality.Heirloom ? "quality.n.heirloom_meal" : "quality.n.masterwork", ("name", c.Name), ("item", itemId));
+            Say(note, NoticeLevel.Info, c.Id);
+            c.AddChronicle(Text(note));
             long today = Clock.DayIndex;
             if (!_masterworkDay.TryGetValue(c.Id, out var last) || last != today)
             {
                 _masterworkDay[c.Id] = today;
-                Upbringing.Reputation.Add(Progress.Mastery.MasterworkReputation, "ustalık eseri");
+                Upbringing.Reputation.Add(Progress.Mastery.MasterworkReputation, Text(LocText.Of("quality.rep.masterwork")));
             }
         }
 
@@ -933,7 +968,7 @@ namespace Thatchwick.Core.Life
             else if (item.Def.Id == OliveHeritage.TreeId && interaction.TakesFruit)
             {
                 int extra = Olives.BonusOlives(item.Id, (int)Clock.TotalDays);
-                if (extra > 0) { House.AddItem(interaction.Id == "pick_hand" ? "item.olive_fine" : "item.olive", extra); Say($"Yadigâr zeytin {extra} zeytin fazla verdi.", NoticeLevel.Info); }
+                if (extra > 0) { House.AddItem("item.olive", extra, interaction.Id == "pick_hand" ? ItemQuality.Fine : ItemQuality.Common); Say($"Yadigâr zeytin {extra} zeytin fazla verdi.", NoticeLevel.Info); }
             }
         }
 
@@ -1081,6 +1116,7 @@ namespace Thatchwick.Core.Life
             }
 
             Spoilage.Tick(gameDays);
+            Aging.Tick(gameDays);
             Duties.Tick(gameDays);
             Requests.Tick();
             Festivals.Tick(Population.Members);
@@ -1112,8 +1148,25 @@ namespace Thatchwick.Core.Life
             return n;
         }
 
+        private QualityBookSave ExportQuality()
+        {
+            var q = QualityBook.Export();
+            q.aging = Aging.Export();
+            return q;
+        }
+
+        /// <summary>Ustalık eserleri kuşak geçince yadigâr olur (53, karar 1): hanenin en genç kuşağı yapanın iki kuşak sonrası.</summary>
+        private void CheckHeirloomWorks()
+        {
+            int youngest = 0;
+            foreach (var m in Household()) youngest = Math.Max(youngest, m.Generation);
+            foreach (var e in QualityBook.CheckHeirlooms(youngest, House, World))
+                Say(LocText.Of("quality.n.heirloom", ("maker", e.MakerName), ("item", e.ItemId)), NoticeLevel.Info);
+        }
+
         private void OnNewDay(long day)
         {
+            CheckHeirloomWorks();
             var today = Weather.Today(Clock.TotalDays);
             Forage.OnNewDay(Clock.Season, today == WeatherType.Rain || today == WeatherType.Storm);
             _plants?.OnNewDay(today == WeatherType.Rain || today == WeatherType.Storm, today == WeatherType.Storm);
@@ -1215,6 +1268,7 @@ namespace Thatchwick.Core.Life
                 lastProcessedDay = _lastDay,
                 festivalCelebratedDay = Festivals.CelebratedDay,
                 spoilage = Spoilage.Export().ToArray(),
+                quality = ExportQuality(),
                 tools = Tools.Export().ToArray(),
                 projectsDone = new List<string>(Projects.Done).ToArray(),
                 goalsDone = new List<string>(Goals.Done).ToArray(),
@@ -1286,6 +1340,8 @@ namespace Thatchwick.Core.Life
             Duties.Import(data.timedDuties);
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);
+            QualityBook.Import(data.quality);
+            Aging.Import(data.quality?.aging);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;

@@ -301,6 +301,19 @@ namespace Thatchwick.Core.Upbringing
             return f;
         }
 
+        /// <summary>Kişinin bu becerideki en eski (en çok kuşaklık) aile tarifi; yoksa null (yadigâr sofra, belge 53).</summary>
+        public FamilyRecipe OldestKnown(int characterId, SkillType skill)
+        {
+            FamilyRecipe best = null;
+            foreach (var r in _recipes)
+            {
+                var d = Def(r.DefId);
+                if (d == null || d.Skill != skill || !Knows(characterId, r)) continue;
+                if (best == null || r.Generations > best.Generations) best = r;
+            }
+            return best;
+        }
+
         /// <summary>Hanede yaşayan biri tarifi biliyorsa o beceride ek ürün şansı.</summary>
         public double ExtraYield(SkillType skill)
         {

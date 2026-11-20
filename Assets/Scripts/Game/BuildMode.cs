@@ -1474,7 +1474,9 @@ namespace Thatchwick.Game
                 IsoArt.IconCell(kv.Key);
                 int damaged = _house.DamagedCount(kv.Key), repaired = _house.RepairedCount(kv.Key);
                 string worn = damaged + repaired == 0 ? "" : $" ({(damaged > 0 ? $"{damaged} hasarlı" : "")}{(damaged > 0 && repaired > 0 ? ", " : "")}{(repaired > 0 ? $"{repaired} onarılmış" : "")})";
-                GUILayout.Label($"{def.DisplayName} x{kv.Value}{worn}");
+                string qual = def.HasQuality ? UiSkin.QualityBreakdown(_house, kv.Key) : "";   // kalite dökümü (belge 53 §6)
+                GUILayout.Label(new GUIContent($"{def.DisplayName} x{kv.Value}{worn}{(qual.Length > 0 ? " " + qual : "")}",
+                    def.HasQuality ? UiSkin.QualityTooltip(_house, kv.Key) : null), UiSkin.Rich);
                 if (def.PlantsAs != null && GUILayout.Button("Dik", GUILayout.Width(44f)))
                 {
                     ClearSelection();

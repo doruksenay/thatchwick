@@ -216,7 +216,10 @@ namespace Thatchwick.Core.Life.Requests
             int prog = Math.Min(o.Progress, o.Count);
             switch (o.Kind)
             {
-                case ObjectiveKind.Deliver: return L("core.req.obj.deliver", ("n", o.Count), ("item", o.ItemId), ("done", prog), ("have", _house.Count(o.ItemId)));
+                case ObjectiveKind.Deliver:
+                    return o.MinQuality > 0
+                        ? L("core.req.obj.deliver_q", ("n", o.Count), ("item", o.ItemId), ("quality", L(ItemQuality.NameKey(o.MinQuality))), ("done", prog), ("have", _house.Count(o.ItemId, o.MinQuality)))
+                        : L("core.req.obj.deliver", ("n", o.Count), ("item", o.ItemId), ("done", prog), ("have", _house.Count(o.ItemId)));
                 case ObjectiveKind.Act:
                     return o.Skill.HasValue ? L("core.req.obj.act", ("skill", SkillText(o.Skill.Value)), ("n", o.Count), ("done", prog))
                                             : L("core.req.obj.act_any", ("n", o.Count), ("done", prog));
@@ -604,7 +607,10 @@ namespace Thatchwick.Core.Life.Requests
             r.Stretch = stretch;
             r.Master = master;
             r.Penalty = FailedOrderRep;
-            r.Objectives.Add(RequestCatalog.Del(pid, n));
+            var del = RequestCatalog.Del(pid, n);
+            // En az kalite (53): usta siparişi Has ister; zorlayıcı sipariş Seçme. Kalitesiz eşyada yok.
+            if (prod.HasQuality) del.MinQuality = master ? ItemQuality.Superior : stretch ? ItemQuality.Fine : ItemQuality.Common;
+            r.Objectives.Add(del);
             double factor = master ? MasterAkceFactor : OrderAkceFactor;
             r.Reward = new Reward
             {
@@ -1086,8 +1092,15 @@ namespace Thatchwick.Core.Life.Requests
                 if (o.Done) continue;
                 if (o.Kind == ObjectiveKind.Deliver)
                 {
-                    int give = Math.Min(o.Left, _house.Count(o.ItemId));
-                    for (int i = 0; i < give; i++) if (_house.TryTakeItem(o.ItemId)) { o.Progress++; any = true; }
+                    // Hedefi karşılayan en düşük kalite önce (53 §4.7); siparişin derecesi teslim edilenlerin en düşüğü.
+                    bool graded = _content.Items.TryGet(o.ItemId, out var od) && od.HasQuality;
+                    int give = Math.Min(o.Left, _house.Count(o.ItemId, o.MinQuality));
+                    for (int i = 0; i < give; i++)
+                        if (_house.TryTake(o.ItemId, TakePolicy.Lowest, out var taken, o.MinQuality))
+                        {
+                            o.Progress++; any = true;
+                            if (graded) r.DeliveredQuality = r.DeliveredQuality < 0 ? taken.Quality : Math.Min(r.DeliveredQuality, taken.Quality);
+                        }
                 }
                 else if (o.Kind == ObjectiveKind.Pay && _house.Akce >= o.Left)
                 {
@@ -1368,8 +1381,34 @@ namespace Thatchwick.Core.Life.Requests
             return "";
         }
 
+        /// <summary>
+        /// Sipariş ödülü kaliteye göre (46 §11, 53 §4.5): akçe ×1 / 1,5 / 2 / 3, itibar +0 / 2 / 4 / 6. Has ve üstünde %10 usta sözü
+        /// (kronik). Derece teslim edilenlerin en düşük kalitesidir.
+        /// </summary>
+        public Reward QualityReward(Request r, Reward reward)
+        {
+            if (r == null || reward == null || r.Kind != RequestKind.Order || r.DeliveredQuality <= 0) return reward;
+            int q = r.DeliveredQuality;
+            var w = reward.Clone();
+            w.Akce = (int)Math.Round(reward.Akce * ItemQuality.OrderAkceFactor(q));
+            w.Reputation = reward.Reputation + ItemQuality.OrderReputation(q);
+            return w;
+        }
+
+        /// <summary>Has ve üstü siparişte usta sözü şansı.</summary>
+        public const double MasterWordChance = 0.10;
+
         private void Complete(Request r, Character by, Reward reward)
         {
+            reward = QualityReward(r, reward);
+            if (r.Kind == RequestKind.Order && r.DeliveredQuality >= ItemQuality.Superior && _rng.NextDouble() < MasterWordChance)
+            {
+                var giverName = _population.Find(r.GiverId)?.Name ?? r.GiverName;
+                var word = L("core.req.chr.master_word", ("giver", giverName), ("title", r.Title));
+                Chronicle?.Invoke(word);
+                string wordText = Resolve(word);
+                foreach (var m in Household()) m.AddChronicle(wordText);
+            }
             r.State = RequestState.Done;
             r.AssignedTo = 0;
             Apply(reward, r, by);

@@ -169,8 +169,9 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(1, AnimalSystem.QualityTierOf(60f, 50f, false));
             Assert.Equal(2, AnimalSystem.QualityTierOf(90f, 80f, false));
             Assert.Equal(2, AnimalSystem.QualityTierOf(75f, 70f, true));     // soy hayvanı +10
-            Assert.Equal("Birinci sınıf", AnimalSystem.QualityName(2));
+            Assert.Equal("Has", AnimalSystem.QualityName(2));   // belge 53: beş renkli düzen
 
+            int best = 0;
             int Eggs(float friendship, float comfort)
             {
                 var x = Make();
@@ -181,12 +182,19 @@ namespace Thatchwick.Core.Tests
                 for (int d = 0; d < 40; d++)
                 {
                     x.Animals.Tick(1.0);
-                    n += coop.Stock.TryGetValue("item.egg", out var e) ? e : 0;
+                    foreach (var kv in coop.Stock)   // barınak yığını kaliteyi "kimlik#kalite" anahtarıyla tutar (belge 53)
+                    {
+                        var key = ItemKey.FromStockKey(kv.Key);
+                        if (key.Id != "item.egg") continue;
+                        n += kv.Value;
+                        if (friendship >= 100f && kv.Value > 0) best = System.Math.Max(best, key.Quality);
+                    }
                     AnimalSystem.TakeStock(coop);
                 }
                 return n;
             }
             Assert.True(Eggs(100f, 100f) > Eggs(60f, 50f));
+            Assert.True(best >= ItemQuality.Fine);   // bakımlı tavuğun yumurtası kaliteli
         }
 
         [Fact]

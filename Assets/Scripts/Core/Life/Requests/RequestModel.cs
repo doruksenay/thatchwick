@@ -71,6 +71,8 @@ namespace Thatchwick.Core.Life.Requests
         public string Region;
         public int VillagerId;
         public TimedDutyKind DutyKind;
+        /// <summary>Teslimde en az kalite (sipariş, belge 53 §4.5); 0 = her kalite.</summary>
+        public int MinQuality;
 
         public bool Done => Progress >= Count;
         public int Left => Math.Max(0, Count - Progress);
@@ -166,6 +168,8 @@ namespace Thatchwick.Core.Life.Requests
         public bool Stretch;
         /// <summary>Usta siparişi (Sv 10).</summary>
         public bool Master;
+        /// <summary>Teslim edilen eşyaların en düşük kalitesi (siparişin derecesi; -1 = henüz teslim yok). Ödül buna göre (53).</summary>
+        public int DeliveredQuality = -1;
         // Çağrı
         public readonly List<CallPath> Paths = new List<CallPath>();
         public int ChosenPath = -1;

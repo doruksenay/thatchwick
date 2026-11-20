@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
+using Thatchwick.Core.Content;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
@@ -180,7 +181,7 @@ namespace Thatchwick.Core.Animals
                 if (houndHelps && r.MeatCount > 0) r.MeatCount += hound.Item2;   // Yumuşak ağız (belge 48)
                 if (houndHelps) HoundSucceeded?.Invoke();
                 _visitors.Remove(v);
-                Give(r, house);
+                Give(r, house, hunter, 0);
                 Journal?.Mark(v.Species.Id, JournalMark.Hunted);
             }
             else if (v.Species.Huntable) v.Fleeing = true;
@@ -200,18 +201,23 @@ namespace Thatchwick.Core.Animals
                 var s = pool[_rng.Next(pool.Count)];
                 var r = Hunting.Try(_rng, s.Id, HuntMethod.Trap, hunter);
                 if (!r.Success) continue;
-                Give(r, house);
+                Give(r, house, hunter, 1);
                 Journal?.Mark(s.Id, JournalMark.Hunted);
                 results.Add(r);
             }
             return results;
         }
 
-        private static void Give(HuntResult r, Household house)
+        // Av eti ve postu avcının Avcılığıyla kalite alır; tuzak bir basamak düşük (belge 53 §4.3).
+        private void Give(HuntResult r, Household house, Character hunter, int penalty)
         {
             if (house == null) return;
-            if (r.Meat != null && r.MeatCount > 0) house.AddItem(r.Meat, r.MeatCount);
-            if (r.Hide != null && r.HideCount > 0) house.AddItem(r.Hide, r.HideCount);
+            int level = hunter?.Skills.GetLevel(SkillType.Hunting) ?? 1;
+            foreach (var (id, n) in new[] { (r.Meat, r.MeatCount), (r.Hide, r.HideCount) })
+            {
+                if (id == null || n <= 0) continue;
+                for (int u = 0; u < n; u++) house.AddItem(id, 1, Math.Max(0, ItemQuality.Gathered(level, _rng) - penalty));
+            }
         }
 
         // Bölgeli dünyada (çiftlik, köy yolu, şehir ve yaban haritaları) hayvan kendi bölgesinin kenarından girer ve çıkar;

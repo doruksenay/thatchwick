@@ -71,11 +71,14 @@ namespace Thatchwick.Core.Build
         public int Free => Math.Max(0, Capacity - Used);
 
         /// <summary>Kaynaksa kapasite kadarını ekler, eklenen adedi döner; kaynak değilse hepsini ekler.</summary>
-        public int AddUpTo(string itemId, int count)
+        public int AddUpTo(string itemId, int count) => AddUpTo(new ItemKey(itemId), count);
+
+        /// <summary>Kaliteli ekleme (53): anahtar olduğu gibi girer; kaynaksa kapasite kadarı.</summary>
+        public int AddUpTo(ItemKey key, int count)
         {
             if (count <= 0) return 0;
-            int add = IsResource(itemId) ? Math.Min(count, Free) : count;
-            if (add > 0) _house.AddItem(itemId, add);
+            int add = IsResource(key.Id) ? Math.Min(count, Free) : count;
+            if (add > 0) _house.Add(key, add);
             return add;
         }
 

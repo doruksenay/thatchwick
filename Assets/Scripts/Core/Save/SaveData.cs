@@ -149,6 +149,9 @@ namespace Thatchwick.Core.Save
         public int band = -1;       // duvar bandı (0 alt, 1 orta, 2 üst)
         public int layer;           // halı sırası (büyük olan üstte)
         public int condition;       // 0 sağlam, 1 hasarlı, 2 onarılmış
+        public int quality;         // kalite (53; eski kayıtta 0)
+        public int maker;           // ustalık eseri defter kimliği (0 = eser değil)
+        public bool embellished;    // oyma süsle / işle yapıldı
         public double tarnish;      // metal aynanın kararma günü
         public string[] contents;   // döküntü yığını: "kimlik" ya da "kimlik|durum"; doldurulan dekor: "kimlik|durum|yaş|kendi"
     }
@@ -172,6 +175,19 @@ namespace Thatchwick.Core.Save
         public KeyInt[] bought;     // pazardan alınmış adetler (D2; "Kendi emeğimiz" eki için)
         public string[] shopUnlocks; // köyde açılan satışlar (glassworks); eski kayıtta null
         public KeyInt[] orders;      // katalog siparişleri, ertesi sabah teslim (belge 42); eski kayıtta null
+        /// <summary>
+        /// Yığınlar (53 §5.3): kimlik, kalite, durum, alınmış, eser, adet. Varsa envanter bundan kurulur; yoksa eski
+        /// inventory/damaged/repaired/bought alanlarından (hepsi Sıradan). Eski alanlar geriye uyum için yazılmaya devam eder.
+        /// </summary>
+        public StackSave[] stacks;
+    }
+
+    [Serializable]
+    public sealed class StackSave
+    {
+        public string id;
+        public int q, c, m, n;
+        public bool b;
     }
 
     [Serializable]

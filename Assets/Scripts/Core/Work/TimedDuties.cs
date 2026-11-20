@@ -613,9 +613,13 @@ namespace Thatchwick.Core.Work
                 CharacterId = d.Order.CharacterId, CharacterName = c?.Name ?? "?", Kind = d.Order.Kind, PlaceId = d.Order.PlaceId,
                 End = end, Xp = d.Xp, RequestId = d.Order.RequestId, Hours = d.ElapsedHours
             };
+            // Kalite (47 §3.3, 53 §4.3): elle toplamanın dağılımı, bir basamak düşük.
+            int level = c != null && place != null && place.Kind != TimedDutyKind.Errand ? c.Skills.GetLevel(place.Skill) : 1;
             foreach (var kv in Whole(d.Gains))
             {
-                _house.AddItem(kv.Key, kv.Value);
+                bool graded = _content.Items.TryGet(kv.Key, out var gd) && gd.HasQuality;
+                for (int u = 0; u < kv.Value; u++)
+                    _house.AddItem(kv.Key, 1, graded ? Math.Max(0, ItemQuality.Gathered(level, _rng) - 1) : 0);
                 r.Items.Add(kv);
             }
             foreach (var kv in d.Packed) if (kv.Value > 0) _house.AddItem(kv.Key, kv.Value);   // artan azık eve döner

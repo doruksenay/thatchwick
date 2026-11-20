@@ -64,6 +64,50 @@ namespace Thatchwick.Game
         /// <summary>Yazı + ikon (ikon yoksa yalnız yazı).</summary>
         public static GUIContent C(string text, params string[] iconKeys) => new GUIContent(text, Icon(iconKeys));
 
+        // ---- kalite rozeti (Project belgesi 53 §6): gri rozetsiz · yeşil ★ · mavi ★★ · mor ✦ · altın ✦ ----
+
+        /// <summary>Kalitenin rengi (Sıradan gri).</summary>
+        public static Color QualityColor(int q)
+        {
+            var (r, g, b) = Thatchwick.Core.Content.ItemQuality.Color(q);
+            return new Color(r, g, b, 1f);
+        }
+
+        /// <summary>Kalitenin adı seçili dilde ("Has"). Ad, eşyanın adına eklenmez; ipucunda ve dökümde kullanılır.</summary>
+        public static string QualityName(int q) => GameLocalization.T(Thatchwick.Core.Content.ItemQuality.NameKey(q));
+
+        /// <summary>Renkli rozet yazısı (zengin metin): "★", "★★", "✦". Sıradan'da boş.</summary>
+        public static string QualityTag(int q)
+        {
+            string badge = Thatchwick.Core.Content.ItemQuality.Badge(q);
+            if (badge.Length == 0) return "";
+            var (r, g, b) = Thatchwick.Core.Content.ItemQuality.Color(q);
+            string hex = ((int)(r * 255)).ToString("X2") + ((int)(g * 255)).ToString("X2") + ((int)(b * 255)).ToString("X2");
+            return "<color=#" + hex + ">" + badge + "</color>";
+        }
+
+        /// <summary>Envanterdeki kalite dökümü, zengin metin: "★3 ★★1 ✦1" (Sıradan adedi yazılmaz; toplam satırda).</summary>
+        public static string QualityBreakdown(Thatchwick.Core.Build.Household house, string itemId)
+        {
+            var counts = house.QualityCounts(itemId);
+            var parts = new System.Collections.Generic.List<string>();
+            for (int q = 1; q < counts.Length; q++) if (counts[q] > 0) parts.Add(QualityTag(q) + counts[q]);
+            return string.Join(" ", parts);
+        }
+
+        /// <summary>Kalite dökümünün ipucu: "Seçme 3, Has 1".</summary>
+        public static string QualityTooltip(Thatchwick.Core.Build.Household house, string itemId)
+        {
+            var counts = house.QualityCounts(itemId);
+            var parts = new System.Collections.Generic.List<string>();
+            for (int q = 0; q < counts.Length; q++) if (counts[q] > 0) parts.Add(QualityName(q) + " " + counts[q]);
+            return string.Join(", ", parts);
+        }
+
+        private static GUIStyle _rich;
+        /// <summary>Zengin metinli etiket (rozet renkleri için).</summary>
+        public static GUIStyle Rich => _rich ?? (_rich = new GUIStyle(GUI.skin.label) { richText = true });
+
         private static void Build()
         {
             if (_skin != null) return;

@@ -202,6 +202,7 @@ namespace Thatchwick.Core.Tests
             var data = RoundTrip(Capture(s));
             data.items = data.items.Concat(new[] { new ItemSave { id = 99, def = "kaldirilmis_esya", x = 9, y = 9 } }).ToArray();
             data.household.inventory = data.household.inventory.Concat(new[] { new KeyInt { key = "eski_kaynak", value = 3 } }).ToArray();
+            data.household.stacks = data.household.stacks.Concat(new[] { new StackSave { id = "eski_kaynak", n = 3 } }).ToArray();
             var loaded = SaveGame.Load(data, s.Db);
             Assert.Equal(2, loaded.Warnings.Count);
             Assert.Equal(s.World.Items.Count, loaded.World.Items.Count);

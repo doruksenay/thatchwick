@@ -1,4 +1,5 @@
 using System;
+using Thatchwick.Core.Content;
 using System.Collections.Generic;
 using System.Globalization;
 using Thatchwick.Core.Animals;
@@ -98,15 +99,27 @@ namespace Thatchwick.Core.Life
             if (hive == null || house == null) return false;
             var stock = AnimalSystem.TakeStock(hive);
             int honey = 0;
-            foreach (var kv in stock) if (kv.Key == HoneyId) honey += kv.Value;
+            int best = 0;
+            foreach (var kv in stock)
+            {
+                var key = ItemKey.FromStockKey(kv.Key);
+                if (key.Id != HoneyId) continue;
+                honey += kv.Value;
+                if (kv.Value > 0) best = Math.Max(best, key.Quality);
+            }
             bool ok = honey >= HoneyPerComb;
+            int need = HoneyPerComb;
             foreach (var kv in stock)
             {
                 int back = kv.Value;
-                if (ok && kv.Key == HoneyId) back -= HoneyPerComb;
+                if (ok && ItemKey.FromStockKey(kv.Key).Id == HoneyId)
+                {
+                    int used = Math.Min(back, need);
+                    back -= used; need -= used;
+                }
                 AnimalSystem.PutStock(hive, kv.Key, back);
             }
-            if (ok) house.AddItem(CombId, 1);
+            if (ok) house.AddItem(CombId, 1, best);   // petek, kesilen balın en iyi kalitesiyle (53)
             return ok;
         }
     }

@@ -217,8 +217,7 @@ namespace Thatchwick.Core.Work
                 {
                     if (_house.Count(p.Item) < p.Count) break;
                     if (Storage != null && Storage.IsResource(p.Produces) && Storage.Free + p.Count < p.ProducesCount) break;   // yer yoksa öğütmez
-                    for (int k = 0; k < p.Count; k++) _house.TryTakeItem(p.Item);
-                    int added = Storage != null ? Storage.AddUpTo(p.Produces, p.ProducesCount) : AddAll(p.Produces, p.ProducesCount);
+                    int added = ProcessBatch(p);
                     if (!made.ContainsKey(p.Produces)) { made[p.Produces] = 0; order.Add(p.Produces); }
                     made[p.Produces] += added;
                 }
@@ -230,6 +229,25 @@ namespace Thatchwick.Core.Work
 
         private int AddAll(string id, int count) { _house.AddItem(id, count); return count; }
 
+        // Düzenek bir parti işler: girdiler en düşük kaliteden harcanır; ürün kaliteli girdilerin ortalamasını taşır
+        // (usta katkısı yok: makine el kadar özenli değildir, belge 53 §4.4).
+        private int ProcessBatch(AutoProcessDef p)
+        {
+            var qs = new List<int>();
+            for (int k = 0; k < p.Count; k++)
+                if (_house.TryTake(p.Item, TakePolicy.Lowest, out var key) && Content != null && Content.Items.TryGet(p.Item, out var inDef) && inDef.HasQuality) qs.Add(key.Quality);
+            int q = 0;
+            if (qs.Count > 0 && Content != null && Content.Items.TryGet(p.Produces, out var outDef) && outDef.HasQuality)
+            {
+                int sum = 0; foreach (var x in qs) sum += Math.Min(ItemQuality.NormalMax, x);
+                q = sum / qs.Count;
+            }
+            var outKey = new ItemKey(p.Produces, q);
+            if (Storage != null) return Storage.AddUpTo(outKey, p.ProducesCount);
+            _house.Add(outKey, p.ProducesCount);
+            return p.ProducesCount;
+        }
+
         // Bir sabah işinin partileri (güçsüz düzenek: bir parti).
         private List<KeyValuePair<string, int>> RunBatches(AutoProcessDef p, int batches)
         {
@@ -239,8 +257,7 @@ namespace Thatchwick.Core.Work
             {
                 if (_house.Count(p.Item) < p.Count) break;
                 if (Storage != null && Storage.IsResource(p.Produces) && Storage.Free + p.Count < p.ProducesCount) break;
-                for (int k = 0; k < p.Count; k++) _house.TryTakeItem(p.Item);
-                total += Storage != null ? Storage.AddUpTo(p.Produces, p.ProducesCount) : AddAll(p.Produces, p.ProducesCount);
+                total += ProcessBatch(p);
             }
             if (total > 0) list.Add(new KeyValuePair<string, int>(p.Produces, total));
             return list;

@@ -623,6 +623,7 @@ namespace Thatchwick.Game
             // Core anahtarlı metin döndürür; bildirim akışı düz metin tuttuğu için seçili dilde burada çözülür (belge 21).
             GameLocalization.ItemName = id => _content.Items.TryGet(id, out var itemDef) ? itemDef.DisplayName : id;
             _life.Text = GameLocalization.R;
+            _life.AttachEffects(_effects);   // kalite: tezgâh seçimleri, ustalık eseri, aile tarifi (belge 53)
             _life.Home.ServantWalks = true;   // hizmetkâr sabahları eve yürür, işleri kendisi yapar (belge 45)
             // Kilitler beceride (karar 28-4): hanenin o becerideki en iyi seviyesi.
             _life.SkillLocks = true;
@@ -1496,6 +1497,57 @@ namespace Thatchwick.Game
             return reply;
         }
 
+        /// <summary>
+        /// Eşyanın menü başlığı: ad; yapılan eşyada kalite adı (rozet rengiyle değil, sözle: menü düz metin), ustalık eserinde yazı
+        /// (belge 53 §4.6: "Ali yaptı, 3. yıl"). Kalite kelimesi eşyanın adına eklenmez; ayraçla yanında durur.
+        /// </summary>
+        private string ItemTitle(ItemInstance item)
+        {
+            string title = item.Def.DisplayName;
+            if (item.Def.HasQuality && item.Quality > 0) title += " · " + UiSkin.QualityName(item.Quality);
+            if (item.Maker > 0)
+            {
+                var ins = _life.QualityBook.Inscription(item.Maker);
+                if (!ins.IsEmpty) title += " · " + GameLocalization.R(ins);
+            }
+            return title;
+        }
+
+        /// <summary>Tezgâhın kalite seçimleri (belge 53 §4.6-4.7): "En iyi malzemeyi kullan" ve "Ustalık eseri dene".</summary>
+        private void AddQualityOptions(ItemInstance item)
+        {
+            var book = _life?.QualityBook;
+            if (book == null || item.IsDecor) return;
+            bool any = false;
+            foreach (var _ in Thatchwick.Core.Life.QualityBook.QualityRecipes(item.Def, _content)) { any = true; break; }
+            if (!any) return;
+            var station = item.Def;
+            bool best = book.BestIngredientsAt(station, _content);
+            _menuOptions.Add(new MenuOption
+            {
+                Label = GameLocalization.T(best ? "ui.quality.best_on" : "ui.quality.best_off"),
+                Run = () => { book.SetBestIngredientsAt(station, _content, !best); ShowMessage(GameLocalization.T(!best ? "ui.quality.best_set" : "ui.quality.best_unset")); }
+            });
+            var c = Commander?.Character;
+            bool queued = book.MasterworkQueuedAt(station, _content);
+            string blocked = null;
+            if (!queued)
+            {
+                foreach (var i in Thatchwick.Core.Life.QualityBook.QualityRecipes(station, _content))
+                {
+                    var why = book.AttemptBlocker(c, i, _clock.DayIndex);
+                    blocked = why.IsEmpty ? null : GameLocalization.R(why);
+                    if (blocked == null) break;
+                }
+            }
+            _menuOptions.Add(new MenuOption
+            {
+                Label = GameLocalization.T(queued ? "ui.quality.masterwork_cancel" : "ui.quality.masterwork_try"),
+                Blocked = blocked,
+                Run = () => { book.QueueMasterworkAt(station, _content, !queued); ShowMessage(GameLocalization.T(!queued ? "ui.quality.masterwork_queued" : "ui.quality.masterwork_unqueued")); }
+            });
+        }
+
         /// <summary>Karakterin başında 4 saniyelik konuşma balonu.</summary>
         private void Say(Character c, string text)
         {
@@ -2096,9 +2148,11 @@ namespace Thatchwick.Game
             }
             foreach (var item in items)
             {
-                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(item.Def.DisplayName)) names.Add(item.Def.DisplayName);
+                string shown = ItemTitle(item);
+                if ((item.Def.Interactions.Count > 0 || item.Def.AnimalRole == AnimalRoles.Bell || item.Def.WaterGate) && !names.Contains(shown)) names.Add(shown);
                 foreach (var it in item.Def.Interactions)
                     if (!it.Hidden) _menuOptions.Add(new MenuOption { Item = item, Interaction = it, Blocked = Commander.Runner.WhyCannotStart(item, it) });
+                AddQualityOptions(item);
                 if (item.Def.WaterGate)
                 {
                     var gate = item;
@@ -2323,7 +2377,7 @@ namespace Thatchwick.Game
             _farmWork.FishBite += (c, tile, fish) => StartFishing(c, fish, false, (ok, perfect) => _farmWork.CompleteFish(c, tile, fish, ok, perfect));
             _effects.FishBite += (c, item, fish, count) => StartFishing(c, fish, false, (ok, perfect) =>
             {
-                if (ok) { _effects.GrantFish(c, fish, count); if (perfect) c.GainSkillXp(SkillType.Fishing, FarmWork.PerfectXp); }
+                if (ok) { _effects.GrantFish(c, fish, count, perfect); if (perfect) c.GainSkillXp(SkillType.Fishing, FarmWork.PerfectXp); }
                 ShowMessage(ok ? GameLocalization.T("ui.fishing.caught", ("fish", _content.Items.Get(fish).DisplayName)) : GameLocalization.T("ui.fishing.escaped"));
             });
             _life.Home.CatchBite += (c, id) => StartFishing(c, id, true, (ok, perfect) =>

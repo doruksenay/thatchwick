@@ -60,6 +60,15 @@ namespace Thatchwick.Core.Mood
             return true;
         }
 
+        /// <summary>Etkin moodlet'in kalan süresini çarpanla uzatır (kaliteli yemeğin etkisi, 53 §4.5). Etkin değilse false.</summary>
+        public bool Extend(string id, double factor)
+        {
+            var a = Find(id);
+            if (a == null || factor <= 1.0) return false;
+            a.RemainingDays *= factor;
+            return true;
+        }
+
         public bool Remove(string id)
         {
             var a = Find(id);

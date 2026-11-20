@@ -142,12 +142,27 @@ namespace Thatchwick.Game
             {
                 GUILayout.BeginHorizontal();
                 IsoArt.IconCell(g.Id);
-                GUILayout.Label($"{g.DisplayName} ({_house.Count(g.Id)})", GUILayout.Width(120f));
+                string breakdown = g.HasQuality ? UiSkin.QualityBreakdown(_house, g.Id) : "";
+                GUILayout.Label(new GUIContent($"{g.DisplayName} ({_house.Count(g.Id)}){(breakdown.Length > 0 ? " " + breakdown : "")}",
+                    g.HasQuality ? UiSkin.QualityTooltip(_house, g.Id) : null), UiSkin.Rich, GUILayout.Width(120f));
                 int sellNow = _market.SellPrice(g.Id);
                 var yday = _market.YesterdaySellPrice(g.Id);   // dünkü fiyat (Ticaret 3)
                 string trend = yday == null ? "" : sellNow > yday ? "+" : sellNow < yday ? "-" : "=";
+                // Sat: en düşük kaliteden (toplu satış kuralı, belge 53 §4.7); kaliteli adet varsa kalite başına ayrı düğme.
                 if (GUILayout.Button(new GUIContent(GameLocalization.T("ui.market.sell", ("price", sellNow)) + trend, yday != null ? GameLocalization.T("ui.market.yesterday", ("price", yday.Value)) : null), GUILayout.Width(58f))) Report(_market.Sell(g.Id, 1), g);
-                if (GUILayout.Button("Sat 5", GUILayout.Width(44f))) Report(_market.Sell(g.Id, 5), g);
+                if (GUILayout.Button(GameLocalization.T("ui.market.sell5"), GUILayout.Width(44f))) Report(_market.Sell(g.Id, 5), g);
+                if (g.HasQuality)
+                {
+                    var counts = _house.QualityCounts(g.Id);
+                    for (int q = 1; q < counts.Length; q++)
+                    {
+                        if (counts[q] <= 0) continue;
+                        int price = _market.SellPrice(g.Id, q);
+                        if (GUILayout.Button(new GUIContent(UiSkin.QualityTag(q) + price, GameLocalization.T("ui.quality.sell_tip", ("quality", UiSkin.QualityName(q)), ("price", price))),
+                                new GUIStyle(GUI.skin.button) { richText = true }, GUILayout.Width(44f)))
+                            Report(_market.Sell(g.Id, 1, q), g);
+                    }
+                }
                 if (!_market.IsBuyable(g.Id)) GUILayout.Label("yalnızca yapılır", GUILayout.Width(90f));
                 else if (GUILayout.Button($"Al {_market.BuyPrice(g.Id)}", GUILayout.Width(48f)))
                 {
