@@ -1,7 +1,7 @@
 ---
 id: "010"
 title: Karakter boy ve detay testi (K1)
-status: review
+status: accepted
 approved_by: user        # K0 planı 2026-11-08 onaylandı
 family: karakter
 style_gate: false
@@ -44,3 +44,4 @@ created: 2026-11-08
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

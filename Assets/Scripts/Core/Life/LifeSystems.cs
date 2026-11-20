@@ -443,6 +443,7 @@ namespace Thatchwick.Core.Life
                     Say($"{c.Name}, {LifeRules.TradeName(skill)} becerisinde {after}. seviyeye ulaştı: meslek dalı seçebilir.", NoticeLevel.Info, c.Id);
                 }
                 Goals.Update();
+                if (after >= 10 && before < 10) OnClothingMastery(c, skill);
             };
         }
 
@@ -847,7 +848,7 @@ namespace Thatchwick.Core.Life
             effects.AppliedOn += OnInteractionAppliedOn;
             effects.AppliedOn += Home.OnApplied;
             effects.AppliedOn += OnSkillWorkApplied;   // beceri işleri ve pasifleri (belge 45)
-            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i);
+            effects.ExtraBlocker = (c, it, i) => Home.CanStart(c, it, i) ?? SkillWorkBlocker(c, it, i) ?? ChopBlocker(c, it, i) ?? ClothingBlocker(c, it, i);
             Home.Effects = effects;
             Coffee.Notice += (c, text) => Say(text, NoticeLevel.Info);
         }
@@ -1248,7 +1249,8 @@ namespace Thatchwick.Core.Life
                 skillFlags = ExportSkillFlags(),
                 oddities = ExportOddities(),
                 roomNames = ExportRoomNames(),
-                clothing = _clothing?.Export()
+                clothing = _clothing?.Export(),
+                tailor = _tailor?.Export()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1293,6 +1295,7 @@ namespace Thatchwick.Core.Life
             Roaming.Import(data.roaming);
             Requests.Import(data.requests);
             Clothing.Import(data.clothing);
+            Tailor.Import(data.tailor);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;
