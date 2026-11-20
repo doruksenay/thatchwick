@@ -57,6 +57,77 @@ namespace Thatchwick.Core.Tests
             foreach (var kv in RequestCatalog.NamedStories) Assert.True(db.Villagers.Contains(kv.Key), kv.Key);
         }
 
+        /// <summary>Pano + tellal (karar 20.11.2026): pano bütün ilanları tutar, tellal sabah yalnızca yenileri bağırır.</summary>
+        [Fact]
+        public void Tellal_SabahYeniIlanlariDuyurur_DuyanOkumusSayilir()
+        {
+            var k = Make();
+            var notes = new List<string>();
+            k.Req.Notify = (t, id) => notes.Add(t.Key);
+            k.Now = 5.0;
+            var r1 = k.Req.GenerateFavors(roll: 0.0);
+            Assert.NotNull(r1);
+            Assert.False(r1.Read);
+            Assert.DoesNotContain("core.req.n.posted_unread", notes);        // sabah turundan önce: tellal duyuracak
+            k.Now = 5.2;
+            Assert.False(k.Req.CrierDue);                                    // saat daha 04:48
+            k.Now = 5.0 + RequestService.CrierHour / 24.0 + 0.01;
+            Assert.True(k.Req.CrierDue);
+
+            var far = k.Req.Cry(heard: false);                               // haneden kimse kasabada değil
+            Assert.Single(far.Fresh);
+            Assert.Equal(1, far.Unread);
+            Assert.False(r1.Read);
+            Assert.False(k.Req.CrierDue);                                    // günde bir tur
+
+            k.Now = 5.9;
+            var r2 = k.Req.GenerateFavors(roll: 0.0);                        // turdan sonra asılan: kâğıt bildirimi gelir
+            Assert.NotNull(r2);
+            Assert.Contains("core.req.n.posted_unread", notes);
+            k.Now = 6.4;
+            var near = k.Req.Cry(heard: true);                               // bugün biri meydanda
+            Assert.Equal(new[] { r2.Id }, near.Fresh.Select(r => r.Id).ToArray());   // dünkü ilan yeniden bağırılmaz
+            Assert.Equal(1, near.NewlyRead);
+            Assert.True(r2.Read);
+            Assert.False(r1.Read);                                           // kaçırılan ilan panoda bekler
+            Assert.Equal(1, k.Req.ReadBoard());
+
+            var copy = Make();
+            copy.Req.Import(k.Req.Export());
+            copy.Now = 6.5;
+            Assert.False(copy.Req.CrierDue);                                 // kayıttan dönünce aynı gün yeniden bağırmaz
+        }
+
+        [Fact]
+        public void Tellal_HaneUyesiKasabadaysaDuyar()
+        {
+            foreach (bool inTown in new[] { true, false })
+            {
+                var k = new Kit { Db = ContentFilesTests.LoadDb(out _), Pop = new Population(), House = new Household(50) };
+                var w = new WorldState(new GridMap(Regions.WorldWidth, Regions.WorldHeight));
+                var spot = inTown ? new GridPos(Regions.Town.X + 20, Regions.Town.Y + 20) : new GridPos(4, 4);
+                k.Ali = new Character(1, "Ali", spot, true) { CanStarve = false, MoodEnabled = true };
+                k.Ali.SetAge(40);
+                k.Pop.Add(k.Ali);
+                k.Life = new LifeSystems(k.Db, w, k.House, k.Pop, new GameClock(), 3);
+                k.Family = new FamilyService(k.Pop, k.House, k.Db);
+                k.Life.Attach(k.Family);
+                k.Life.Villagers.SpawnMissing(_ => new GridPos(Regions.Town.X + 3, Regions.Town.Y + 3));
+                k.Life.Houses.EnsureHouses();
+                k.Req.Now = () => k.Now;
+                k.Now = 2.0;
+                var r = k.Req.GenerateFavors(roll: 0.0);
+                Assert.NotNull(r);
+                RequestService.CrierCall call = null;
+                k.Life.CrierCalled += c => call = c;
+                k.Now = 2.5;
+                k.Life.Tick(0.0001);
+                Assert.NotNull(call);
+                Assert.Equal(inTown, call.Heard);
+                Assert.Equal(inTown, r.Read);
+            }
+        }
+
         [Fact]
         public void Rica_PanodanOkunur_KabulEdilir_UlaklaTeslim()
         {

@@ -68,6 +68,8 @@ namespace Thatchwick.Core.Life
         public Func<Character, bool> IsOutdoors { get; set; } = _ => true;
         /// <summary>Bugünün hava çarpanı (fırtına 2, kar 1,5); yalnızca dışarıda uygulanır.</summary>
         public Func<double> WeatherFactor { get; set; } = () => 1.0;
+        /// <summary>Kişiye özel şans çarpanı (nazar boncuğu 0,9; taşlı nazarlık 0,8): kaza ve iz kalma olasılığını çarpar.</summary>
+        public Func<Character, double> LuckFactor { get; set; }
         /// <summary>Aletin hız çarpanı (iyi alet daha az kaza).</summary>
         public Func<string, double> ToolSpeed { get; set; } = _ => 1.0;
         /// <summary>Bildirim (metin, karakter).</summary>
@@ -204,6 +206,7 @@ namespace Thatchwick.Core.Life
             }
             if (outdoors) p *= Math.Max(1.0, WeatherFactor());
             p *= Math.Pow(AccidentPerScar, c.EventScarCount);
+            if (LuckFactor != null) p *= Math.Max(0.0, LuckFactor(c));
             return Math.Max(0, Math.Min(1, p));
         }
 

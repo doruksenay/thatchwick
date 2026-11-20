@@ -76,6 +76,7 @@ namespace Thatchwick.Core.Content
                     RequiresIndoor = dto.requiresIndoor,
                     IsIceBox = dto.iceBox,
                     IsFishTrap = dto.fishTrap,
+                    IsSnare = dto.snare,
                     WindPower = dto.windPower,
                     WaterGate = dto.waterGate,
                     FillCapacity = Math.Max(0, dto.fillCapacity),

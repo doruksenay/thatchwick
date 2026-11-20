@@ -111,6 +111,7 @@ namespace Thatchwick.Game
             _scroll = GUILayout.BeginScrollView(_scroll);
             UiSkin.Wrap("— Hane —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (!c.IsVillager) DrawRow(c, actor);
+            DrawJewelry(actor);
             DrawSkillBoard();
             DrawRecipes(actor);
             UiSkin.Wrap("— Köylüler (pazar çevresi) —", UiSkin.FamilyTextW);
@@ -409,6 +410,60 @@ namespace Thatchwick.Game
         }
 
         // Aile sırları: bilenler, öğret (seçili kişi bilir ve hedef hane üyesi bilmez), deftere yaz.
+        /// <summary>
+        /// Takılar (belge 48 §5.7): seçili kişinin taktıkları ve hanenin çekmecesindeki takılar. Gardırop ekranı
+        /// gelene kadar takıp çıkarma buradan yapılır; etkiler (pazarlık, gönül, kaza, keyif) satırda yazar.
+        /// </summary>
+        private void DrawJewelry(Character actor)
+        {
+            if (Life == null || Content?.Clothing == null || Content.Clothing.Count == 0) return;
+            var svc = Life.Clothing;
+            var drawer = new List<Thatchwick.Core.Clothing.ClothingInstance>(svc.UnwornJewelry());
+            var worn = actor != null && !actor.IsVillager
+                ? new List<Thatchwick.Core.Clothing.ClothingInstance>(svc.JewelryOwnedBy(actor))
+                : new List<Thatchwick.Core.Clothing.ClothingInstance>();
+            if (drawer.Count == 0 && worn.Count == 0) return;
+            UiSkin.Wrap(GameLocalization.T("ui.family.jewelry.title"), UiSkin.FamilyTextW);
+            if (actor != null && !actor.IsVillager)
+            {
+                UiSkin.Wrap(GameLocalization.T("ui.family.jewelry.effects", ("name", actor.Name),
+                    ("trade", Math.Round(svc.TradeBonus(actor) * 100)), ("court", Math.Round(svc.CourtBonus(actor) * 100)),
+                    ("luck", Math.Round((1.0 - svc.AccidentFactor(actor)) * 100)), ("joy", svc.JewelryJoy(actor))), UiSkin.FamilyTextW);
+                foreach (var it in worn)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(12f);
+                    GUILayout.Label(JewelryLabel(svc, it));
+                    if (GUILayout.Button(GameLocalization.T("ui.family.jewelry.take_off"), GUILayout.Width(64f))) svc.TakeOffJewelry(actor, it);
+                    GUILayout.EndHorizontal();
+                }
+            }
+            if (drawer.Count == 0) return;
+            UiSkin.Wrap(GameLocalization.T("ui.family.jewelry.drawer"), UiSkin.FamilyTextW);
+            foreach (var it in drawer)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(12f);
+                GUILayout.Label(JewelryLabel(svc, it));
+                if (actor != null && !actor.IsVillager && GUILayout.Button(GameLocalization.T("ui.family.jewelry.wear"), GUILayout.Width(64f)))
+                {
+                    var err = svc.WearJewelry(actor, it);
+                    _status = err == Thatchwick.Core.Clothing.EquipError.None ? ""
+                        : GameLocalization.T(err == Thatchwick.Core.Clothing.EquipError.Age ? "ui.family.jewelry.err_age"
+                            : err == Thatchwick.Core.Clothing.EquipError.JewelryLimit ? "ui.family.jewelry.err_limit"
+                            : "ui.family.jewelry.err_other", ("name", actor.Name));
+                }
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        private string JewelryLabel(Thatchwick.Core.Clothing.ClothingService svc, Thatchwick.Core.Clothing.ClothingInstance it)
+        {
+            var def = svc.JewelryOf(it);
+            string name = def != null ? Name(def.ItemId) : it.ModelId;
+            return string.IsNullOrEmpty(it.MakerName) ? name : GameLocalization.T("ui.family.jewelry.made_by", ("item", name), ("maker", it.MakerName));
+        }
+
         private void DrawRecipes(Character actor)
         {
             var u = Upbringing;

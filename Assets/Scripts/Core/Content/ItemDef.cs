@@ -461,6 +461,8 @@ namespace Thatchwick.Core.Content
         public bool IsIceBox { get; set; }
         /// <summary>Balık sepeti: bir gölete değerken her sabah mevsimine göre bir balık.</summary>
         public bool IsFishTrap { get; set; }
+        /// <summary>Kement tuzağı: arsaya ya da yaban bölgesine kurulur; her sabah av düşebilir, av toplanana dek tuzakta durur.</summary>
+        public bool IsSnare { get; set; }
         /// <summary>Yel değirmeni: kanal gerekmeden güç verir.</summary>
         public bool WindPower { get; set; }
         /// <summary>Su kapağı: açıkken sulama ağında suyu geçirir, kapalıyken keser (dokununca aç/kapa).</summary>

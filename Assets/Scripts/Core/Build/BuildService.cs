@@ -522,9 +522,24 @@ namespace Thatchwick.Core.Build
             var (w, h) = Footprint.Dimensions(def.Width, def.Height, rotation);
             for (int dy = 0; dy < h; dy++)
                 for (int dx = 0; dx < w; dx++)
-                    if (!OwnsForItems(new GridPos(position.X + dx, position.Y + dy, position.Z)))
-                        return PlacementCheck.Fail(NotOwned);
+                {
+                    var tile = new GridPos(position.X + dx, position.Y + dy, position.Z);
+                    if (OwnsForItems(tile)) continue;
+                    if (def.IsSnare && Thatchwick.Core.Animals.WildRoamers.IsSnareGround(_world.Map, tile)) continue;   // kement yabana da kurulur
+                    return PlacementCheck.Fail(def.IsSnare ? SnareGround : NotOwned);
+                }
             return PlacementCheck.Success;
+        }
+
+        public const string SnareGround = "Kement kendi arsana ya da yabana (orman, göl, sazlık, tepe) kurulur.";
+        public static readonly string SnareLimit = $"En çok {Thatchwick.Core.Animals.WildRoamers.MaxSnares} kement kurulabilir.";
+
+        /// <summary>Haritaya kurulu kementler.</summary>
+        public int PlacedSnares()
+        {
+            int n = 0;
+            foreach (var it in _world.Items) if (!it.IsDecor && it.Def.IsSnare) n++;
+            return n;
         }
 
         public const string NotOwned = "Burası senin arsan değil.";
@@ -541,6 +556,7 @@ namespace Thatchwick.Core.Build
             }
             var owned = CheckOwned(def, position, rotation);
             if (!owned.Ok) return owned;
+            if (def.IsSnare && PlacedSnares() >= Thatchwick.Core.Animals.WildRoamers.MaxSnares) return PlacementCheck.Fail(SnareLimit);
             if (def.IsRug) return _world.CanPlaceRug(def, position, rotation);
             var floor = _world.CanPlaceFloor(def, position, rotation, null, landingMayBeCreated: def.IsStairs);
             if (!floor.Ok || !def.IsStairs) return floor;

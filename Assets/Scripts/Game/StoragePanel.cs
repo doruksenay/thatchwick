@@ -19,6 +19,9 @@ namespace Thatchwick.Game
 
         public bool Active { get; private set; }
 
+        /// <summary>Mahzende olgunlaşma (belge 53): satırda "mahzende N gün" bilgisi için; null ise gösterilmez.</summary>
+        public AgingService Aging { get; set; }
+
         public StoragePanel(SpoilageService spoil, Household house, ContentDatabase content)
         {
             _spoil = spoil; _house = house; _content = content;
@@ -70,6 +73,10 @@ namespace Thatchwick.Game
                 GUILayout.BeginHorizontal();
                 IsoArt.IconCell(id, 20f);
                 string qual = def.HasQuality ? UiSkin.QualityBreakdown(_house, id) : "";
+                if (Aging != null && def.AgeStepDays > 0f)
+                    days += " · " + (Aging.HasCellar()
+                        ? GameLocalization.T("ui.storage.aging", ("days", System.Math.Floor(Aging.OldestDays(id))), ("step", def.AgeStepDays))
+                        : GameLocalization.T("ui.storage.no_cellar"));
                 GUILayout.Label($"{def.DisplayName} {_house.Count(id)}{(qual.Length > 0 ? " " + qual : "")}: {string.Join(", ", where)}{days}", UiSkin.Rich);
                 GUILayout.EndHorizontal();
                 GUI.color = old;

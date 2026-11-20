@@ -1,3 +1,4 @@
+using Thatchwick.Core.Animals.Genetics;
 using System;
 using System.Collections.Generic;
 using Thatchwick.Core.Build;
@@ -112,7 +113,7 @@ namespace Thatchwick.Core.Animals
             double sum = 0;
             if (feeder.Def.IsHousing)
             {
-                foreach (var a in _animals) if (!a.IsDead && a.HomeItemId == feeder.Id) sum += a.Species.FeedPerDay;
+                foreach (var a in _animals) if (!a.IsDead && a.HomeItemId == feeder.Id) sum += a.Species.FeedPerDay * GeneticsService.FeedFactor(a.Genome);
                 return sum;
             }
             var room = _world.Map.Rooms.RoomAt(feeder.Position);
@@ -123,7 +124,7 @@ namespace Thatchwick.Core.Animals
                 if (home == null) continue;
                 var hr = RoomOf(home);
                 bool same = hr != null ? hr == room : Math.Abs(home.Position.X - feeder.Position.X) <= 6 && Math.Abs(home.Position.Y - feeder.Position.Y) <= 6;
-                if (same) sum += a.Species.FeedPerDay;
+                if (same) sum += a.Species.FeedPerDay * GeneticsService.FeedFactor(a.Genome);
             }
             return sum;
         }
@@ -801,7 +802,7 @@ namespace Thatchwick.Core.Animals
         /// <summary>Yavrunun soyunun bir üst kademe çıkma şansına eklenen (Hayvancılık dalı vb.); yoksa 0.</summary>
         public Func<double> LineageUpBonus { get; set; }
 
-        /// <summary>Tüccar, panayır ya da hile: hayvanın soy kademesini koyar (Efsane buradan verilmez).</summary>
+        /// <summary>Tüccar ya da panayır damızlığı (TravelingMerchant.Buy): hayvanın soy kademesini koyar (Efsane buradan verilmez).</summary>
         public void SetLineage(Animal a, AnimalLineage lineage)
         {
             if (a == null || lineage == AnimalLineage.Legendary) return;
