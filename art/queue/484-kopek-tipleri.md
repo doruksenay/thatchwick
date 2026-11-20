@@ -1,7 +1,7 @@
 ---
 id: "484"
 title: "Köpek tipleri: 7 gövde (çoban, tazı, zağar, iz, mastıf, su, kucak)"
-status: running
+status: review
 claimed_at: 2026-11-20T10:03Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (hayvan genetiği ve tür genişletme, tek PR), Project belgeleri 48 ve 48b
 priority: 30
