@@ -1,7 +1,7 @@
 ---
 id: "554"
 title: "Yaban bitkileri 2/3: çayır ve tepe (9)"
-status: running
+status: review
 claimed_at: 2026-11-20T14:49Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamayı başlat, assetleri de sıraya ekle; hepsi tek seferde"), Project belgeleri 59 ve 59a
 priority: 30
@@ -51,6 +51,9 @@ Yöntem **373 ile aynı**: tuval 80x72, 1x1 kılavuz + maske, pivot 40,24; 373't
 
 ## Notlar
 - Kod düğümü adla bulur (`iso_forage_<ad>_se`).
+
+## Sorular
+- 2026-11-20 şerit 1: 5/9 teslim (kuzukulağı, ebegümeci, karahindiba, yabani kuşkonmaz, sumak). Madımak ve ardıç zemin karosu/ağaç çıktı; salep orkidesi ve sarı kantaron palet dışı renk yüzünden KALDI (bkz. results/554). Yeni iş ya da vurgu paleti kararı gerekir.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
