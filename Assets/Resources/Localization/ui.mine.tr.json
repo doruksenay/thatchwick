@@ -1,7 +1,17 @@
 {
+  "ui.mine.child_needs_adult": "{name} madene ancak hanenin bir büyüğüyle iner.",
+  "ui.mine.go_down": "{name} madene insin",
+  "ui.mine.mood.daylight": "Gün ışığı",
+  "ui.mine.mood.vein_opened": "Damar açtı",
+  "ui.mine.mood.wet": "Islandı",
   "ui.mine.name": "Hane madeni",
+  "ui.mine.not_dig_area": "Burası kazı alanı değil.",
   "ui.mine.open": "Madeni aç",
   "ui.mine.opened": "Hane madeni açıldı: karoları işaretle, maden görevlileri her sabah kazar",
+  "ui.mine.panel.creaks": "Çatırdayan karo: {n}. Bugün destek kurulmazsa yarın çöker.",
   "ui.mine.panel.title": "HANE MADENİ · GALERİ KATI",
-  "ui.mine.shift_dug": "{name} madende {n} karo kazdı"
+  "ui.mine.panel.work_below": "Destek, ışık, su ve kazı madenin içinde yapılır: karakterle in, karoya dokun.",
+  "ui.mine.quarry_spent": "Taşlık tükendi; {days} gün sonra yenilenir.",
+  "ui.mine.shift_dug": "{name} madende {n} karo kazdı",
+  "ui.mine.vein_opened": "{name} yeni bir damar açtı: {ore}"
 }

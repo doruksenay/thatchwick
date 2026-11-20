@@ -33,6 +33,8 @@ namespace Thatchwick.Core.Mining
         public int LightRadius;
         public double LightDays;
 
+        /// <summary>Bu damar daha önce açıldı (ilk karosu "Damar açtı" verdi; belge 58d M0.4).</summary>
+        public bool VeinSeen;
         public bool IsOpen => Rock == RockKind.Open;
     }
 
@@ -49,6 +51,16 @@ namespace Thatchwick.Core.Mining
         public int Width { get; }
         public int Height { get; }
         public int Seed { get; }
+        /// <summary>Dünya ızgarasındaki köşe (belge 58d M1): madenin galerisi tepenin altındadır. Arsa kazısında 0.</summary>
+        public int OriginX { get; set; }
+        public int OriginY { get; set; }
+        public World.GridPos ToWorld(int x, int y) => new World.GridPos(OriginX + x, OriginY + y, Level);
+        /// <summary>Dünya karosu bu kazı yerinde mi; öyleyse yerel koordinatlar.</summary>
+        public bool TryLocal(World.GridPos p, out int x, out int y)
+        {
+            x = p.X - OriginX; y = p.Y - OriginY;
+            return p.Z == Level && InBounds(x, y);
+        }
         private readonly MineTile[] _tiles;
 
         /// <summary>Katta birikmiş su (birim).</summary>

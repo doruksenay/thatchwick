@@ -92,6 +92,8 @@ namespace Thatchwick.Core.Work
         public readonly Dictionary<string, int> Packed = new Dictionary<string, int>();
         public readonly List<LocText> Events = new List<LocText>();
         public double Xp;
+        /// <summary>Maden görevinde kazılmayı bekleyen karo kesri (gerçek karolar tüketilir; belge 58b karar 2).</summary>
+        public double MineTiles;
         public TimedDutyEnd End;
         public double ElapsedHours => WorkedHours + BreakHours + PlayedHours;
     }
@@ -170,6 +172,11 @@ namespace Thatchwick.Core.Work
         public Action<LocText, int> Notify { get; set; }
         /// <summary>Anahtarlı metni çözer (moodlet gibi düz metin bekleyen eski API'ler için; oyun katmanı verir).</summary>
         public Func<LocText, string> Resolve { get; set; } = t => t.Literal ?? t.Key ?? "";
+        /// <summary>
+        /// Maden görevini gerçek haritaya bağlar (belge 58d M0.1): (yer, kişi, karo sayısı) → kazılan karolardan çıkanlar.
+        /// Önce işaretli karolar, işaret yoksa girişe en yakın düz taş. Bağlı değilse eski oran tablosu kullanılır.
+        /// </summary>
+        public Func<TimedDutyPlace, Character, int, List<KeyValuePair<string, int>>> MineDig { get; set; }
 
         private static LocText L(string key, params (string name, object value)[] args) => LocText.Of(key, args);
 
@@ -553,6 +560,17 @@ namespace Thatchwick.Core.Work
         private void Produce(TimedDuty d, Character c, TimedDutyPlace place, double hours)
         {
             double rate = ManualRate(c, place) * Efficiency(c, place) * hours;
+            if (place.Kind == TimedDutyKind.Mine && MineDig != null)
+            {
+                // Verim tavanı kazılan karo sayısına uygulanır; ürün kazılan karodan gelir (damar tükenir).
+                d.MineTiles += rate;
+                int n = (int)Math.Floor(d.MineTiles + 1e-9);
+                if (n <= 0) return;
+                d.MineTiles -= n;
+                var got = MineDig(place, c, n);
+                if (got != null) foreach (var kv in got) Add(d, kv.Key, kv.Value);
+                return;
+            }
             var w = WeatherNow();
             if (!place.Underground && w == WeatherType.Storm) rate *= StormYield;
             foreach (var (item, share, rare) in YieldTable(c, place))
@@ -716,7 +734,7 @@ namespace Thatchwick.Core.Work
                     id = d.Id, characterId = d.Order.CharacterId, kind = (int)d.Order.Kind, place = d.Order.PlaceId, hours = d.Order.Hours,
                     targetItem = d.Order.TargetItem, targetCount = d.Order.TargetCount, requestId = d.Order.RequestId, label = LocCodec.Encode(d.Order.Label),
                     startDay = d.StartDay, plannedHours = d.PlannedHours, workedHours = d.WorkedHours, breakHours = d.BreakHours, playedHours = d.PlayedHours,
-                    playing = d.Playing, x = d.StartPos.X, y = d.StartPos.Y, z = d.StartPos.Z, xp = d.Xp, events = d.Events.ConvertAll(LocCodec.Encode).ToArray()
+                    playing = d.Playing, x = d.StartPos.X, y = d.StartPos.Y, z = d.StartPos.Z, xp = d.Xp, mineTiles = d.MineTiles, events = d.Events.ConvertAll(LocCodec.Encode).ToArray()
                 };
                 var gk = new List<string>(); var gv = new List<double>();
                 foreach (var kv in d.Gains) { gk.Add(kv.Key); gv.Add(kv.Value); }
@@ -752,7 +770,7 @@ namespace Thatchwick.Core.Work
                     var d = new TimedDuty
                     {
                         Id = ds.id, Order = order, StartDay = ds.startDay, PlannedHours = ds.plannedHours, WorkedHours = ds.workedHours, BreakHours = ds.breakHours,
-                        PlayedHours = ds.playedHours, Playing = ds.playing, StartPos = new World.GridPos(ds.x, ds.y, ds.z), Xp = ds.xp
+                        PlayedHours = ds.playedHours, Playing = ds.playing, StartPos = new World.GridPos(ds.x, ds.y, ds.z), Xp = ds.xp, MineTiles = ds.mineTiles
                     };
                     if (ds.events != null) foreach (var e in ds.events) d.Events.Add(LocCodec.Decode(e));
                     if (ds.gainItems != null) for (int i = 0; i < ds.gainItems.Length && i < (ds.gainAmounts?.Length ?? 0); i++) d.Gains[ds.gainItems[i]] = ds.gainAmounts[i];
@@ -777,7 +795,7 @@ namespace Thatchwick.Core.Work
     {
         public int id, characterId, kind, targetCount, requestId, x, y, z;
         public string place, targetItem, label;
-        public double hours, startDay, plannedHours, workedHours, breakHours, playedHours, xp;
+        public double hours, startDay, plannedHours, workedHours, breakHours, playedHours, xp, mineTiles;
         public bool playing;
         public string[] events, gainItems, packedItems;
         public double[] gainAmounts;

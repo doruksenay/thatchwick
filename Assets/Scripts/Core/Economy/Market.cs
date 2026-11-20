@@ -139,6 +139,23 @@ namespace Thatchwick.Core.Economy
             return Math.Max(_cfg.RawFloor, 1.0 - _cfg.RawDropPerUnit * (sold - free));
         }
 
+        /// <summary>Ham madde doygunluk sayacı kayda girer (belge 58d M0.5); yoksa yüklemeden sonra hafta sıfırdan başlardı.</summary>
+        public List<KeyValuePair<string, int>> ExportRawSold(out long week)
+        {
+            week = _rawWeek;
+            var list = new List<KeyValuePair<string, int>>();
+            foreach (var kv in _rawSold) list.Add(kv);
+            list.Sort((a, b) => string.CompareOrdinal(a.Key, b.Key));
+            return list;
+        }
+
+        public void RestoreRawSold(long week, IEnumerable<KeyValuePair<string, int>> sold)
+        {
+            _rawSold.Clear();
+            _rawWeek = week;
+            if (sold != null) foreach (var kv in sold) if (kv.Value > 0) _rawSold[kv.Key] = kv.Value;
+        }
+
         public int RawSoldThisWeek(string itemId) => _rawSold.TryGetValue(itemId, out var n) ? n : 0;
 
         public double SeasonMultiplier(ItemDef def)

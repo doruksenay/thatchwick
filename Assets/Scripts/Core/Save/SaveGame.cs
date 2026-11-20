@@ -30,6 +30,8 @@ namespace Thatchwick.Core.Save
         public float[] RoomTemperatures;
         public List<KeyValuePair<string, double>> MarketDemand = new List<KeyValuePair<string, double>>();
         public List<int> MarketTakenOffers = new List<int>();
+        public List<KeyValuePair<string, int>> MarketRawSold = new List<KeyValuePair<string, int>>();
+        public long MarketRawWeek = -1;
         public List<(int a, int b, int value)> Affection = new List<(int, int, int)>();
         /// <summary>Kayıtta hanedan yoksa null (eski kayıt): oyuncu karakteriyle yeniden kurulur.</summary>
         public Dynasty Dynasty;
@@ -317,6 +319,11 @@ namespace Thatchwick.Core.Save
                 foreach (var kv in market.ExportDemand()) demand.Add(new KeyFloat { key = kv.Key, value = kv.Value });
                 data.marketDemand = demand.ToArray();
                 data.marketTakenOffers = market.ExportTakenOffers().ToArray();
+                var raw = new List<KeyFloat>();
+                var rawSold = market.ExportRawSold(out long rawWeek);
+                foreach (var kv in rawSold) raw.Add(new KeyFloat { key = kv.Key, value = kv.Value });
+                data.marketRawSold = raw.ToArray();
+                data.marketRawWeek = rawWeek;
             }
             if (family != null)
             {
@@ -742,6 +749,8 @@ namespace Thatchwick.Core.Save
             result.RoomTemperatures = data.roomTemperatures;
             if (data.marketDemand != null) foreach (var kv in data.marketDemand) if (kv != null) result.MarketDemand.Add(new KeyValuePair<string, double>(kv.key, kv.value));
             if (data.marketTakenOffers != null) result.MarketTakenOffers.AddRange(data.marketTakenOffers);
+            if (data.marketRawSold != null) foreach (var kv in data.marketRawSold) if (kv != null) result.MarketRawSold.Add(new KeyValuePair<string, int>(kv.key, (int)kv.value));
+            result.MarketRawWeek = data.marketRawWeek;
             if (data.affection != null) foreach (var a in data.affection) if (a != null) result.Affection.Add((a.a, a.b, a.value));
             if (data.dynasty != null)
             {

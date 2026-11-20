@@ -65,6 +65,8 @@ namespace Thatchwick.Core.Mining
         public event Action<Character, MineMap, int, int, List<KeyValuePair<string, int>>> Dug;
         /// <summary>Kalıntı bulundu.</summary>
         public event Action<Character, string> RelicFound;
+        /// <summary>Bir damarın ilk karosu açıldı (kişi, kazı yeri, cevher).</summary>
+        public event Action<Character, MineMap, string> VeinOpened;
         /// <summary>Gün başında yeni çatırdayan karolar (yer, adet).</summary>
         public event Action<MineMap, int> Creaked;
         /// <summary>Damarı dinle (Madencilik 9): çatırdayan karo bir gün geç çöker. null ise yok.</summary>
@@ -168,7 +170,7 @@ namespace Thatchwick.Core.Mining
             }
         }
 
-        private static GridPos WorldPos(MineMap m, int x, int y) => new GridPos(x, y, m.Level);
+        private static GridPos WorldPos(MineMap m, int x, int y) => m.ToWorld(x, y);
 
         /// <summary>Arsa kazısında üstündeki bodrum karosunda duvar, merdiven ya da büyük eşya var mı (destek ister)?</summary>
         public bool HouseAbove(int x, int y)
@@ -227,7 +229,10 @@ namespace Thatchwick.Core.Mining
         }
 
         /// <summary>Karoyu kazar: çıkanları depoya koyar, XP verir. Çıkanların listesi döner (kazılamazsa boş).</summary>
-        public List<KeyValuePair<string, int>> Dig(MineMap m, int x, int y, Character c)
+        public List<KeyValuePair<string, int>> Dig(MineMap m, int x, int y, Character c) => Dig(m, x, y, c, null);
+
+        /// <summary>Kazar; <paramref name="sink"/> verilirse çıkanlar depoya değil oraya gider (süreli görev dönüşte teslim eder).</summary>
+        public List<KeyValuePair<string, int>> Dig(MineMap m, int x, int y, Character c, Action<string, int> sink)
         {
             var got = new List<KeyValuePair<string, int>>();
             if (CanDig(m, x, y, c) != null) return got;
@@ -239,8 +244,14 @@ namespace Thatchwick.Core.Mining
             void Give(string id, int n)
             {
                 if (n <= 0) return;
-                int added = Store != null ? Store(id, n) : AddAll(id, n);
+                int added = sink != null ? n : Store != null ? Store(id, n) : AddAll(id, n);
+                sink?.Invoke(id, n);
                 if (added > 0) got.Add(new KeyValuePair<string, int>(id, added));
+            }
+            if (t.Ore != null && !t.VeinSeen && c != null)
+            {
+                SeeVein(m, x, y, t.Ore);
+                VeinOpened?.Invoke(c, m, t.Ore);
             }
             if (t.Ore != null)
             {
@@ -265,18 +276,148 @@ namespace Thatchwick.Core.Mining
             t.Cracked = false;
             t.Marked = false;
             t.Wet = wet;
-            if (m.Kind == MineSiteKind.Plot)
-            {
-                var p = WorldPos(m, x, y);
-                _world.Map.SetTile(p, true);
-                _world.Map.SetFloor(p, FloorType.Dirt);
-            }
+            OpenInWorld(m, x, y);
             c?.GainSkillXp(SkillType.Mining, xp);
             Dug?.Invoke(c, m, x, y, got);
             return got;
         }
 
         private int AddAll(string id, int n) { _house.AddItem(id, n); return n; }
+
+        /// <summary>Damarın bütün bitişik karolarını "görüldü" işaretler: aynı damarın sonraki karoları yeniden sevinç vermez.</summary>
+        private static void SeeVein(MineMap m, int x, int y, string ore)
+        {
+            var stack = new Stack<(int, int)>();
+            stack.Push((x, y));
+            while (stack.Count > 0)
+            {
+                var (cx, cy) = stack.Pop();
+                var t = m.Get(cx, cy);
+                if (t == null || t.VeinSeen || t.Ore != ore) continue;
+                t.VeinSeen = true;
+                foreach (var (dx, dy) in MineMap.Four) stack.Push((cx + dx, cy + dy));
+            }
+        }
+
+        /// <summary>Açık karo dünyada yürünür olur (arsa kazısı ve tepenin altındaki galeri).</summary>
+        private void OpenInWorld(MineMap m, int x, int y)
+        {
+            if (m.Kind == MineSiteKind.Mine && !Placed(m)) return;
+            var p = WorldPos(m, x, y);
+            if (!_world.Map.InBounds(p)) return;
+            _world.Map.SetTile(p, true);
+            _world.Map.SetFloor(p, FloorType.Dirt);
+        }
+
+        /// <summary>Galeri dünyaya yerleştirildi mi (yer üstüyle bağlı; belge 58d M1).</summary>
+        public static bool Placed(MineMap m) => m != null && (m.Kind == MineSiteKind.Plot || m.OriginX != 0 || m.OriginY != 0);
+
+        /// <summary>
+        /// Galeriyi dünyaya yerleştirir (belge 58d M1): tepedeki ağzın altına, kat -1'e. Açık karolar yürünür olur, ağız ile
+        /// giriş arasında sabit bağlantı kurulur. Yeni oyunda ve her yüklemede çağrılır (bağlantı kayda yazılmaz).
+        /// </summary>
+        public void PlaceMine(GridPos mouth)
+        {
+            var m = Get(MineId);
+            if (m == null) return;
+            var (ex, ey) = MineEntrance;
+            m.OriginX = mouth.X - ex; m.OriginY = mouth.Y - ey;
+            foreach (var (x, y, t) in m.All())
+            {
+                var p = WorldPos(m, x, y);
+                if (!_world.Map.InBounds(p)) continue;
+                _world.Map.SetTile(p, t.IsOpen);
+                if (t.IsOpen) _world.Map.SetFloor(p, FloorType.Dirt);
+            }
+            _world.AddFixedLink(new GridPos(mouth.X, mouth.Y, 0), WorldPos(m, ex, ey));
+        }
+
+        /// <summary>Dünya karosu hangi kazı yerinde (arsa kat -2, galeri kat -1); yoksa null.</summary>
+        public MineMap SiteAt(GridPos p, out int x, out int y)
+        {
+            x = y = -1;
+            var mine = Get(MineId);
+            if (mine != null && Placed(mine) && mine.TryLocal(p, out x, out y)) return mine;
+            var plot = Get(PlotId);
+            if (plot != null && plot.TryLocal(p, out x, out y)) return plot;
+            return null;
+        }
+
+        /// <summary>Karakter galerinin içinde mi (kat -1, galeri sınırında).</summary>
+        public bool InMine(Character c) => c != null && SiteAt(c.Position, out _, out _) is MineMap m && m.Kind == MineSiteKind.Mine;
+
+        /// <summary>
+        /// Çocuk ve ergen madene yalnızca hanenin genç yetişkin ya da daha büyük bir üyesiyle iner (belge 58d karar G).
+        /// <paramref name="adultInMine"/>: o an madende ya da onunla birlikte inen bir yetişkin var mı. İnemezse nedeni.
+        /// </summary>
+        public static bool NeedsEscort(Character c) =>
+            c != null && (c.Stage == AgeStage.Baby || c.Stage == AgeStage.Child || c.Stage == AgeStage.Teen);
+
+        // ---------- süreli görev ve vardiya ----------
+
+        /// <summary>Elle kazı ile ekran dışı kazının aynı hızda olması için iş süresi çarpanı (JobRunner.ActionTimeScale).</summary>
+        public double ActionTimeScale { get; set; } = 1.0;
+
+        /// <summary>Süreli görevin sıradaki karosu: önce işaretli, işaret yoksa girişe en yakın düz (damarsız) taş ya da toprak.</summary>
+        public bool NextDutyTile(MineMap m, Character c, out int bx, out int by)
+        {
+            bx = by = -1;
+            if (m == null) return false;
+            var (ex, ey) = m.Kind == MineSiteKind.Mine ? MineEntrance : (-1, -1);
+            double best = double.MaxValue;
+            for (int pass = 0; pass < 2 && bx < 0; pass++)
+                foreach (var (x, y, t) in m.All())
+                {
+                    if (t.IsOpen) continue;
+                    if (pass == 0 ? !t.Marked : (t.Ore != null || t.Rock < RockKind.Soil || t.Rock > RockKind.Stone)) continue;
+                    if (CanDig(m, x, y, c) != null) continue;
+                    double d = ex >= 0 ? Math.Abs(x - ex) + Math.Abs(y - ey) : 0;
+                    if (d < best) { best = d; bx = x; by = y; }
+                }
+            return bx >= 0;
+        }
+
+        /// <summary>Süreli görev: <paramref name="tiles"/> karo kazar, çıkanları döndürür (depoya koymaz; belge 58d M0.1).</summary>
+        public List<KeyValuePair<string, int>> DutyDig(string siteId, Character c, int tiles)
+        {
+            var got = new Dictionary<string, int>(StringComparer.Ordinal);
+            var m = Get(siteId);
+            for (int i = 0; i < tiles; i++)
+            {
+                if (!NextDutyTile(m, c, out int x, out int y)) break;
+                Dig(m, x, y, c, (id, n) => got[id] = (got.TryGetValue(id, out var v) ? v : 0) + n);
+            }
+            var list = new List<KeyValuePair<string, int>>();
+            foreach (var kv in got) list.Add(kv);
+            return list;
+        }
+
+        // ---------- yer altında geçen süre (iç sesler; belge 58d M0.4) ----------
+
+        public const double DustyAfterDays = 2.0 / 24.0, DaylightAfterDays = 2.0 / 24.0;
+        private readonly Dictionary<int, double> _undergroundSince = new Dictionary<int, double>();
+        private readonly HashSet<int> _dustyGiven = new HashSet<int>();
+
+        public enum UndergroundEvent { None, Dusty, Daylight }
+
+        /// <summary>
+        /// Kişinin yer altında olup olmadığını bildirir (oyun katmanı saatte bir ya da sık çağırır). 2 saat yer altında kalan
+        /// "Tozlu" olur; 2 saatten uzun kalıp çıkan "Gün ışığı" alır. Kısa iniş ceza vermez.
+        /// </summary>
+        public UndergroundEvent NoteUnderground(Character c, bool underground, double now)
+        {
+            if (c == null) return UndergroundEvent.None;
+            if (underground)
+            {
+                if (!_undergroundSince.TryGetValue(c.Id, out var since)) { _undergroundSince[c.Id] = now; return UndergroundEvent.None; }
+                if (now - since >= DustyAfterDays && _dustyGiven.Add(c.Id)) return UndergroundEvent.Dusty;
+                return UndergroundEvent.None;
+            }
+            if (!_undergroundSince.TryGetValue(c.Id, out var start)) return UndergroundEvent.None;
+            _undergroundSince.Remove(c.Id);
+            _dustyGiven.Remove(c.Id);
+            return now - start >= DaylightAfterDays ? UndergroundEvent.Daylight : UndergroundEvent.None;
+        }
 
         public void Mark(MineMap m, int x, int y, bool on)
         {
@@ -496,7 +637,7 @@ namespace Thatchwick.Core.Mining
                     t.Rock = RockKind.Rubble;
                     t.LightRadius = 0; t.LightDays = 0;
                     collapsed.Add((x, y));
-                    if (m.Kind != MineSiteKind.Plot) continue;
+                    if (!Placed(m)) continue;
                     var p = WorldPos(m, x, y);
                     if (CharactersAt != null) foreach (var c in CharactersAt(p)) CaughtInCaveIn?.Invoke(c, m);
                     // Göçen karodaki eşya hane envanterine döner (kaybolmaz), karo haritadan kalkar.
@@ -554,7 +695,7 @@ namespace Thatchwick.Core.Mining
                     if (d < bestD) { bestD = d; best = (x, y); }
                 }
                 if (best.x < 0) break;
-                double need = DigDays(m, best.x, best.y, c);
+                double need = DigDays(m, best.x, best.y, c) * (ActionTimeScale > 0 ? ActionTimeScale : 1.0);   // elle kazıyla aynı hız
                 if (need > left) break;
                 Dig(m, best.x, best.y, c);
                 left -= need;
@@ -574,7 +715,7 @@ namespace Thatchwick.Core.Mining
             foreach (var id in ids)
             {
                 var m = _sites[id];
-                var s = new MineSave { id = m.Id, kind = (int)m.Kind, level = m.Level, w = m.Width, h = m.Height, seed = m.Seed, water = m.Water, smoke = m.SmokeDays };
+                var s = new MineSave { id = m.Id, kind = (int)m.Kind, level = m.Level, w = m.Width, h = m.Height, seed = m.Seed, water = m.Water, smoke = m.SmokeDays, ox = m.OriginX, oy = m.OriginY };
                 var rock = new int[m.Width * m.Height];
                 var flags = new int[rock.Length];
                 var ore = new string[rock.Length];
@@ -584,7 +725,7 @@ namespace Thatchwick.Core.Mining
                 foreach (var (_, _, t) in m.All())
                 {
                     rock[i] = (int)t.Rock;
-                    flags[i] = (t.Wet ? 1 : 0) | (t.Cracked ? 2 : 0) | (t.Marked ? 4 : 0) | (t.Creaking ? 8 : 0) | ((int)t.Support << 4) | (t.LightRadius << 8);
+                    flags[i] = (t.Wet ? 1 : 0) | (t.Cracked ? 2 : 0) | (t.Marked ? 4 : 0) | (t.Creaking ? 8 : 0) | ((int)t.Support << 4) | (t.LightRadius << 8) | (t.VeinSeen ? 1 << 12 : 0);
                     ore[i] = t.Ore;
                     age[i] = t.SupportAge;
                     light[i] = t.LightDays;
@@ -602,7 +743,7 @@ namespace Thatchwick.Core.Mining
             foreach (var s in saves)
             {
                 if (s == null || s.w <= 0 || s.h <= 0 || s.rock == null || s.rock.Length != s.w * s.h) continue;
-                var m = new MineMap(s.id, (MineSiteKind)s.kind, s.level, s.w, s.h, s.seed) { Water = Math.Max(0, s.water), SmokeDays = Math.Max(0, s.smoke) };
+                var m = new MineMap(s.id, (MineSiteKind)s.kind, s.level, s.w, s.h, s.seed) { Water = Math.Max(0, s.water), SmokeDays = Math.Max(0, s.smoke), OriginX = s.ox, OriginY = s.oy };
                 int i = 0;
                 foreach (var (_, _, t) in m.All())
                 {
@@ -611,6 +752,7 @@ namespace Thatchwick.Core.Mining
                     t.Wet = (f & 1) != 0; t.Cracked = (f & 2) != 0; t.Marked = (f & 4) != 0; t.Creaking = (f & 8) != 0;
                     t.Support = (SupportKind)((f >> 4) & 0xF);
                     t.LightRadius = (f >> 8) & 0xF;
+                    t.VeinSeen = (f & (1 << 12)) != 0;
                     t.Ore = s.ore != null && i < s.ore.Length && !string.IsNullOrEmpty(s.ore[i]) ? s.ore[i] : null;
                     t.SupportAge = s.supportAge != null && i < s.supportAge.Length ? s.supportAge[i] : 0;
                     t.LightDays = s.light != null && i < s.light.Length ? s.light[i] : 0;
@@ -628,9 +770,10 @@ namespace Thatchwick.Core.Mining
     {
         public string id;
         public int kind, level, w, h, seed;
+        public int ox, oy;           // galerinin dünyadaki köşesi (belge 58d M1; eski kayıtta 0, yüklemede yeniden yerleşir)
         public double water, smoke;
         public int[] rock;
-        public int[] flags;          // bit 0 sulu, 1 çatlak, 2 işaretli, 3 çatırdıyor, 4-7 destek, 8-11 ışık yarıçapı
+        public int[] flags;          // bit 0 sulu, 1 çatlak, 2 işaretli, 3 çatırdıyor, 4-7 destek, 8-11 ışık yarıçapı, 12 damar görüldü
         public string[] ore;
         public double[] supportAge;
         public double[] light;

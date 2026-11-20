@@ -44,6 +44,9 @@ namespace Thatchwick.Core.Life
         public const double PruneFruitShare = 0.30;
         public const int GraftBonus = 2;
         public const int StockedPondDays = 10;
+        /// <summary>Taşlık düğümü: bu kadar vuruşta tükenir, bu kadar günde yenilenir (yer tutucu; denge koşusuyla).</summary>
+        public const int QuarryHits = 12;
+        public const int QuarryRegenDays = 5;
         public const double BadMushroomChance = 0.12;
         public const int ForestSecretEvery = 7;
         public const double BearingSpeed = 1.15, ClimbSpeed = 1.25;
@@ -100,6 +103,11 @@ namespace Thatchwick.Core.Life
                     return GraftScion(item) == null ? "Aşı için envanterde başka bir meyve fidanı gerekli." : null;
                 case "stock_pond":
                     if (SkillFlag("stock:" + item.Id) > Today) return Localization.CoreText.T("ui.pond.already_stocked");
+                    return null;
+                case "quarry":
+                    // Taşlık düğümü tükenir, 5 günde yenilenir (belge 58b karar 3, 58d M0.2).
+                    double regen = SkillFlag("quarry_regen:" + item.Id);
+                    if (regen > Today) return Localization.CoreText.T("ui.mine.quarry_spent", ("days", (int)Math.Ceiling(regen - Today)));
                     return null;
                 case "black_earth":
                     if (SkillFlag("black_earth") > 0 && Today - SkillFlag("black_earth") < 40) return "Kara toprak yılda bir hazırlanır.";
@@ -288,6 +296,16 @@ namespace Thatchwick.Core.Life
                     SetSkillFlag("contract", Today);
                     Say($"{c.Name} sözleşme yazdı: bugün köy işlerinin ödülü %15 fazla.", NoticeLevel.Info, c.Id);
                     SealBonus(c, "seal.rep.contract", "seal.n.contract");
+                    break;
+                case "quarry":
+                    if (SkillFlag("quarry_regen:" + item.Id) > 0 && SkillFlag("quarry_regen:" + item.Id) <= Today)
+                    {
+                        SetSkillFlag("quarry_regen:" + item.Id, 0);
+                        SetSkillFlag("quarry:" + item.Id, 0);
+                    }
+                    double hits = SkillFlag("quarry:" + item.Id) + 1;
+                    SetSkillFlag("quarry:" + item.Id, hits);
+                    if (hits >= QuarryHits) SetSkillFlag("quarry_regen:" + item.Id, Today + QuarryRegenDays);
                     break;
                 case "stock_pond":
                     SetSkillFlag("stock:" + item.Id, Today + StockedPondDays);

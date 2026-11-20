@@ -1,7 +1,17 @@
 {
+  "ui.mine.child_needs_adult": "{name} can only go down the mine with an adult of the household.",
+  "ui.mine.go_down": "Send {name} down the mine",
+  "ui.mine.mood.daylight": "Daylight",
+  "ui.mine.mood.vein_opened": "Opened a vein",
+  "ui.mine.mood.wet": "Soaked",
   "ui.mine.name": "Household mine",
+  "ui.mine.not_dig_area": "This is not a digging area.",
   "ui.mine.open": "Open the mine",
   "ui.mine.opened": "Household mine opened: mark tiles, mine workers dig every morning",
+  "ui.mine.panel.creaks": "Creaking tiles: {n}. Without a support today they collapse tomorrow.",
   "ui.mine.panel.title": "HOUSEHOLD MINE · GALLERY LEVEL",
-  "ui.mine.shift_dug": "{name} dug {n} tiles in the mine"
+  "ui.mine.panel.work_below": "Supports, light, water and digging are done inside the mine: go down with a character and tap a tile.",
+  "ui.mine.quarry_spent": "The stone pit is worked out; it recovers in {days} days.",
+  "ui.mine.shift_dug": "{name} dug {n} tiles in the mine",
+  "ui.mine.vein_opened": "{name} opened a new vein: {ore}"
 }

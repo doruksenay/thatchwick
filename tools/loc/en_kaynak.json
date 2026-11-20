@@ -558,7 +558,7 @@
   "item.bleached_bench.act.sit": "Otur",
   "item.bleached_bench.name": "Ağartılmış ahşap sıra",
   "item.bloomery.act.smelt_raw": "Ham cevheri erit (3 + 2 kömür)",
-  "item.bloomery.act.smelt_roasted": "Kavrulmuş cevheri erit (2 + 2 kömür)",
+  "item.bloomery.act.smelt_roasted": "Kavrulmuş cevheri erit (2 + 1 kömür)",
   "item.bloomery.name": "Ham demir ocağı",
   "item.boar_meat.name": "Yaban domuzu eti",
   "item.boar_stew.name": "Yaban domuzu yahnisi",
