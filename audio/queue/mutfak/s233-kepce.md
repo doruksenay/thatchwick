@@ -4,7 +4,7 @@ title: Kepçeyle kaba alma
 kind: sfx
 family: foley
 freq: B
-status: claimed
+status: review
 approved_by: user
 depends_on: []
 note: 'Project belgesi 60: izlenen eylem zinciri adım sesi (life.json chains[].steps[].sfx).'
@@ -41,5 +41,9 @@ layers:
   prompt: 'A small ladleful of thick stew poured into a clay bowl: one short soft wet glug. Brief, not a long stream, no splashing.'
 claimed_by: ip-10-0-138-220
 claimed_at: '2026-11-20T18:31:37Z'
+candidates: 12
+passed: 12
+credits_spent: 96
+generated_at: '2026-11-20T18:31:52Z'
 ---
 Kepçe iki katman: kepçenin kazana değip alması ve kâseye kısa dökülüş. Oyunda birlikte çalar (5. tur; 3. tur katı, 4. tur fazla sıvıydı).
