@@ -45,9 +45,9 @@ namespace Thatchwick.Core.Save
         /// <summary>Ismarlamalar ve biçki kalıpları (belge 48 §10-11). Eski kayıtta null.</summary>
         public Thatchwick.Core.Clothing.TailorSave tailor;
         /// <summary>Yaşlılık sıkıntıları ve Zihin dinçliği (belge 51 §3). Eski kayıtta null.</summary>
-        public string[] aging;
+        public string[] ailments;
         /// <summary>Yaşlılık sıkıntıları ayarı + 1 (0 = eski kayıt: Normal).</summary>
-        public int agingSetting;
+        public int ailmentSetting;
         /// <summary>Süreli görevler ve "her gün tekrarla" planları (belge 47 §3). Eski kayıtta null.</summary>
         public Thatchwick.Core.Work.TimedDutyServiceSave timedDuties;
         /// <summary>Çocukların gezme izni (belge 47 §7.2). Eski kayıtta null.</summary>

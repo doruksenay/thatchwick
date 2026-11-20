@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Thatchwick.Core.Aging;
+using Thatchwick.Core.Elders;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Clothing;
 using Thatchwick.Core.Content;
@@ -13,8 +13,8 @@ namespace Thatchwick.Core.Life
     /// </summary>
     public sealed partial class LifeSystems
     {
-        private AgingService _aging;
-        public AgingService Aging => _aging ?? (_aging = CreateAging());
+        private ElderAilmentService _ailments;
+        public ElderAilmentService Ailments => _ailments ?? (_ailments = CreateAilments());
         /// <summary>Dalgın yaşlı işi bıraktı (oyun katmanı "Ne yapıyordum ben?" balonu çizer; ilerleme kaybolmaz).</summary>
         public event Action<Character> AbsentPause;
         /// <summary>Dalgınlık işareti balonu.</summary>
@@ -22,11 +22,11 @@ namespace Thatchwick.Core.Life
         private readonly Dictionary<int, long> _lateCoffee = new Dictionary<int, long>();
         private readonly Dictionary<int, double> _blackTeaAt = new Dictionary<int, double>();
         private readonly Dictionary<int, double> _dropAt = new Dictionary<int, double>();
-        private readonly Random _agingRng = new Random(977);
+        private readonly Random _ailmentsRng = new Random(977);
 
-        private AgingService CreateAging()
+        private ElderAilmentService CreateAilments()
         {
-            var a = new AgingService();
+            var a = new ElderAilmentService();
             a.Appeared += (c, cond) =>
             {
                 string what = ConditionText(cond);
@@ -64,10 +64,10 @@ namespace Thatchwick.Core.Life
                 var m = Clothing.ModelOf(it);
                 if (m != null && !it.Diamond && (m.Material == "fur" || m.Material == "felt" || m.Material == "knit" || m.Id == "wool_shawl")) return true;
             }
-            return Aging.HasAid(c, AgingAids.IsKnee);
+            return Ailments.HasAid(c, AgingAids.IsKnee);
         }
 
-        private void UpdateAging()
+        private void UpdateAilments()
         {
             long day = Clock.DayIndex;
             bool coldOrRain = RainyToday || Weather.Today(Clock.TotalDays) == WeatherType.Snow;
@@ -77,25 +77,25 @@ namespace Thatchwick.Core.Life
                 if (c.ConditionSpeed == null)
                 {
                     var ch = c;
-                    c.ConditionSpeed = s => Aging.WorkSpeed(ch, s, coldOrRain || ch.AmbientTemperature < 5f, Clock.DayIndex);
-                    c.ConditionXp = s => Aging.XpFactor(ch, s, Clock.DayIndex);
+                    c.ConditionSpeed = s => Ailments.WorkSpeed(ch, s, coldOrRain || ch.AmbientTemperature < 5f, Clock.DayIndex);
+                    c.ConditionXp = s => Ailments.XpFactor(ch, s, Clock.DayIndex);
                 }
-                c.WalkFactor = Aging.WalkFactor(c, day);
-                c.WarmthNeedFactor = (float)Aging.WarmthNeed(c, ThickPiece(c), false, day);
+                c.WalkFactor = Ailments.WalkFactor(c, day);
+                c.WarmthNeedFactor = (float)Ailments.WarmthNeed(c, ThickPiece(c), false, day);
                 // dalgınlık: günde bir kez, iş saatinde, uzun ve beklemeye dayanıklı bir işteyken
-                if (Aging.Has(c, AgingCondition.Absent) && !c.Asleep && !c.Away)
+                if (Ailments.Has(c, AgingCondition.Absent) && !c.Asleep && !c.Away)
                 {
-                    if (!_dropAt.TryGetValue(c.Id, out var at) || Math.Floor(at) != day) _dropAt[c.Id] = at = day + 0.35 + _agingRng.NextDouble() * 0.35;
+                    if (!_dropAt.TryGetValue(c.Id, out var at) || Math.Floor(at) != day) _dropAt[c.Id] = at = day + 0.35 + _ailmentsRng.NextDouble() * 0.35;
                     if (Clock.TotalDays >= at && at > 0)
                     {
                         _dropAt[c.Id] = -day;   // bugün denendi
-                        if (c.Duty != DutyKind.None && Aging.TryDrop(c, day, waitTolerant: true)) AbsentPause?.Invoke(c);
+                        if (c.Duty != DutyKind.None && Ailments.TryDrop(c, day, waitTolerant: true)) AbsentPause?.Invoke(c);
                     }
                 }
             }
         }
 
-        private void DailyAging()
+        private void DailyAilments()
         {
             long day = Clock.DayIndex;
             foreach (var c in Household())
@@ -104,9 +104,9 @@ namespace Thatchwick.Core.Life
                 bool lonely = c.MoodEnabled && c.Needs.Get(NeedType.Social) < MoodCatalog.NeedMoodThreshold;
                 bool unhappy = c.MoodEnabled && (c.Mood.Status == MoodStatus.Unhappy || c.Mood.Status == MoodStatus.Miserable);
                 bool grieving = c.MoodEnabled && c.Mood.Has(MoodCatalog.Grief);
-                Aging.Daily(c, Clock.TotalDays, lonely, unhappy, grieving);
+                Ailments.Daily(c, Clock.TotalDays, lonely, unhappy, grieving);
                 // akşam kahvesi: ertesi gün "Kötü uyudu" (papatya o gece içildiyse yok)
-                if (_lateCoffee.TryGetValue(c.Id, out var late) && late == day - 1 && !Aging.HadChamomile(c, day - 1)) c.AddMoodlet(AgingService.SleptBadly);
+                if (_lateCoffee.TryGetValue(c.Id, out var late) && late == day - 1 && !Ailments.HadChamomile(c, day - 1)) c.AddMoodlet(ElderAilmentService.SleptBadly);
             }
         }
 
@@ -117,7 +117,7 @@ namespace Thatchwick.Core.Life
         }
 
         /// <summary>İçecekler ve zihin etkinlikleri (belge 51 §3.3a), sert yiyecek.</summary>
-        private void OnAgingInteraction(Character c, InteractionDef i)
+        private void OnAilmentInteraction(Character c, InteractionDef i)
         {
             if (c == null || i == null) return;
             long day = Clock.DayIndex;
@@ -126,12 +126,12 @@ namespace Thatchwick.Core.Life
             bool coffee = Consumes(i, "item.coffee");
             if (coffee)
             {
-                Aging.AddMind(c, MindActivity.Coffee, day);
+                Ailments.AddMind(c, MindActivity.Coffee, day);
                 if (frac >= CoffeeHabits.LateAfter) _lateCoffee[c.Id] = day;
             }
-            if (Consumes(i, "item.tea_sage")) { c.AddMoodlet("eff_sage_clear"); Aging.AddMind(c, MindActivity.Sage, day); }
+            if (Consumes(i, "item.tea_sage")) { c.AddMoodlet("eff_sage_clear"); Ailments.AddMind(c, MindActivity.Sage, day); }
             if (Consumes(i, "item.tea_mint")) { c.AddMoodlet("eff_mint_fresh"); c.Needs.Restore(NeedType.Energy, 10f); }
-            if (Consumes(i, "item.tea_chamomile") || Consumes(i, "item.honey_milk")) Aging.Chamomile(c, day);
+            if (Consumes(i, "item.tea_chamomile") || Consumes(i, "item.honey_milk")) Ailments.Chamomile(c, day);
             if (Consumes(i, "item.tea_linden") && frac >= 0.70) c.AddMoodlet("eff_calm_evening");
             if (Consumes(i, "item.black_tea"))
             {
@@ -144,25 +144,25 @@ namespace Thatchwick.Core.Life
                     if (other == null || other.IsDead) continue;
                     c.AddMoodlet("eff_tea_talk"); other.AddMoodlet("eff_tea_talk");
                     c.Needs.Restore(NeedType.Social, 15f); other.Needs.Restore(NeedType.Social, 15f);
-                    Aging.AddMind(c, MindActivity.Chat, day); Aging.AddMind(other, MindActivity.Chat, day);
+                    Ailments.AddMind(c, MindActivity.Chat, day); Ailments.AddMind(other, MindActivity.Chat, day);
                     break;
                 }
                 _blackTeaAt[c.Id] = Clock.TotalDays;
             }
             // sert yiyecek
             foreach (var con in i.AllConsumed())
-                if (Aging.HardFoodPenalty(c, con.ItemId, day))
+                if (Ailments.HardFoodPenalty(c, con.ItemId, day))
                 {
                     c.AddMoodlet("eff_hard_bite");
-                    if (i.Need == NeedType.Hunger && i.Restore > 0) c.Needs.Set(NeedType.Hunger, Math.Max(0f, c.Needs.Get(NeedType.Hunger) - i.Restore * (float)AgingService.HardFoodFullness));
+                    if (i.Need == NeedType.Hunger && i.Restore > 0) c.Needs.Set(NeedType.Hunger, Math.Max(0f, c.Needs.Get(NeedType.Hunger) - i.Restore * (float)ElderAilmentService.HardFoodFullness));
                     break;
                 }
             // zihin etkinlikleri: okuma, ders, müzik, sohbet, yürüyüş
-            if (i.Skill == SkillType.Literacy) Aging.AddMind(c, MindActivity.Reading, day);
-            else if (i.Skill == SkillType.Teaching || i.Skill == SkillType.Parenting) Aging.AddMind(c, MindActivity.Teaching, day);
-            else if (i.Skill == SkillType.Music) Aging.AddMind(c, MindActivity.Music, day);
-            else if (i.Skill == SkillType.Charm) Aging.AddMind(c, MindActivity.Chat, day);
-            if (Consumes(i, AgingAids.Tincture)) Aging.Tincture(c, day);
+            if (i.Skill == SkillType.Literacy) Ailments.AddMind(c, MindActivity.Reading, day);
+            else if (i.Skill == SkillType.Teaching || i.Skill == SkillType.Parenting) Ailments.AddMind(c, MindActivity.Teaching, day);
+            else if (i.Skill == SkillType.Music) Ailments.AddMind(c, MindActivity.Music, day);
+            else if (i.Skill == SkillType.Charm) Ailments.AddMind(c, MindActivity.Chat, day);
+            if (Consumes(i, AgingAids.Tincture)) Ailments.Tincture(c, day);
         }
 
         /// <summary>Siyah çay ergen ve üstü (belge 51 §3.3a); kahve kuralı CoffeeHabits'te.</summary>
@@ -179,8 +179,8 @@ namespace Thatchwick.Core.Life
         public bool ArmInArm(Character helper, Character elder)
         {
             if (helper == null || elder == null || helper.Stage == AgeStage.Baby || elder.Stage != AgeStage.Elder) return false;
-            Aging.ArmInArm(elder, Clock.DayIndex);
-            Aging.AddMind(elder, MindActivity.Walk, Clock.DayIndex);
+            Ailments.ArmInArm(elder, Clock.DayIndex);
+            Ailments.AddMind(elder, MindActivity.Walk, Clock.DayIndex);
             helper.AddMoodlet(MoodCatalog.NiceChat); elder.AddMoodlet(MoodCatalog.NiceChat);
             return true;
         }
@@ -189,7 +189,7 @@ namespace Thatchwick.Core.Life
         public bool CrumbleBite(Character helper, Character elder)
         {
             if (helper == null || elder == null || !AgeStages.IsAdultContentAge(helper.Stage)) return false;
-            Aging.CrumbleBite(elder, Clock.DayIndex);
+            Ailments.CrumbleBite(elder, Clock.DayIndex);
             return true;
         }
 
@@ -197,7 +197,7 @@ namespace Thatchwick.Core.Life
         public bool SpeakUp(Character helper, Character elder)
         {
             if (helper == null || elder == null) return false;
-            Aging.SpeakUp(elder, Clock.DayIndex);
+            Ailments.SpeakUp(elder, Clock.DayIndex);
             return true;
         }
 
@@ -205,8 +205,8 @@ namespace Thatchwick.Core.Life
         public bool Remind(Character helper, Character elder)
         {
             if (helper == null || elder == null || helper == elder) return false;
-            Aging.Remind(elder, Clock.DayIndex);
-            Aging.AddMind(elder, MindActivity.Chat, Clock.DayIndex);
+            Ailments.Remind(elder, Clock.DayIndex);
+            Ailments.AddMind(elder, MindActivity.Chat, Clock.DayIndex);
             return true;
         }
 
@@ -214,7 +214,7 @@ namespace Thatchwick.Core.Life
         public bool UseAid(Character elder, string itemId, Character maker = null)
         {
             if (elder == null || Array.IndexOf(AgingAids.All, itemId) < 0 || !House.TryTakeItem(itemId)) return false;
-            Aging.EquipAid(elder, itemId);
+            Ailments.EquipAid(elder, itemId);
             if (maker != null && maker != elder && (maker.BirthMotherId.HasValue || maker.BirthFatherId.HasValue))
             {
                 maker.AddMoodlet("eff_gift_glasses");

@@ -386,7 +386,7 @@ namespace Thatchwick.Core.Life
         public void OnBecameElder(Character c)
         {
             if (c == null || c.IsDead) return;
-            if (!c.IsVillager) Aging.OnBecameElder(c, Clock.TotalDays);   // yaşlılık sıkıntıları (belge 51 §3)
+            if (!c.IsVillager) Ailments.OnBecameElder(c, Clock.TotalDays);   // yaşlılık sıkıntıları (belge 51 §3)
             if (c.Skills.ApplyElderOnset() > 0 && !c.IsVillager)
                 Say($"{c.Name} yaşlandı: elleri eskisi kadar çabuk değil. Becerilerini her mevsim bir kez çalıştırmalı.", NoticeLevel.Info, c.Id);
         }
@@ -863,7 +863,7 @@ namespace Thatchwick.Core.Life
             if (interaction.Id == FortuneInteraction) Say($"{c.Name} fincanı kapattı, telveye baktı: {Coffee.Fortune()}", NoticeLevel.Info);
             if (IsHoneyHarvest(interaction)) TrySting(c);   // petek kesmede sokma OnInteractionAppliedOn'da
             OnClothingCrafted(c, interaction);
-            OnAgingInteraction(c, interaction);
+            OnAilmentInteraction(c, interaction);
             OnClothingWork(c, interaction);
         }
 
@@ -1075,7 +1075,7 @@ namespace Thatchwick.Core.Life
                 Watcher.Update(Population.Members, day: Clock.TotalDays);
                 Breakdowns.Update(step);
                 UpdateClothing();
-                UpdateAging();
+                UpdateAilments();
             }
 
             Spoilage.Tick(gameDays);
@@ -1176,7 +1176,7 @@ namespace Thatchwick.Core.Life
             AnimalDay(day);   // hüner etkileri, çekirge, perhiz (belge 48)
             DailyHealing();
             DailyClothing();
-            DailyAging();
+            DailyAilments();
             Injuries.DailyUpdate();
             Decor.RemindFreeMirror();
             Home.OnNewDay();
@@ -1248,8 +1248,8 @@ namespace Thatchwick.Core.Life
                 roomNames = ExportRoomNames(),
                 clothing = _clothing?.Export(),
                 tailor = _tailor?.Export(),
-                aging = _aging?.Export(),
-                agingSetting = _aging != null ? (int)_aging.Setting + 1 : 0
+                ailments = _ailments?.Export(),
+                ailmentSetting = _ailments != null ? (int)_ailments.Setting + 1 : 0
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1294,8 +1294,8 @@ namespace Thatchwick.Core.Life
             Requests.Import(data.requests);
             Clothing.Import(data.clothing);
             Tailor.Import(data.tailor);
-            Aging.Import(data.aging);
-            if (data.agingSetting > 0 && Enum.IsDefined(typeof(Thatchwick.Core.Aging.AgingSetting), data.agingSetting - 1)) Aging.Setting = (Thatchwick.Core.Aging.AgingSetting)(data.agingSetting - 1);
+            Ailments.Import(data.ailments);
+            if (data.ailmentSetting > 0 && Enum.IsDefined(typeof(Thatchwick.Core.Elders.AgingSetting), data.ailmentSetting - 1)) Ailments.Setting = (Thatchwick.Core.Elders.AgingSetting)(data.ailmentSetting - 1);
             UpdateMerchant(false);
             Marriages = Math.Max(0, data.marriages);
             if (Enum.IsDefined(typeof(AccidentSetting), data.accidentSetting)) Injuries.Setting = (AccidentSetting)data.accidentSetting;

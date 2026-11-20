@@ -1,5 +1,5 @@
 using System.Linq;
-using Thatchwick.Core.Aging;
+using Thatchwick.Core.Elders;
 using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
@@ -21,7 +21,7 @@ namespace Thatchwick.Core.Tests
             return c;
         }
 
-        private static void Activate(AgingService a, Character c, AgingCondition cond)
+        private static void Activate(ElderAilmentService a, Character c, AgingCondition cond)
         {
             a.OnBecameElder(c, 0);
             var s = a.StateOf(c);
@@ -32,7 +32,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Sira_NormalIkiHafifBir_KapaliYok_UcuncuOnIkinciGunde()
         {
-            var a = new AgingService(5);
+            var a = new ElderAilmentService(5);
             var c = Elder();
             a.OnBecameElder(c, 100);
             var s = a.StateOf(c);
@@ -44,13 +44,13 @@ namespace Thatchwick.Core.Tests
             for (int d = 100; d <= 125; d++) a.Daily(c, d, false, false, false);
             Assert.True(s.ThirdRolled);
             Assert.InRange(s.Active.Count, 2, 3);
-            var mild = new AgingService(5) { Setting = AgingSetting.Mild };
+            var mild = new ElderAilmentService(5) { Setting = AgingSetting.Mild };
             var m = Elder(2);
             mild.OnBecameElder(m, 0);
             Assert.Single(mild.StateOf(m).Pending);
             for (int d = 0; d <= 30; d++) mild.Daily(m, d, false, false, false);
             Assert.Single(mild.StateOf(m).Active);   // Hafif: 3. sıkıntı yok
-            var off = new AgingService { Setting = AgingSetting.Off };
+            var off = new ElderAilmentService { Setting = AgingSetting.Off };
             off.OnBecameElder(Elder(3), 0);
             Assert.Null(off.StateOf(Elder(3)));
         }
@@ -58,7 +58,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Goz_GozlukSiler_OkumaTasiKismi_UykudaCikar()
         {
-            var a = new AgingService();
+            var a = new ElderAilmentService();
             var c = Elder();
             Activate(a, c, AgingCondition.Eyes);
             Assert.Equal(0.7, a.WorkSpeed(c, SkillType.Tailoring, false, 1), 6);
@@ -82,7 +82,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Diz_BastonKolunaGir_Tavan40()
         {
-            var a = new AgingService();
+            var a = new ElderAilmentService();
             var c = Elder();
             Activate(a, c, AgingCondition.Knees);
             Assert.Equal(0.7, a.WalkFactor(c, 1), 6);
@@ -107,7 +107,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void DigerSikintilar_CozumleriVeArtilari()
         {
-            var a = new AgingService();
+            var a = new ElderAilmentService();
             var c = Elder();
             Activate(a, c, AgingCondition.Teeth);
             Assert.True(a.HardFoodPenalty(c, "item.bread_rye", 1));
@@ -141,7 +141,7 @@ namespace Thatchwick.Core.Tests
             Assert.False(a.CanMakeMasterwork(t, SkillType.Tailoring));
             Assert.Equal(1.5, a.MasterEyeXp(t, Elder(7, 20), SkillType.Tailoring));
             // Hafif ayarda eksiler yarı
-            var mild = new AgingService { Setting = AgingSetting.Mild };
+            var mild = new ElderAilmentService { Setting = AgingSetting.Mild };
             var m = Elder(8);
             Activate(mild, m, AgingCondition.Knees);
             Assert.Equal(0.85, mild.WalkFactor(m, 1), 6);
@@ -150,7 +150,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Zihin_EtkinlikGunlukTavanli_YaslidaIkiKat_YastaSayilmaz()
         {
-            var a = new AgingService();
+            var a = new ElderAilmentService();
             var adult = Elder(1, 60);
             Assert.True(a.AddMind(adult, MindActivity.Reading, 1));
             Assert.False(a.AddMind(adult, MindActivity.Reading, 1));   // aynı gün aynı etkinlik
@@ -174,7 +174,7 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Dalginlik_IsaretSonraDurum_IsBirakma_KahveCay()
         {
-            var a = new AgingService(3);
+            var a = new ElderAilmentService(3);
             var c = Elder();
             a.OnBecameElder(c, 0);
             var s = a.StateOf(c);
@@ -189,12 +189,12 @@ namespace Thatchwick.Core.Tests
             Assert.True(a.Has(c, AgingCondition.Absent));
             long day = 16;
             Assert.Equal(0.15, a.AbsentDropChance(c, day), 6);
-            c.AddMoodlet(AgingService.Awake, CoffeeMood());
+            c.AddMoodlet(ElderAilmentService.Awake, CoffeeMood());
             Assert.Equal(0.075, a.AbsentDropChance(c, day), 6);
-            c.Mood.Remove(AgingService.Awake);
-            c.AddMoodlet(AgingService.Mahmur, CoffeeMood());
+            c.Mood.Remove(ElderAilmentService.Awake);
+            c.AddMoodlet(ElderAilmentService.Mahmur, CoffeeMood());
             Assert.Equal(0.225, a.AbsentDropChance(c, day), 6);
-            c.Mood.Remove(AgingService.Mahmur);
+            c.Mood.Remove(ElderAilmentService.Mahmur);
             Assert.False(a.TryDrop(c, day, waitTolerant: false, roll: 0.0));   // pişirme, kazan: durmaz
             Assert.True(a.TryDrop(c, day, true, roll: 0.0));
             Assert.False(a.TryDrop(c, day, true, roll: 0.0));                  // günde bir kez
@@ -216,13 +216,13 @@ namespace Thatchwick.Core.Tests
         [Fact]
         public void Kayit_GeriGelir()
         {
-            var a = new AgingService();
+            var a = new ElderAilmentService();
             var c = Elder();
             a.OnBecameElder(c, 3);
             a.StateOf(c).Active.Add(AgingCondition.Eyes);
             a.EquipAid(c, AgingAids.GlassesSilver);
             a.AddMind(c, MindActivity.Music, 4);
-            var b = new AgingService();
+            var b = new ElderAilmentService();
             b.Import(a.Export());
             Assert.True(b.Has(c, AgingCondition.Eyes));
             Assert.True(b.Glasses(c));
