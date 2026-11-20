@@ -21,7 +21,7 @@ namespace Thatchwick.Game
         private bool WardrobeVisible => _wardrobeWindow != null && _wardrobeWindow.Visible;
 
         /// <summary>Ortada duran bir UI Toolkit penceresi açık mı (zaman durur, dünya ve IMGUI dokunma almaz).</summary>
-        private bool UiWindowOpen => BetVisible || WardrobeVisible || (_cartPanel != null && _cartPanel.Active) || (_relationsPanel != null && _relationsPanel.Active) || (_shopPanel != null && _shopPanel.Active) || (_villagePanel != null && _villagePanel.Active);
+        private bool UiWindowOpen => BetVisible || WardrobeVisible || (_cartPanel != null && _cartPanel.Active) || (_relationsPanel != null && _relationsPanel.Active) || (_shopPanel != null && _shopPanel.Active) || (_villagePanel != null && _villagePanel.Active) || LedgerVisible;
 
         /// <summary>Esc: açık pencereyi kapatır; kapattıysa true.</summary>
         private bool CloseUiWindows()

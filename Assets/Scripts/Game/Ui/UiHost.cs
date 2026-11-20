@@ -7,7 +7,8 @@ namespace Thatchwick.Game.Ui
     /// <summary>
     /// UI Toolkit kökü (performans incelemesi 20.11.2026, IMGUI'den geçişin altyapısı). Sahne ve asset gerektirmez:
     /// UIDocument ve PanelSettings koddan kurulur, görünüm arayüz kitinin (UiSkin) dokuları ve renkleriyle satır içi
-    /// stil olarak verilir. Ölçek IMGUI HUD ile aynıdır: 540 birim ekran yüksekliği.
+    /// stil olarak verilir. Ölçek tam sayıdır (HUD v2, belge 66 §3.1): ekran yüksekliği / 540'ın tabanı (en az 1), böylece
+    /// piksel sanatı bulanıklaşmaz; arayüz alanı en az 540 birim yüksekliktir.
     /// IMGUI her karede birkaç kez yeniden çizilir ve metin üretir; burada öğeler bir kez kurulur, yalnızca değişen metin yazılır.
     /// </summary>
     public sealed class UiHost
@@ -16,6 +17,8 @@ namespace Thatchwick.Game.Ui
 
         private readonly GameObject _go;
         private readonly UIDocument _document;
+        private readonly PanelSettings _settings;
+        private int _lastHeight;
 
         public VisualElement Root { get; }
 
@@ -27,11 +30,10 @@ namespace Thatchwick.Game.Ui
 
             var settings = ScriptableObject.CreateInstance<PanelSettings>();
             settings.name = "ThatchwickPanel";
-            settings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
-            settings.referenceResolution = new Vector2Int(960, ReferenceHeight);
-            settings.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
-            settings.match = 1f;          // yüksekliğe göre ölçekle (IMGUI HudScale ile aynı)
+            settings.scaleMode = PanelScaleMode.ConstantPixelSize;
+            settings.scale = IntegerScale(Screen.height);
             settings.sortingOrder = 100;
+            _settings = settings;
 
             _document = _go.AddComponent<UIDocument>();
             _document.panelSettings = settings;
@@ -50,6 +52,20 @@ namespace Thatchwick.Game.Ui
         }
 
         public bool Ready => Root != null;
+
+        /// <summary>Arayüz biriminin ekran pikseli karşılığı (tam sayı).</summary>
+        public float Scale => _settings != null ? _settings.scale : 1f;
+
+        /// <summary>Ekran yüksekliğine göre tam sayı ölçek: 540'ın katları (1080 → 2, 1170 → 2, 1620 → 3).</summary>
+        public static float IntegerScale(int screenHeight) => Mathf.Max(1f, Mathf.Floor(screenHeight / (float)ReferenceHeight));
+
+        /// <summary>Çözünürlük değiştiyse ölçeği yeniler (her karede çağrılabilir; yalnızca değişince yazar).</summary>
+        public void UpdateScale()
+        {
+            if (_settings == null || Screen.height == _lastHeight) return;
+            _lastHeight = Screen.height;
+            _settings.scale = IntegerScale(Screen.height);
+        }
 
         public bool Visible
         {

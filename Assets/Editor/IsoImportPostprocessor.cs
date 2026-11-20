@@ -22,6 +22,8 @@ namespace Thatchwick.EditorTools
         public override uint GetVersion() { return 2; }
 
         const string MapsRoot = "Assets/Resources/Content/maps/";
+        // HUD v2 parçaları (belge 66): UI Toolkit arka planı; piksel sanatı tam sayı ölçekte keskin kalsın.
+        const string HudRoot = "Assets/Resources/UI/Hud/";
 
         void OnPreprocessTexture()
         {
@@ -38,6 +40,18 @@ namespace Thatchwick.EditorTools
                 mi.alphaSource = TextureImporterAlphaSource.None;
                 mi.textureCompression = TextureImporterCompression.Uncompressed;
                 mi.maxTextureSize = 2048;
+                return;
+            }
+            if (assetPath.StartsWith(HudRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                var hi = (TextureImporter)assetImporter;
+                hi.textureType = TextureImporterType.Default;
+                hi.npotScale = TextureImporterNPOTScale.None;
+                hi.filterMode = FilterMode.Point;
+                hi.mipmapEnabled = false;
+                hi.alphaIsTransparency = true;
+                hi.wrapMode = TextureWrapMode.Clamp;
+                hi.textureCompression = TextureImporterCompression.Uncompressed;
                 return;
             }
             if (!assetPath.StartsWith(Root, StringComparison.OrdinalIgnoreCase)) return;

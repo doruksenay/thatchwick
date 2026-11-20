@@ -562,11 +562,11 @@ namespace Thatchwick.Game
         {
             get
             {
-                if (_toolkitHud && _hudBar != null)
+                if (_hud != null)
                 {
-                    // Küçük HUD UI Toolkit'te; IMGUI yalnızca "Ayrıntı" alanını onun altına çizer.
+                    // Küçük HUD UI Toolkit'te; IMGUI yalnızca "Ayrıntı" alanını sol üst köşenin altına çizer.
                     if (!_hudExpanded) return new Rect(8f, 8f, HudWidth, 0f);
-                    float top = _hudBar.Bottom + 4f;
+                    float top = _hud.LeftBottom * (_ui != null ? _ui.Scale : 1f) / HudScale + 4f;
                     return new Rect(8f, top, HudWidth, Mathf.Max(60f, Mathf.Min(560f, Screen.height / HudScale - 8f - top)));
                 }
                 return new Rect(8f, 8f, HudWidth, _hudExpanded
@@ -586,27 +586,39 @@ namespace Thatchwick.Game
             PlayerPrefs.Save();
         }
 
-        // ---------------- UI Toolkit HUD (IMGUI'den geçiş; F4 ile açılır, tercih saklanır) ----------------
-        private const string ToolkitHudPref = "ui.toolkit_hud";
+        // ---------------- HUD v2 (UI Toolkit, Project belgesi 66): dört köşe, karakter kartı, Defter ----------------
         private Ui.UiHost _ui;
-        private Ui.HudBar _hudBar;
-        /// <summary>Alttaki karakter kartı (Project belgesi 68): F4'ten bağımsız, UI Toolkit kurulabildiyse hep o çizer.</summary>
+        private Ui.HudV2 _hud;
+        private Ui.LedgerWindow _ledger;
+        /// <summary>Alttaki karakter kartı (Project belgesi 68): UI Toolkit kurulabildiyse o çizer; HUD v2'de yalnızca
+        /// karaktere dokununca açılır (belge 66 karar S1).</summary>
         private Ui.CharacterCard _characterCard;
-        private bool _toolkitHud;
-        private bool _toolkitHudRestored;
+        private readonly CardToggle _cardToggle = new CardToggle();
+        private bool _hudSubscribed;
         private const float HudWidth = 340f;
         private GUIStyle _hudNoWrap;
 
-        private void SetToolkitHud(bool on)
+        private bool LedgerVisible => _ledger != null && _ledger.Visible;
+
+        /// <summary>HUD v2'yi kurar (yaratma ekranı bittikten sonra). UI Toolkit yoksa IMGUI küçük HUD'u kalır.</summary>
+        private void EnsureHud()
         {
-            if (on && _hudBar == null)
-            {
-                if (EnsureUi() == null) on = false;
-                else _hudBar = BuildHudBar(_ui);
-            }
-            _toolkitHud = on && _hudBar != null;
-            if (_hudBar != null) _hudBar.Visible = _toolkitHud;
-            PlayerPrefs.SetInt(ToolkitHudPref, _toolkitHud ? 1 : 0);
+            if (_hud != null || _life == null || _statusHud == null) return;
+            var host = EnsureUi();
+            if (host == null) return;
+            _hud = new Ui.HudV2(host, BuildHudHooks());
+            _ledger = BuildLedger(host);
+            _statusHud.TopInToolkit = true;
+            if (!_hudSubscribed) { _hudSubscribed = true; _life.Log.Added += e => _hud?.Notify(e); }
+        }
+
+        private void UpdateHud()
+        {
+            if (_hud == null) return;
+            // Yapı modunda ve sağdaki panellerde yalnızca Yapı düğmesi kalır (o panellerin üstünü örtmesin, belge 65 A4).
+            _hud.SetCompact(SidePanelOpen || _dynastyEnded || AchievementsVisible || UiWindowOpen || _mirror != null);
+            _hud.Refresh();
+            _ledger?.Refresh();
         }
 
         private void UpdateCharacterCard()
@@ -622,7 +634,46 @@ namespace Thatchwick.Game
             }
             // Yapı modunda ve sağ panellerde IMGUI alt çubuğu da çizilmiyordu (belge 65 A4, 66 §1.6); tam ekran pencerede de gizli.
             bool show = !SidePanelOpen && !_dynastyEnded && !AchievementsVisible && !UiWindowOpen;
+            // HUD v2: kart yalnızca dokununca açıktır ve açık kartın sahibi komut alan kişidir.
+            if (_hud != null)
+            {
+                if (_cardToggle.Open && (Commander == null || Commander.Character.Id != _cardToggle.CharacterId)) _cardToggle.Close();
+                show &= _cardToggle.Open;
+            }
             _characterCard.Refresh(show);
+        }
+
+        /// <summary>Portreye ya da haritada hane üyesine dokunuldu: komut alan kişi olur, kart açılır ya da kapanır.</summary>
+        private void TapHouseholdMember(Character c)
+        {
+            var actor = _actors.Find(a => a.Character == c);
+            if (actor == null) return;
+            _selected = actor;
+            if (!FamilyPanel.CanTakeCommands(c)) { _cardToggle.Close(); return; }
+            _cardToggle.Tap(c.Id);
+        }
+
+        /// <summary>Haritadaki dokunuş bir hane üyesinin üstüne mi düştü (ayak noktası ile baş arası).</summary>
+        private Actor HouseholdActorAt(Vector3 world)
+        {
+            Actor best = null;
+            float bestDx = float.MaxValue;
+            foreach (var a in _actors)
+            {
+                if (a.View == null || !a.View.gameObject.activeSelf || a.Character.IsDead || a.Character.IsVillager) continue;
+                var p = a.View.position;
+                float dx = Mathf.Abs(world.x - p.x), dy = world.y - p.y;
+                if (dx < 0.45f && dy > -0.2f && dy < 2.3f && dx < bestDx) { best = a; bestDx = dx; }
+            }
+            return best;
+        }
+
+        private List<Character> HudHousehold()
+        {
+            var list = new List<Character>();
+            foreach (var a in _actors)
+                if (!a.Character.IsDead && !a.Character.IsVillager && !a.Character.Away) list.Add(a.Character);
+            return list;
         }
 
         private string HudDateText() => T("ui.hud.date", ("year", _clock.YearIndex + 1), ("season", SeasonName(_clock.Season)),
@@ -636,44 +687,106 @@ namespace Thatchwick.Game
         private string HudReputationTip() =>
             $"{_life.Upbringing.Reputation.Points} · {_life.Upbringing.Reputation.SellBonus() * 100:+0.#;-0.#;0}%";
 
-        private Ui.HudBar BuildHudBar(Ui.UiHost host)
+        /// <summary>Görev izleyicinin tek satırı: ilk gün rehberinin sıradaki adımı. Rehber bittiyse boş.</summary>
+        private string HudQuestText()
         {
-            var panels = new List<Ui.HudBar.Item>
+            if (_account == null || !FirstDayGuide.IsActive(_account)) return null;
+            foreach (var step in FirstDayGuide.Steps)
+                if (!FirstDayGuide.IsDone(step, _account))
+                    return T("ui.hud2.quest", ("step", T("ui.guide." + step.Id)), ("done", FirstDayGuide.DoneCount(_account)), ("total", FirstDayGuide.Steps.Count));
+            return null;
+        }
+
+        private Ui.HudV2.Hooks BuildHudHooks() => new Ui.HudV2.Hooks
+        {
+            Date = HudDateText,
+            Status = HudStatusText,
+            Weather = () => _statusHud.WeatherLine(out _),
+            WeatherDanger = () => { _statusHud.WeatherLine(out bool d); return d; },
+            SeasonKey = () => _clock.Season.ToString().ToLowerInvariant(),
+            Quest = HudQuestText,
+            QuestClick = () => { if (_account != null) ShowMessage(T("ui.guide." + NextGuideStepId() + ".how"), 5f); },
+            Message = () => Time.unscaledTime < _messageUntil ? _message : null,
+            Speeds = GameClock.AllowedSpeeds,
+            Speed = () => _clock.RequestedSpeed,
+            SetSpeed = speed => _clock.SetSpeed(speed),
+            Akce = () => HudAkce,
+            AkceTint = () => Time.unscaledTime < _akceFlashUntil ? (_akceFlashUp ? new Color(0.6f, 1f, 0.55f) : new Color(1f, 0.55f, 0.5f)) : (Color?)null,
+            AkceTip = () => T("ui.hud2.akce_tip") + " · " + T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)) + " · " + HudReputationTip(),
+            Diamonds = () => _account != null ? _account.Diamonds : 0,
+            DiamondTip = () => T("ui.diamonds.tip"),
+            Household = HudHousehold,
+            Portrait = c => { var pa = _actors.Find(x => x.Character == c); return Portraits.SpriteFor(c, pa != null ? LookFor(pa) : null); },
+            Selected = () => Commander?.Character,
+            CardOpen = () => _cardToggle.Open,
+            PortraitTap = TapHouseholdMember,
+            Build = ToggleBuild,
+            BuildOn = () => _buildMode.Active,
+            BuildTip = () => T("ui.hud2.build_tip"),
+            Book = () => { CloseSidePanels(); _ledger?.Toggle(); },
+            BookOn = () => LedgerVisible,
+            BookTip = () => T("ui.hud2.ledger_tip"),
+            Badge = () => LedgerSections.Badge(_life.Log.UnreadCount, _life.Requests.UnreadCount),
+        };
+
+        private string NextGuideStepId()
+        {
+            foreach (var step in FirstDayGuide.Steps) if (!FirstDayGuide.IsDone(step, _account)) return step.Id;
+            return FirstDayGuide.Steps[0].Id;
+        }
+
+        /// <summary>Defter açılırken sağdaki paneller kapanır (bir anda tek pencere).</summary>
+        private void CloseSidePanels()
+        {
+            if (_buildMode.Active) ToggleBuild();
+            if (_marketPanel.Active) ToggleMarket();
+            if (_storagePanel.Active) _storagePanel.Toggle();
+            if (_minePanel.Active) _minePanel.Toggle();
+            if (_familyPanel.Active) ToggleFamily();
+            if (_villagePanel.Active) ToggleVillage();
+            if (_requestPanel.Active) ToggleRequests();
+            if (_keepsakePanel != null && _keepsakePanel.Active) _keepsakePanel.Toggle();
+            if (_kitchenPanel != null && _kitchenPanel.Active) _kitchenPanel.Toggle();
+            if (_homePanel != null && _homePanel.Active) _homePanel.Toggle();
+        }
+
+        private Ui.LedgerWindow BuildLedger(Ui.UiHost host)
+        {
+            Ui.LedgerWindow.Section S(string id, System.Action open, System.Func<bool> available = null, System.Func<int> count = null) =>
+                new Ui.LedgerWindow.Section { Id = id, Title = () => T("ui.hud2.sec." + id), Open = open, Available = available, Count = count };
+            var sections = new List<Ui.LedgerWindow.Section>();
+            foreach (var id in LedgerSections.Order)
             {
-                new Ui.HudBar.Item { Text = () => T("ui.menu.settings"), On = () => _settingsOpen, Click = () => _settingsOpen = !_settingsOpen },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.build"), On = () => _buildMode.Active, Click = ToggleBuild },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.market"), On = () => _marketPanel.Active, Click = ToggleMarket },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.storage"), On = () => _storagePanel.Active, Click = () => _storagePanel.Toggle() },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.mine"), On = () => _minePanel.Active, Click = () => _minePanel.Toggle() },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.carts"), On = () => _cartPanel != null && _cartPanel.Active, Click = () => _cartPanel?.Toggle() },
-                new Ui.HudBar.Item { Text = () => T("ui.rel.hud"), On = () => _relationsPanel != null && _relationsPanel.Active, Click = ToggleRelations },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.family"), On = () => _familyPanel.Active, Click = ToggleFamily },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.village"), On = () => _villagePanel.Active, Click = ToggleVillage },
-                new Ui.HudBar.Item
+                switch (id)
                 {
-                    Text = () => { int unread = _life.Requests.UnreadCount; return unread > 0 ? T("ui.hud.requests_unread", ("count", unread)) : T("ui.hud.requests"); },
-                    On = () => _requestPanel.Active, Click = ToggleRequests
-                },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.keepsakes"), On = () => _keepsakePanel != null && _keepsakePanel.Active, Click = () => _keepsakePanel?.Toggle(), Visible = () => _keepsakePanel != null },
-                new Ui.HudBar.Item { Text = () => T("cook.ui.hud"), On = () => _kitchenPanel != null && _kitchenPanel.Active, Click = () => _kitchenPanel?.Toggle(), Visible = () => _kitchenPanel != null },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.home"), On = () => _homePanel != null && _homePanel.Active, Click = () => _homePanel?.Toggle(), Visible = () => _homePanel != null },
-            };
-            var info = new List<Ui.HudBar.Item>
+                    case LedgerSections.Family: sections.Add(S(id, ToggleFamily)); break;
+                    case LedgerSections.Storage: sections.Add(S(id, () => _storagePanel.Toggle())); break;
+                    case LedgerSections.Market: sections.Add(S(id, ToggleMarket)); break;
+                    case LedgerSections.Requests: sections.Add(S(id, ToggleRequests, null, () => _life.Requests.UnreadCount)); break;
+                    case LedgerSections.Village: sections.Add(S(id, ToggleVillage)); break;
+                    case LedgerSections.Relations: sections.Add(S(id, ToggleRelations)); break;
+                    case LedgerSections.Mine: sections.Add(S(id, () => _minePanel.Toggle())); break;
+                    case LedgerSections.Kitchen: sections.Add(S(id, () => _kitchenPanel?.Toggle(), () => _kitchenPanel != null)); break;
+                    case LedgerSections.Home: sections.Add(S(id, () => _homePanel?.Toggle(), () => _homePanel != null)); break;
+                    case LedgerSections.Carts: sections.Add(S(id, () => _cartPanel?.Toggle(), () => _cartPanel != null)); break;
+                    case LedgerSections.Keepsakes: sections.Add(S(id, () => _keepsakePanel?.Toggle(), () => _keepsakePanel != null)); break;
+                    case LedgerSections.Notices: sections.Add(S(id, null, null, () => _life.Log.UnreadCount)); break;
+                    case LedgerSections.Achievements: sections.Add(S(id, ToggleAchievements)); break;
+                    case LedgerSections.Settings: sections.Add(S(id, null)); break;
+                }
+            }
+            var options = new List<Ui.LedgerWindow.Option>
             {
-                new Ui.HudBar.Item
-                {
-                    Text = () => T("ui.hud.akce", ("amount", HudAkce)), Width = 80f,
-                    Tint = () => Time.unscaledTime < _akceFlashUntil ? (_akceFlashUp ? new Color(0.25f, 0.5f, 0.2f) : new Color(0.7f, 0.2f, 0.15f)) : (Color?)null
-                },
-                new Ui.HudBar.Item { Text = () => T("ui.diamonds.balance", ("count", _account != null ? _account.Diamonds : 0)), Tooltip = () => T("ui.diamonds.tip") },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.reputation", ("tier", _life.Upbringing.Reputation.TierName)), Tooltip = HudReputationTip, Width = 110f },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.labels"), On = () => _labelsAll, Click = () => _labelsAll = !_labelsAll },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.save"), Click = () => SaveNow(quiet: false) },
-                new Ui.HudBar.Item { Text = () => T("ui.hud.adult_pack"), On = () => Thatchwick.Core.Content.ContentPacks.Adult, Click = ToggleAdultPack, Visible = () => AdultPackAvailable },
-                new Ui.HudBar.Item { Text = () => T(_hudExpanded ? "ui.hud.detail_open" : "ui.hud.detail_closed"), On = () => _hudExpanded, Click = () => _hudExpanded = !_hudExpanded },
+                new Ui.LedgerWindow.Option { Text = () => T("ui.hud2.settings_window"), Click = () => { _ledger.Visible = false; _settingsOpen = true; } },
+                new Ui.LedgerWindow.Option { Text = () => T("ui.hud.save"), Click = () => SaveNow(quiet: false) },
+                new Ui.LedgerWindow.Option { Text = () => T("ui.hud.labels"), On = () => _labelsAll, Click = () => _labelsAll = !_labelsAll },
+                new Ui.LedgerWindow.Option { Text = () => T("ui.hud.fx." + _fxLevel), Click = CycleFx },
+                new Ui.LedgerWindow.Option { Text = () => T(_hudExpanded ? "ui.hud.detail_open" : "ui.hud.detail_closed"), On = () => _hudExpanded, Click = () => _hudExpanded = !_hudExpanded },
+                new Ui.LedgerWindow.Option { Text = () => T("ui.hud.adult_pack"), On = () => Thatchwick.Core.Content.ContentPacks.Adult, Click = ToggleAdultPack, Visible = () => AdultPackAvailable },
             };
-            return new Ui.HudBar(host, HudDateText, HudStatusText, () => Time.unscaledTime < _messageUntil ? _message : null,
-                GameClock.AllowedSpeeds, () => _clock.RequestedSpeed, speed => _clock.SetSpeed(speed), panels, info);
+            return new Ui.LedgerWindow(host, sections, options, () => _life.Log.Recent(40), day => _life.Festivals.DateText((long)day),
+                () => _life.Log.MarkAllRead(), () => T("ui.hud2.ledger"), () => T("ui.hud2.notices_title"), () => T("ui.hud2.options_title"),
+                () => T("ui.hud2.back"), () => T("ui.hud2.empty"));
         }
 
         /// <summary>
@@ -1796,7 +1909,8 @@ namespace Thatchwick.Game
             if (_dynastyEnded) return true;
             if (_menuOpen && _menuRect.Contains(guiPos)) return true;
             if (AchievementsVisible || UiWindowOpen) return true;   // tam ekran pencere: dünyaya dokunma geçmez
-            if ((_toolkitHud || (_characterCard != null && _characterCard.Visible)) && _ui != null && _ui.IsPointerOver(screenPos)) return true;
+            if (LedgerVisible) return true;   // Defter açık: dünyaya dokunma geçmez (dışına dokunmak Defter'i kapatır)
+            if ((_hud != null || (_characterCard != null && _characterCard.Visible)) && _ui != null && _ui.IsPointerOver(screenPos)) return true;
             return HudRect.Contains(guiPos);
         }
 
@@ -2140,6 +2254,12 @@ namespace Thatchwick.Game
             if (_buildMode.Active) { _menuOpen = false; _buildMode.OnTap(world); return; }
             if (_menuOpen) { _menuOpen = false; return; }   // menü dışına dokunmak menüyü kapatır
             if (_vivView != null && _vivView.Active) { _vivView.Close(); return; }   // cam bahçe görünümü dışına dokunmak kapatır
+            // HUD v2 (belge 66 S1): hane üyesine dokunmak onu seçer ve kartını açar; aynı kişiye yeniden dokunmak kapatır.
+            if (_hud != null && !forceMenu)
+            {
+                var member = HouseholdActorAt(world);
+                if (member != null) { TapHouseholdMember(member.Character); return; }
+            }
             // Küçükler tüm köyü kendi başına gezemez (belge 47 §7.2): izin yoksa karakter itiraz eder.
             { string roamWhy = RoamBlocker(Commander?.Character, tile); if (roamWhy != null) { ShowMessage($"{Commander.Character.Name}: \"{roamWhy}\" (Aile → İzin iste)"); return; } }
 
@@ -2956,12 +3076,7 @@ namespace Thatchwick.Game
                 return; // yaratma ekranı açıkken oyun saati ilerlemez
             }
 
-            if (!_toolkitHudRestored)
-            {
-                // Tercih: yeni HUD en son açık bırakıldıysa (F4) yine açılır. Yaratma ekranı bittikten sonra kurulur.
-                _toolkitHudRestored = true;
-                if (PlayerPrefs.GetInt(ToolkitHudPref, 0) == 1) SetToolkitHud(true);
-            }
+            EnsureHud();   // HUD v2: yaratma ekranı bittikten sonra kurulur (belge 66)
             var kb = UnityEngine.InputSystem.Keyboard.current;
             if (kb != null && kb.bKey.wasPressedThisFrame) ToggleBuild();
             if (kb != null && kb.f3Key.wasPressedThisFrame && PlacementDebugOverlay.Allowed)
@@ -2969,12 +3084,9 @@ namespace Thatchwick.Game
                 if (_placementDebug == null) _placementDebug = new PlacementDebugOverlay(transform);
                 _placementDebug.Toggle();
             }
-            if (kb != null && kb.f4Key.wasPressedThisFrame)
-            {
-                SetToolkitHud(!_toolkitHud);
-                ShowMessage(T(_toolkitHud ? "ui.hud.toolkit_on" : "ui.hud.toolkit_off"));
-            }
-            if (_toolkitHud) _hudBar.Refresh();
+            if (kb != null && kb.dKey.wasPressedThisFrame && _ledger != null) { if (!_ledger.Visible) CloseSidePanels(); _ledger.Toggle(); }
+            _ui?.UpdateScale();
+            UpdateHud();
             UpdateCharacterCard();
             if (kb != null && kb.pKey.wasPressedThisFrame) ToggleMarket();
             if (kb != null && kb.fKey.wasPressedThisFrame) ToggleFamily();
@@ -2994,7 +3106,7 @@ namespace Thatchwick.Game
             if (kb != null && kb.hKey.wasPressedThisFrame) { _hoeMode = !_hoeMode; ShowMessage(_hoeMode ? "Çapa kipi: boş çime dokun, çapalasın" : "Çapa kipi kapalı"); }
             if (kb != null && kb.vKey.wasPressedThisFrame) ToggleVillage();
             if (kb != null && kb.iKey.wasPressedThisFrame) ToggleRequests();
-            if (kb != null && kb.nKey.wasPressedThisFrame) _statusHud.ToggleLog();
+            if (kb != null && kb.nKey.wasPressedThisFrame) { if (_ledger != null) { if (_ledger.Visible) _ledger.Visible = false; else { CloseSidePanels(); _ledger.OpenNotices(); } } else _statusHud.ToggleLog(); }
             if (kb != null && kb.lKey.wasPressedThisFrame) _labelsAll = !_labelsAll;
             if (kb != null && kb.tabKey.wasPressedThisFrame) _hudExpanded = !_hudExpanded;
 
@@ -3032,7 +3144,7 @@ namespace Thatchwick.Game
 
         /// <summary>Zamanı durduran bir menü açık mı (yapı modu, katalog, paneller; belge 47 karar 4).</summary>
         private bool MenuOpen() =>
-            _mirror != null || _settingsOpen || UiWindowOpen || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
+            _mirror != null || _settingsOpen || UiWindowOpen || LedgerVisible || (_buildMode != null && _buildMode.Active) || (_marketPanel != null && _marketPanel.Active) || (_shopPanel != null && _shopPanel.Active)
             || (_storagePanel != null && _storagePanel.Active) || (_minePanel != null && _minePanel.Active) || (_keepsakePanel != null && _keepsakePanel.Active)
             || (_homePanel != null && _homePanel.Active) || (_vivView != null && _vivView.Active) || (_familyPanel != null && _familyPanel.Active)
             || (_villagePanel != null && _villagePanel.Active) || (_requestPanel != null && _requestPanel.Active);
@@ -3784,11 +3896,11 @@ namespace Thatchwick.Game
             if (!buildOpen) { var prevHudSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { _statusHud.OnGUI(s); } finally { GUI.skin = prevHudSkin; } }   // 391 tema (belge 33)
             DrawInteractionMenu();
             if (_dynastyEnded) DrawDynastyEnded(s);
-            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (!buildOpen) DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
+            { var prevMenuSkin = GUI.skin; GUI.skin = UiSkin.Skin; try { if (!buildOpen && _hud == null) DrawGuide(s); if (_settingsOpen) DrawSettingsWindow(s); } finally { GUI.skin = prevMenuSkin; } }
 
             // Sol panel (görsel analiz, 18.11.2026): varsayılan küçük; ihtiyaç listesi, beceriler ve ayarlar "Ayrıntı" (Tab) altında.
             // UI Toolkit HUD açıkken (F4) küçük bölüm orada çizilir; IMGUI yalnızca açılmış "Ayrıntı" alanını çizer.
-            bool toolkitHud = _toolkitHud && _hudBar != null;
+            bool toolkitHud = _hud != null;
             if (toolkitHud && !_hudExpanded) { DrawAnimalNaming(); return; }
             GUILayout.BeginArea(HudRect, GUI.skin.box);
             if (!toolkitHud) DrawCompactHud();

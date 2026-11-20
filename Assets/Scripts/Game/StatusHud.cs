@@ -49,6 +49,28 @@ namespace Thatchwick.Game
         /// <summary>Alttaki karakter kartı UI Toolkit'te çiziliyor (Ui.CharacterCard, Project belgesi 68): IMGUI alt çubuğu çizilmez.</summary>
         public bool BottomInToolkit { get; set; }
 
+        /// <summary>HUD v2 (belge 66) açık: üst bilgi şeridi ve bildirim düğmesi/listesi çizilmez; tarih, hava ve kış
+        /// satırı sol üst köşede (<see cref="WeatherLine"/>), bildirimler kayan kartlarda ve Defter'de.</summary>
+        public bool TopInToolkit { get; set; }
+
+        /// <summary>HUD v2'nin sol üstteki tek satırı: bugünkü hava ve kış tahmini. Tehlike varsa <paramref name="danger"/>.</summary>
+        public string WeatherLine(out bool danger)
+        {
+            var clock = _life.Clock;
+            var today = _life.Weather.Today(clock.TotalDays);
+            if (_forecast == null || Time.unscaledTime >= _forecastUntil)
+            {
+                _forecast = _life.Forecast.Report(clock.TotalDays);
+                _forecastUntil = Time.unscaledTime + 0.5f;
+            }
+            var rep = _forecast;
+            danger = rep.HasDanger;
+            string D(double d) => double.IsInfinity(d) || double.IsNaN(d) ? "?" : Math.Max(0, d).ToString("0");
+            return rep.InWinter
+                ? GameLocalization.T("ui.hud2.winter_now", ("weather", WeatherSystem.Name(today)), ("days", D(rep.WinterDaysLeft)), ("food", D(rep.FoodDays)))
+                : GameLocalization.T("ui.hud2.winter_ahead", ("weather", WeatherSystem.Name(today)), ("days", D(rep.DaysToWinter)), ("food", D(rep.FoodDays)));
+        }
+
         public bool LogOpen => _logOpen;
         public void ToggleLog() { _logOpen = !_logOpen; if (_logOpen) _life.Log.MarkAllRead(); }
 
@@ -95,10 +117,13 @@ namespace Thatchwick.Game
             _rects.Clear();
             float w = Screen.width / s;
             float h = Screen.height / s;
-            DrawTopBar(w);
+            if (!TopInToolkit) DrawTopBar(w);
             if (!BottomInToolkit) DrawBottom(w, h);
-            DrawLogButton(w, h);
-            if (_logOpen) DrawLog(w, h);
+            if (!TopInToolkit)
+            {
+                DrawLogButton(w, h);
+                if (_logOpen) DrawLog(w, h);
+            }
             if (_card != null) DrawCard(w, h);
             DrawLevelCards(w);
         }

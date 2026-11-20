@@ -82,6 +82,13 @@ namespace Thatchwick.Game.Ui
 
             _card = UiHost.Panel();
             _card.style.width = Width;
+            // HUD v2 (belge 66 §5 S6): sarmaşıklı meşe çerçeve (774 hud_window, dokuz dilim). Doku yoksa kit paneli kalır.
+            if (HudArt.Tex(HudArt.Window) != null)
+            {
+                HudArt.Apply(_card, HudArt.Window, HudArt.WindowSlice, Color.clear);
+                HudArt.Pad(_card, 28, 28, 24, 26);
+                _card.style.width = Width + 44f;
+            }
 
             // 1. satır: ruh hali levhası, ad, özellikler.
             var top = UiHost.Row();
