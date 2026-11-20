@@ -1,7 +1,7 @@
 ---
 id: "474a"
 title: "Cam bahçe bitkileri: yeniden deneme ve tatlı su bitkileri (10)"
-status: running
+status: review
 claimed_at: 2026-11-20T07:39Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (cam bahçe: balık, taş, yosun, kabuk), Project belgesi 47
 priority: 20
