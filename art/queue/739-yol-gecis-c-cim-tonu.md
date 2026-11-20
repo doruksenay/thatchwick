@@ -1,7 +1,7 @@
 ---
 id: "739"
 title: "Yol geçiş seti c çeşidi: çim tonunu ana çime eşitle (renk düzeltme, yeniden çizim yok)"
-status: running
+status: review
 claimed_at: 2026-11-20T20:30Z
 approved_by: user        # kullanıcı onayı 2026-11-20 (sohbet: "kıyı karosu ve çim tonu için PixelLab işi hazırla"; belge 65b)
 priority: 10
