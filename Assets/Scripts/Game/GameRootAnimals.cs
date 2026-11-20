@@ -194,11 +194,13 @@ namespace Thatchwick.Game
             GUI.matrix = Matrix4x4.identity;
         }
 
-        // ---- at yarışı bahsi (+18 paketi; karar 20.11.2026): yalnızca metin, at seçilir ----
+        // ---- at yarışı bahsi (+18 paketi; karar 20.11.2026): yalnızca metin, at seçilir. UI Toolkit penceresi. ----
 
-        private bool _betOpen;
+        private Ui.ListWindow _betWindow;
         private int _betPick = -1, _betStake = 10;
         private string _betStatus = "";
+
+        private bool BetVisible => _betWindow != null && _betWindow.Visible;
 
         /// <summary>Ayrıntı panelindeki giriş: bahse açık yarış varsa düğme, bahis yatırıldıysa durumu.</summary>
         private void DrawBetEntry()
@@ -211,57 +213,63 @@ namespace Thatchwick.Game
                 return;
             }
             if (_life.OpenRaceCard() == null) return;
-            if (GUILayout.Button("   " + T("ui.bet.open"))) { _betOpen = true; _betPick = -1; _betStatus = ""; }
+            if (GUILayout.Button("   " + T("ui.bet.open"))) OpenBet();
         }
 
-        private void DrawBetWindow(float s)
+        private void OpenBet()
+        {
+            var host = EnsureUi();
+            if (host == null) { ShowMessage(T("ui.ach.unavailable")); return; }
+            if (_betWindow == null)
+            {
+                _betWindow = new Ui.ListWindow(host, BetModel, () => T("ui.bet.close"), 520f, 8);
+                _life.Bets.Settled += _ => _betWindow.Refresh();   // yarış koştu: pencere açıksa güncellenir ya da kapanır
+            }
+            _betPick = -1; _betStatus = "";
+            _betWindow.Visible = true;
+        }
+
+        /// <summary>Bahis penceresinin içeriği; bahse açık yarış da bekleyen bahis de yoksa null (pencere kapanır).</summary>
+        private Ui.ListWindow.Model BetModel()
         {
             var card = _life.OpenRaceCard();
             var bet = _life.Bets.Current;
-            if (card == null && bet == null) { _betOpen = false; return; }
-            float sw = Screen.width / s, sh = Screen.height / s;
-            const float w = 460f, h = 380f;
-            GUILayout.BeginArea(new Rect((sw - w) / 2f, (sh - h) / 2f, w, h), GUI.skin.box);
-            var wrap = new GUIStyle(GUI.skin.label) { wordWrap = true };
-            GUILayout.BeginHorizontal();
+            if (card == null && bet == null) return null;
+
+            var model = new Ui.ListWindow.Model { Status = _betStatus };
             string festival = card != null ? _life.Festivals.FestivalOn(card.Day)?.DisplayName ?? "" : "";
-            GUILayout.Label(card == null ? T("ui.bet.title")
-                : GameLocalization.T(card.Day == _clock.DayIndex ? "ui.bet.title_today" : "ui.bet.title_tomorrow", ("festival", festival)));
-            if (GUILayout.Button(T("ui.bet.close"), GUILayout.Width(64f))) _betOpen = false;
-            GUILayout.EndHorizontal();
-            GUILayout.Label(T("ui.bet.rules"), wrap);
+            model.Title = card == null ? T("ui.bet.title")
+                : T(card.Day == _clock.DayIndex ? "ui.bet.title_today" : "ui.bet.title_tomorrow", ("festival", festival));
+            model.Info = T("ui.bet.rules");
             if (bet != null)
-                GUILayout.Label(GameLocalization.T("ui.bet.current", ("horse", bet.RunnerName), ("stake", bet.Stake),
-                    ("payout", AnimalContests.BetPayout(bet.Stake, bet.Chance))), wrap);
-            if (card != null)
+                model.Info += "\n" + T("ui.bet.current", ("horse", bet.RunnerName), ("stake", bet.Stake), ("payout", AnimalContests.BetPayout(bet.Stake, bet.Chance)));
+            if (card == null) return model;
+
+            for (int i = 0; i < card.Runners.Count; i++)
             {
-                for (int i = 0; i < card.Runners.Count; i++)
-                {
-                    var r = card.Runners[i];
-                    string line = GameLocalization.T(r.Mine ? "ui.bet.runner_mine" : string.IsNullOrEmpty(r.Owner) ? "ui.bet.runner_plain" : "ui.bet.runner",
-                        ("n", i + 1), ("horse", r.Name), ("owner", r.Owner), ("chance", Mathf.RoundToInt((float)(r.Chance * 100))),
-                        ("stake", _betStake), ("payout", RaceBets.PayoutFor(r, _betStake)));
-                    if (bet != null) GUILayout.Label(line, wrap);
-                    else if (GUILayout.Toggle(_betPick == i, line, GUI.skin.button) && _betPick != i) _betPick = i;
-                }
-                if (bet == null)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label(GameLocalization.T("ui.bet.stake", ("akce", _household.Akce)));
-                    foreach (int stake in RaceBets.Stakes)
-                        if (GUILayout.Toggle(_betStake == stake, stake.ToString(), GUI.skin.button, GUILayout.Width(44f)) && _betStake != stake) _betStake = stake;
-                    GUILayout.EndHorizontal();
-                    GUI.enabled = _betPick >= 0 && _betPick < card.Runners.Count;
-                    if (GUILayout.Button(T("ui.bet.place"), GUILayout.Height(28f)))
-                    {
-                        var err = _life.Bets.Place(card, _betPick, _betStake, _household);
-                        _betStatus = err.IsEmpty ? "" : GameLocalization.R(err);
-                    }
-                    GUI.enabled = true;
-                }
+                var r = card.Runners[i];
+                int index = i;
+                var row = new Ui.ListWindow.Row(T(r.Mine ? "ui.bet.runner_mine" : string.IsNullOrEmpty(r.Owner) ? "ui.bet.runner_plain" : "ui.bet.runner",
+                    ("n", i + 1), ("horse", r.Name), ("owner", r.Owner), ("chance", Mathf.RoundToInt((float)(r.Chance * 100))),
+                    ("stake", _betStake), ("payout", RaceBets.PayoutFor(r, _betStake))));
+                if (bet == null) { row.Marked = _betPick == i; row.Click = () => { _betPick = index; _betStatus = ""; }; }
+                model.Rows.Add(row);
             }
-            if (_betStatus.Length > 0) GUILayout.Label(_betStatus, wrap);
-            GUILayout.EndArea();
+            if (bet != null) return model;
+
+            model.FooterLabel = T("ui.bet.stake", ("akce", _household.Akce));
+            foreach (int stake in RaceBets.Stakes)
+            {
+                int amount = stake;
+                model.Footer.Add(new Ui.ListWindow.Act(stake.ToString(), () => _betStake = amount, on: _betStake == stake));
+            }
+            bool picked = _betPick >= 0 && _betPick < card.Runners.Count;
+            model.Footer.Add(new Ui.ListWindow.Act(T("ui.bet.place"), () =>
+            {
+                var err = _life.Bets.Place(card, _betPick, _betStake, _household);
+                _betStatus = err.IsEmpty ? "" : GameLocalization.R(err);
+            }, disabled: !picked));
+            return model;
         }
-}
+    }
 }

@@ -52,6 +52,8 @@ namespace Thatchwick.Game
         /// <summary>Çocuk annesinden kasabaya gitmek için izin ister; dönen metin cevaptır (oyun katmanı saati ve havayı verir).</summary>
         public Func<Character, string> AskRoam { get; set; }
 
+        /// <summary>Giyim penceresini açar (takımlar, sandık, takılar, terzi); null ise düğme görünmez.</summary>
+        public Action<Character> OpenWardrobe { get; set; }
         /// <summary>Ayna'yı açar (görünüş ve ad değiştirme); null ise düğme görünmez.</summary>
         public Action<Character> OpenMirror { get; set; }
         /// <summary>Portre karesi (geçici: dünya karakterinden baş kırpımı); null ise portre çizilmez.</summary>
@@ -111,7 +113,6 @@ namespace Thatchwick.Game
             _scroll = GUILayout.BeginScrollView(_scroll);
             UiSkin.Wrap("— Hane —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (!c.IsVillager) DrawRow(c, actor);
-            DrawJewelry(actor);
             DrawSkillBoard();
             DrawRecipes(actor);
             UiSkin.Wrap("— Köylüler (pazar çevresi) —", UiSkin.FamilyTextW);
@@ -135,6 +136,8 @@ namespace Thatchwick.Game
             if (OpenMirror != null && !c.IsVillager && !c.IsDead && c.Stage != AgeStage.Baby
                 && GUILayout.Button(GameLocalization.T(c.FreeMirrorAvailable ? "ui.mirror.open_free" : "ui.mirror.open"), GUILayout.Width(c.FreeMirrorAvailable ? 120f : 60f)))
                 OpenMirror(c);
+            if (OpenWardrobe != null && !c.IsVillager && !c.IsDead && GUILayout.Button(GameLocalization.T("ui.wardrobe.open"), GUILayout.Width(80f)))
+                OpenWardrobe(c);
             // Hanedan geçmişi: kişinin hayat notları ("Neşeli bir soydan geldi ama zor bir çocukluk geçirdi.").
             if (!c.IsVillager) foreach (var note in c.Chronicle) UiSkin.Wrap("    · " + GameLocalization.Saved(note), UiSkin.FamilyTextW);
 
@@ -410,74 +413,6 @@ namespace Thatchwick.Game
         }
 
         // Aile sırları: bilenler, öğret (seçili kişi bilir ve hedef hane üyesi bilmez), deftere yaz.
-        /// <summary>
-        /// Takılar (belge 48 §5.7): seçili kişinin taktıkları ve hanenin çekmecesindeki takılar. Gardırop ekranı
-        /// gelene kadar takıp çıkarma buradan yapılır; etkiler (pazarlık, gönül, kaza, keyif) satırda yazar.
-        /// </summary>
-        private void DrawJewelry(Character actor)
-        {
-            if (Life == null || Content?.Clothing == null || Content.Clothing.Count == 0) return;
-            var svc = Life.Clothing;
-            var drawer = new List<Thatchwick.Core.Clothing.ClothingInstance>(svc.UnwornJewelry());
-            var worn = actor != null && !actor.IsVillager
-                ? new List<Thatchwick.Core.Clothing.ClothingInstance>(svc.JewelryOwnedBy(actor))
-                : new List<Thatchwick.Core.Clothing.ClothingInstance>();
-            var stock = new List<KeyValuePair<string, int>>(Life.JewelryInInventory());
-            if (drawer.Count == 0 && worn.Count == 0 && stock.Count == 0) return;
-            UiSkin.Wrap(GameLocalization.T("ui.family.jewelry.title"), UiSkin.FamilyTextW);
-            if (actor != null && !actor.IsVillager)
-            {
-                UiSkin.Wrap(GameLocalization.T("ui.family.jewelry.effects", ("name", actor.Name),
-                    ("trade", Math.Round(svc.TradeBonus(actor) * 100)), ("court", Math.Round(svc.CourtBonus(actor) * 100)),
-                    ("luck", Math.Round((1.0 - svc.AccidentFactor(actor)) * 100)), ("joy", svc.JewelryJoy(actor))), UiSkin.FamilyTextW);
-                foreach (var it in worn)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(12f);
-                    GUILayout.Label(JewelryLabel(svc, it));
-                    if (GUILayout.Button(GameLocalization.T("ui.family.jewelry.take_off"), GUILayout.Width(64f))) svc.TakeOffJewelry(actor, it);
-                    GUILayout.EndHorizontal();
-                }
-            }
-            // Envanterdeki takı eşyaları (dükkândan, tüccardan alınan): buradan takılır.
-            foreach (var kv in stock)
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(12f);
-                GUILayout.Label(GameLocalization.T("ui.family.jewelry.in_stock", ("item", Name(kv.Key)), ("n", kv.Value)));
-                if (actor != null && !actor.IsVillager && GUILayout.Button(GameLocalization.T("ui.family.jewelry.wear"), GUILayout.Width(64f)))
-                    _status = JewelryError(Life.WearJewelryFromInventory(actor, kv.Key), actor);
-                GUILayout.EndHorizontal();
-            }
-            if (drawer.Count == 0) return;
-            UiSkin.Wrap(GameLocalization.T("ui.family.jewelry.drawer"), UiSkin.FamilyTextW);
-            foreach (var it in drawer)
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(12f);
-                GUILayout.Label(JewelryLabel(svc, it));
-                if (actor != null && !actor.IsVillager && GUILayout.Button(GameLocalization.T("ui.family.jewelry.wear"), GUILayout.Width(64f)))
-                    _status = JewelryError(svc.WearJewelry(actor, it), actor);
-                if (!it.Heirloom && GUILayout.Button(new GUIContent(GameLocalization.T("ui.family.jewelry.to_stock"), GameLocalization.T("ui.family.jewelry.to_stock_tip")), GUILayout.Width(96f)))
-                    Life.JewelryToInventory(it);
-                GUILayout.EndHorizontal();
-            }
-        }
-
-        private static string JewelryError(Thatchwick.Core.Clothing.EquipError err, Character actor) =>
-            err == Thatchwick.Core.Clothing.EquipError.None ? ""
-            : GameLocalization.T(err == Thatchwick.Core.Clothing.EquipError.Age ? "ui.family.jewelry.err_age"
-                : err == Thatchwick.Core.Clothing.EquipError.JewelryLimit ? "ui.family.jewelry.err_limit"
-                : "ui.family.jewelry.err_other", ("name", actor.Name));
-
-        private string JewelryLabel(Thatchwick.Core.Clothing.ClothingService svc, Thatchwick.Core.Clothing.ClothingInstance it)
-        {
-            var def = svc.JewelryOf(it);
-            string name = def != null ? Name(def.ItemId) : it.ModelId;
-            if (it.Heirloom && !string.IsNullOrEmpty(it.HeirloomNote)) return GameLocalization.T("ui.family.jewelry.heirloom", ("item", name), ("from", it.HeirloomNote));
-            return string.IsNullOrEmpty(it.MakerName) ? name : GameLocalization.T("ui.family.jewelry.made_by", ("item", name), ("maker", it.MakerName));
-        }
-
         private void DrawRecipes(Character actor)
         {
             var u = Upbringing;
