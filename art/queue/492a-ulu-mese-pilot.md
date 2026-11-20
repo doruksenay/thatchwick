@@ -1,8 +1,8 @@
 ---
 id: "492a"
 title: "Ulu meşe, dört mevsim (ulu ağaç stil pilotu)"
-status: pending
-claimed_at: 2026-11-20T10:46Z
+status: running
+claimed_at: 2026-11-20T18:24Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("kodlamasını tek pr'da hallet, gereken assetleri sıraya koy"), Project belgesi 52
 priority: 10
 family: bitki
