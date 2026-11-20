@@ -167,8 +167,9 @@ PIN = {"make_borek_leek", "make_kete_meat", "make_tart_apple", "make_simit", "ma
 TRAY = {"make_borek_leek", "make_kete_meat", "make_tart_apple", "bake",
         "cook_lamb_tandir", "cook_goose_roast", "cook_venison_roast", "cook_pigeon_stuffed", "cook_duck_plum", "cook_eel_pie",
         "cook_borek_cheese", "cook_cherry_tart"}
-# Kürekle sürülen ekmek ve çörekler (odunu ayrı malzeme yazmayan fırın tarifleri).
-PEEL = {"cook_chestnut_bread", "cook_saffron_bun", "cook_walnut_bun"}
+# Fırına kürekle sürülenler: odunu ayrı malzeme yazmayan fırın tarifleri (odun yazanlar küreği zaten ister).
+PEEL = {"cook_chestnut_bread", "cook_saffron_bun", "cook_walnut_bun", "cook_lamb_tandir", "cook_goose_roast", "cook_venison_roast",
+        "cook_pigeon_stuffed", "cook_duck_plum", "cook_eel_pie", "cook_borek_cheese", "cook_cherry_tart"}
 STRAIN = {"brew_coffee_cloth", "make_hosaf", "make_pekmez", "make_pekmez_grape",
           "cook_pear_hosaf", "pomegranate_sherbet", "verjuice", "cook_cokelek", "goat_cheese", "cheese_rennet"}
 # Bulaşık tek sistemde (63a §4): yemek geliştirmesinin leğen ve kovadaki basit "Bulaşık yıka" işi kalkar.

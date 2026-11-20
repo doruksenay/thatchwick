@@ -57110,6 +57110,7 @@
       "serve": "tray:stew",
       "cook": "bake",
       "needTools": [
+        "tool:peel",
         "vessel:bake"
       ]
     },
@@ -57199,6 +57200,7 @@
       "serve": "tray:fry",
       "cook": "bake",
       "needTools": [
+        "tool:peel",
         "vessel:bake"
       ]
     },
@@ -57260,6 +57262,7 @@
       "serve": "tray:fry",
       "cook": "bake",
       "needTools": [
+        "tool:peel",
         "vessel:bake"
       ]
     },
@@ -57292,6 +57295,7 @@
       "serve": "tray:fry",
       "cook": "bake",
       "needTools": [
+        "tool:peel",
         "vessel:bake"
       ]
     },
@@ -57377,6 +57381,7 @@
       "serve": "tray:fry",
       "cook": "bake",
       "needTools": [
+        "tool:peel",
         "vessel:bake"
       ]
     },
@@ -57622,6 +57627,7 @@
       "cook": "bake",
       "needTools": [
         "tool:pin",
+        "tool:peel",
         "vessel:bake"
       ]
     },
@@ -58215,6 +58221,7 @@
       "dish": "pastry",
       "cook": "bake",
       "needTools": [
+        "tool:peel",
         "vessel:bake"
       ]
     },
@@ -58410,6 +58417,7 @@
       "cook": "bake",
       "needTools": [
         "tool:pin",
+        "tool:peel",
         "vessel:bake"
       ]
     },
