@@ -274,7 +274,8 @@ NEED_FILL = ((60, "bar_fill_green"), (30, "bar_fill_amber"), (-1, "bar_fill_red"
 
 
 def _asset(name):
-    for d in (HUD_DIR, os.path.join("Assets", "Art", "Iso"), os.path.join("Assets", "Resources", "UI", "Icons")):
+    for d in (HUD_DIR, os.path.join("Assets", "Art", "Iso"), os.path.join("Assets", "Art", "Iso", "_aday", "anim"),
+              os.path.join("Assets", "Resources", "UI", "Icons")):
         p = os.path.join(ROOT, d, name + ".png")
         if os.path.exists(p):
             return p
@@ -320,6 +321,11 @@ def nine_slice(im, w, h, c):
 def _piece(base, yon, el, missing_pieces):
     # 'src': parçayı başka bir yönün çıktısından al (karma yön; ör. düğmeler ilmekten).
     name = f"ui_hud2_{el.get('src', yon)}_{el['piece']}"
+    # Düzeltme turları var olan PNG'nin üzerine yazmaz, _v2, _v3 ekler; en yeni sürüm kullanılır.
+    for v in range(9, 1, -1):
+        if _asset(f"{name}_v{v}"):
+            name = f"{name}_v{v}"
+            break
     path = _asset(name)
     x, y, w, h = el["box"]
     if path is None:
@@ -344,7 +350,10 @@ def _portrait(base, sprite, box):
         return
     im = Image.open(path).convert("RGBA")
     bb = im.getbbox() or (0, 0, im.width, im.height)
-    head = im.crop((bb[0], bb[1], bb[2], bb[1] + (bb[2] - bb[0])))
+    # Oyundaki Portraits.HeadCrop gibi: baş, dolu yüksekliğin yaklaşık %34'ü; kare, yatayda ortalı.
+    side0 = max(1, round((bb[3] - bb[1]) * 0.34))
+    cx = (bb[0] + bb[2]) // 2
+    head = im.crop((cx - side0 // 2, bb[1], cx - side0 // 2 + side0, bb[1] + side0))
     side = min(w, h) - 8
     k = max(1, head.width // side + (1 if head.width % side else 0))
     head = head.resize((max(1, head.width // k), max(1, head.height // k)), Image.NEAREST)
