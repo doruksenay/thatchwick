@@ -93,8 +93,12 @@ namespace Thatchwick.Core.World
         /// <summary>Otonominin verilen ihtiyaç için seçebileceği eşyalar (<see cref="Items"/> ile aynı sırada).</summary>
         public IReadOnlyList<ItemInstance> NeedItemsFor(Characters.NeedType need) => _needBuckets[(int)need];
 
+        /// <summary>Eşya her eklendiğinde ya da çıkarıldığında artar (eşya listesinden türetilen önbellekler için).</summary>
+        public int ItemsVersion { get; private set; }
+
         private void AddToIndex(ItemInstance item)
         {
+            ItemsVersion++;
             if (item.Def.RestoresAnyNeed)
             {
                 _needItems.Add(item);
@@ -111,6 +115,7 @@ namespace Thatchwick.Core.World
         private void RemoveFromIndex(ItemInstance item)
         {
             if (!_items.Remove(item)) return;
+            ItemsVersion++;
             if (item.Def.RestoresAnyNeed)
             {
                 _needItems.Remove(item);
