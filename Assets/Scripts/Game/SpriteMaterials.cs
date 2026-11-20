@@ -311,6 +311,20 @@ namespace Thatchwick.Game
             }
         }
 
+        private static Material _lodged;
+        private static bool _lodgedMissing;
+        /// <summary>Yatmış tahıl malzemesi (Thatchwick/LodgedSprite; belge 57d §2). Shader yoksa null: ekin devrik çizilir.</summary>
+        public static Material Lodged
+        {
+            get
+            {
+                if (_lodged != null || _lodgedMissing) return _lodged;
+                var shader = Shader.Find("Thatchwick/LodgedSprite");
+                if (shader == null) { _lodgedMissing = true; return null; }
+                return _lodged = new Material(shader) { name = "RuntimeLodged" };
+            }
+        }
+
         private static Material BlendMaterial(string name, float src, float dst)
         {
             if (_blendShaderMissing) return null;

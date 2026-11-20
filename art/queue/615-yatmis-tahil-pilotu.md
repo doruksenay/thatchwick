@@ -1,5 +1,5 @@
 ---
-id: "595"
+id: "615"
 title: Yatmış tahıl pilotu (buğday, arpa, çavdar, yulaf)
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -17,7 +17,7 @@ outputs:
   - Assets/Art/Iso/iso_plant_crop_oats_lodged_se.png
 created: 2026-11-20
 ---
-# 595 Yatmış tahıl pilotu (buğday, arpa, çavdar, yulaf)
+# 615 Yatmış tahıl pilotu (buğday, arpa, çavdar, yulaf)
 
 ## Amaç
 Belge 57d §2: tahıl yatması görsel olarak işlenmeli. Birinci yol shader (`_Lodge`, satır kaydırma); bu iş ikinci yolun (ayrı sprite) pilotu: shader Unity'de yeterince iyi görünmezse bu kareler kullanılır.

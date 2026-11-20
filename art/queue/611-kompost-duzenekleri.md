@@ -1,5 +1,5 @@
 ---
-id: "591"
+id: "611"
 title: Kompost düzenekleri (üç gözlü kompostluk, döner fıçı, solucan kasası, yaprak ağılı)
 status: pending
 approved_by: pending     # PixelLab bütçe kararı bekleniyor (506-509 ile aynı: kullanıcı, 20.11.2026: "daha sonra karar verelim")
@@ -17,7 +17,7 @@ outputs:
   - Assets/Art/Iso/iso_item_leaf_bin_se.png
 created: 2026-11-20
 ---
-# 591 Kompost düzenekleri (üç gözlü kompostluk, döner fıçı, solucan kasası, yaprak ağılı)
+# 611 Kompost düzenekleri (üç gözlü kompostluk, döner fıçı, solucan kasası, yaprak ağılı)
 
 ## Amaç
 Belge 57c §4: kompost süreci için düzenekler. Üç gözlü kompostluk 3x1, ötekiler tek karo.

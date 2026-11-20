@@ -60,6 +60,15 @@ namespace Thatchwick.Core.Audio
         public const string AnimalCat = "animal.cat";         // B animals
         public const string AnimalWolf = "animal.wolf";       // C animals
 
+        // Avlu (belge 57): audio/queue/avlu s250-s256
+        public const string YardFlies = "yard.flies";             // B foley
+        public const string YardShovel = "yard.shovel";           // B tools
+        public const string YardCompostTurn = "yard.compost_turn"; // B tools
+        public const string YardMuckOut = "yard.muck_out";        // B tools
+        public const string YardStepInIt = "yard.step_in_it";     // C foley
+        public const string YardCartOut = "yard.cart_out";        // B foley
+        public const string YardCatDig = "yard.cat_dig";          // C foley
+
         // Ortam yatakları ve nokta sesleri
         public const string AmbFarmDay = "amb.farm.day";      // C ambience
         public const string AmbFarmNight = "amb.farm.night";  // C ambience

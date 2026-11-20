@@ -146,7 +146,7 @@ namespace UnityEngine.Tilemaps {
  public class TileBase:ScriptableObject{}
  public class Tile:TileBase{public enum ColliderType{None,Sprite,Grid} public Sprite sprite; public Color color; public TileFlags flags; public ColliderType colliderType; public Matrix4x4 transform;}
  public struct TileChangeData{public Vector3Int position; public TileBase tile; public Color color; public Matrix4x4 transform; public TileChangeData(Vector3Int p,TileBase t,Color c,Matrix4x4 m){position=p;tile=t;color=c;transform=m;}}
- public class Tilemap:GridLayout{public Vector3 tileAnchor; public void SetTile(Vector3Int p,TileBase t){} public void SetTiles(TileChangeData[] d,bool ignoreLockFlags){} public void SetColor(Vector3Int p,Color c){} public void SetTransformMatrix(Vector3Int p,Matrix4x4 m){} public void ClearAllTiles(){} public void RefreshAllTiles(){}}
+ public class Tilemap:GridLayout{public Vector3 tileAnchor; public Color color; public void SetTile(Vector3Int p,TileBase t){} public void SetTiles(TileChangeData[] d,bool ignoreLockFlags){} public void SetColor(Vector3Int p,Color c){} public void SetTransformMatrix(Vector3Int p,Matrix4x4 m){} public void ClearAllTiles(){} public void RefreshAllTiles(){}}
  public class TilemapRenderer:Renderer{public enum Mode{Chunk,Individual,SRPBatch} public Mode mode;}
 }
 // UI Toolkit (Ui/UiHost, Ui/HudBar): yalnızca kullanılan üyeler, Unity imzasıyla.

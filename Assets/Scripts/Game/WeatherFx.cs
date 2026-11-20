@@ -29,6 +29,12 @@ namespace Thatchwick.Game
         /// </summary>
         public System.Func<Vector3, bool> IsSheltered;
 
+        /// <summary>Şu anki yağış rüzgârı (birim/sn, eksi = sola) ve sağanak şiddeti (0-1): ağaç, duman ve sıçrama aynı rüzgârı kullanır.</summary>
+        public float CurrentWind { get; private set; }
+        public float Gust => _gust;
+        /// <summary>Yağış yoğunluğu 0-1 (dinerken yavaşça iner).</summary>
+        public float Level => _level;
+
         // Yoğunluk ritmi: hava değişince yumuşak geçiş, yağarken yavaş dalga ve ara ara sağanak (fırtınada rüzgâr
         // da hamle yapar). Sabit yoğunluk ve hız yapay duruyordu (kullanıcı, 19.11.2026).
         private float _level;        // 0..1 şu anki yoğunluk (hedefe doğru kayar)
@@ -87,6 +93,7 @@ namespace Thatchwick.Game
             float speedMul = 0.8f + 0.45f * _level + 0.25f * _gust;
             float windBase = _weather == WeatherType.Storm ? -3.2f : -1.4f;
             float wind = windBase * (0.6f + 0.5f * Mathf.PerlinNoise(_seed + 7f, t * 0.25f) + 0.6f * _gust);
+            CurrentWind = max > 0 ? wind : 0f;
             for (int i = 0; i < _drops.Count; i++)
             {
                 var d = _drops[i];

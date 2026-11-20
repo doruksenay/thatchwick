@@ -794,7 +794,7 @@ namespace Thatchwick.Core.Tests
             var missing = file.items.Where(i => !string.IsNullOrEmpty(i.cropFamily) && string.IsNullOrEmpty(i.feed)).Select(i => i.id).ToArray();
             Assert.True(missing.Length == 0, "beslenme tipi eksik: " + string.Join(", ", missing));
             foreach (var id in new[] { FilthService.HumanPileId, FilthService.DogPileId, FilthService.AnimalPileId, FilthService.SheepPileId, FilthService.RefusePileId,
-                         CompostService.RawId, CompostService.BlackId, CompostService.LeavesId, CompostService.LeafMouldId, LifeSystems.SeaweedId, LifeSystems.MarlId, LifeSystems.DungCakeId })
+                         CompostService.RawId, CompostService.BlackId, CompostService.FreshManureId, "item.bone_mill", "item.cart_shed", CompostService.LeavesId, CompostService.LeafMouldId, LifeSystems.SeaweedId, LifeSystems.MarlId, LifeSystems.DungCakeId })
                 Assert.True(Db.Items.Contains(id), id);
             foreach (var id in new[] { LifeSystems.MoodStomachAche, LifeSystems.MoodScolded, LifeSystems.MoodSawTooMuch, LifeSystems.MoodSteppedInIt, LifeSystems.MoodBadSmell,
                          LifeSystems.MoodLostAppetite, LifeSystems.MoodMurkyWater, LifeSystems.MoodTidyYard, LifeSystems.MoodDisgusted })
@@ -802,6 +802,11 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(FeedType.Heavy, Db.Items.Get("item.crop_cabbage").Feed);
             Assert.Equal(FeedType.Builder, Db.Items.Get("item.crop_pea").Feed);
             Assert.True(Db.Items.Get("item.crop_rye").HasTag("tall"));
+            // Arabalar yerleştirilen eşya (belge 57e); olgun gübre ayrı tür, çok yiyen sever.
+            foreach (var id in CartFleet.CartIds) Assert.NotEqual(ItemPlacement.Resource, Db.Items.Get(id).Placement);
+            Assert.True((Db.Items.Get("item.crop_cabbage").LikesFertilizer & Fertilizer.Manure) != 0);
+            Assert.Equal(Fertilizer.Manure, Db.Items.Get("item.crop_cabbage").Interactions.Find(i => i.Id == "manure").FertilizerKind);
+            Assert.Equal(Fertilizer.FreshManure, Db.Items.Get("item.crop_cabbage").Interactions.Find(i => i.Id == "manure_fresh").FertilizerKind);
         }
     }
 }
