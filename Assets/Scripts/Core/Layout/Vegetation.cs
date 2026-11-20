@@ -95,7 +95,7 @@ namespace Thatchwick.Core.Layout
             e.plaza = region == Regions.Town ? Math.Abs(p.X - pc.X) + Math.Abs(p.Y - pc.Y) : 99;
             foreach (var b in Regions.TownBuildings)
             {
-                int d = OutdoorBuilder.Dist(b.Rect, p);
+                int d = b.DistanceTo(p);
                 if (d < e.building) e.building = d;
                 if (d == 1) e.wallBase = true;
             }

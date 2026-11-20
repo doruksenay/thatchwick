@@ -1143,6 +1143,86 @@
           "anchor": "wall"
         }
       ]
+    },
+    {
+      "id": "annex_forge",
+      "type": "storehouse",
+      "steps": [
+        {
+          "item": "item.iron_pile",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barrel",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.quench_tub",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "annex_lumber",
+      "type": "storehouse",
+      "steps": [
+        {
+          "item": "item.lumber_pile",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.unfinished_furniture",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "annex_kitchen",
+      "type": "storehouse|pantry",
+      "steps": [
+        {
+          "item": "item.water_barrel",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barrel",
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barrel",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.flour_sack",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
+    },
+    {
+      "id": "annex_store",
+      "type": "storehouse",
+      "steps": [
+        {
+          "item": "item.grain_sack",
+          "count": 2,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.chest_wood",
+          "optional": true,
+          "anchor": "wall"
+        },
+        {
+          "item": "item.barrel",
+          "optional": true,
+          "anchor": "wall"
+        }
+      ]
     }
   ],
   "buildings": [

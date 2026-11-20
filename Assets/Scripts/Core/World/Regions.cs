@@ -103,6 +103,45 @@ namespace Thatchwick.Core.World
             }
         }
 
+        /// <summary>
+        /// Ek yapı (TownBuilding.WithAnnex): ana binaya yaslanan tek katlı oda. Dış yüzleri duvar (en uzun dış yüzün
+        /// ortasında bir pencere); ana binayla ortak duvarda yalnızca iç kapı açılır (orada pencere varsa duvar olur).
+        /// </summary>
+        public void Annex(TownBuilding b)
+        {
+            if (_m == null || !b.HasAnnex) return;
+            int x0 = b.AX, y0 = b.AY, x1 = b.AX + b.AW - 1, y1 = b.AY + b.AH - 1;
+            bool InMain(int x, int y) => x >= b.X && x < b.X + b.W && y >= b.Y && y < b.Y + b.H;
+            var (dx, dy) = b.AnnexDoor;
+            // Pencere: en uzun dış yüzün ortası
+            int bestLen = -1; char winSide = 'S';
+            foreach (var side in new[] { 'N', 'S', 'W', 'E' })
+            {
+                int len = 0;
+                if (side == 'N' || side == 'S') { int yy = side == 'N' ? y0 - 1 : y1 + 1; for (int x = x0; x <= x1; x++) if (!InMain(x, yy)) len++; }
+                else { int xx = side == 'W' ? x0 - 1 : x1 + 1; for (int y = y0; y <= y1; y++) if (!InMain(xx, y)) len++; }
+                if (len > bestLen) { bestLen = len; winSide = side; }
+            }
+            for (int x = x0; x <= x1; x++)
+            {
+                SetAnnexEdge(new Edge(_ox + x, _oy + y0, EdgeAxis.Horizontal), InMain(x, y0 - 1), x == dx && y0 == dy, winSide == 'N' && x == (x0 + x1) / 2);
+                SetAnnexEdge(new Edge(_ox + x, _oy + y1 + 1, EdgeAxis.Horizontal), InMain(x, y1 + 1), x == dx && y1 == dy, winSide == 'S' && x == (x0 + x1) / 2);
+            }
+            for (int y = y0; y <= y1; y++)
+            {
+                SetAnnexEdge(new Edge(_ox + x0, _oy + y, EdgeAxis.Vertical), InMain(x0 - 1, y), y == dy && x0 == dx, winSide == 'W' && y == (y0 + y1) / 2);
+                SetAnnexEdge(new Edge(_ox + x1 + 1, _oy + y, EdgeAxis.Vertical), InMain(x1 + 1, y), y == dy && x1 == dx, winSide == 'E' && y == (y0 + y1) / 2);
+            }
+            Floor(x0, y0, x1, y1, b.Floor);
+            for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++) if (_m.GetRoad(P(x, y)) != RoadType.None) _m.SetRoad(P(x, y), RoadType.None);
+        }
+
+        private void SetAnnexEdge(Edge e, bool shared, bool door, bool window)
+        {
+            if (shared) _m.SetEdge(e, door ? EdgeKind.Door : EdgeKind.Wall);
+            else _m.SetEdge(e, window ? EdgeKind.Window : EdgeKind.Wall);
+        }
+
         /// <summary>Çitli alan (ağıl, bahçe). gate: 'N','S','E','W' ve konumu. pasture: otlak bölgesi işaretlenir.</summary>
         public void Fence(int x0, int y0, int x1, int y1, char gate, int at, bool pasture)
         {
@@ -348,6 +387,17 @@ namespace Thatchwick.Core.World
 
         private static void TownMap(Painter p)
         {
+            // Taslak varsa (maps/town/terrain.png): ırmak, köprüler, meydan, eğri sokaklar ve kapı patikaları oradan; bina
+            // planı, ekler ve ağıl burada (belge 64a).
+            var data = MapFiles.Get(Town.Id);
+            if (data != null)
+            {
+                PaintData(p, data);
+                foreach (var b in TownBuildings) { p.Building(b.X, b.Y, b.W, b.H, b.Door, b.DoorAt, b.Floor); p.Annex(b); }
+                p.Fence(PenX0, PenY0, PenX1, PenY1, 'S', 58, true);
+                p.Path(1, (58, 13), (58, 17), (62, 17), (62, 26));
+                return;
+            }
             // Irmak (3 karo) ve iki köprü (doğu yolu y26-27, güney patikası y44-45)
             for (int y = 0; y < 52; y++) { int c = RiverX(y); for (int x = c - 1; x <= c + 1; x++) p.Water(x, y); }
             for (int y = 26; y <= 27; y++) for (int x = RiverX(y) - 1; x <= RiverX(y) + 1; x++) p.Floor(x, y, x, y, FloorType.Wood);
@@ -368,7 +418,7 @@ namespace Thatchwick.Core.World
             p.Path(1, (34, 44), (47, 44), (47, 45), (56, 45));     // güney köprüsüne patika
 
             // ---- Binalar (plan: belge 40; iç döşeme şablonlardan, Core.Layout.TownBuilder, belge 44 C) ----
-            foreach (var b in TownBuildings) p.Building(b.X, b.Y, b.W, b.H, b.Door, b.DoorAt, b.Floor, b.PathTo);
+            foreach (var b in TownBuildings) { p.Building(b.X, b.Y, b.W, b.H, b.Door, b.DoorAt, b.Floor, b.PathTo); p.Annex(b); }
 
             // ---- Hayvan pazarı (Murat): ırmağın ötesinde, kuzeydoğuda çitli ağıl (plan); içi kurallarla ----
             p.Fence(PenX0, PenY0, PenX1, PenY1, 'S', 58, true);
@@ -396,16 +446,16 @@ namespace Thatchwick.Core.World
         public static readonly TownBuilding[] TownBuildings =
         {
             // Meydanın çevresi
-            new TownBuilding("tavern", "Meyhane / han", "inn", 20, 12, 10, 7, 'S', 25, FloorType.Wood, "home:tavern", (25, 21)),
-            new TownBuilding("general", "Pazar (Kerem)", "shop", 33, 14, 8, 6, 'S', 36, FloorType.Wood, "home:general", (36, 22)),
+            new TownBuilding("tavern", "Meyhane / han", "inn", 20, 12, 10, 7, 'S', 25, FloorType.Wood, "home:tavern", (25, 21)).WithAnnex(16, 13, 4, 4, 19, 15, "annex_kitchen"),   // batıda mutfak kanadı
+            new TownBuilding("general", "Pazar (Kerem)", "shop", 33, 14, 8, 6, 'S', 36, FloorType.Wood, "home:general", (36, 22)).WithAnnex(41, 15, 2, 4, 41, 17, "annex_store"),   // doğuda ambar
             new TownBuilding("scribe", "Kâtip ve ulak", "shop", 14, 28, 6, 5, 'E', 30, FloorType.Wood, "home:scribe", (24, 30)),
             new TownBuilding("tailor", "Terzi ve dokumacı", "shop", 36, 32, 7, 6, 'N', 38, FloorType.Wood, "home:tailor", (36, 31)),
             // Batı (giriş)
             new TownBuilding("herb", "Otacı ve ebe", "shop", 6, 6, 7, 6, 'S', 9, FloorType.Wood, "home:herb", (9, TownEntryY)),
-            new TownBuilding("smithy", "Demirci (Orhan)", "shop", 3, 22, 7, 6, 'N', 6, FloorType.Stone, null, (6, 20)),
-            new TownBuilding("carpenter", "Marangoz / mobilyacı", "shop", 3, 31, 8, 6, 'E', 33, FloorType.Wood, "home:carpenter", (12, 33)),
+            new TownBuilding("smithy", "Demirci (Orhan)", "shop", 3, 22, 7, 6, 'N', 6, FloorType.Stone, null, (6, 20)).WithAnnex(3, 28, 4, 2, 4, 28, "annex_forge"),   // arkada kömürlük ve demir deposu
+            new TownBuilding("carpenter", "Marangoz / mobilyacı", "shop", 3, 31, 8, 6, 'E', 33, FloorType.Wood, "home:carpenter", (12, 33)).WithAnnex(4, 37, 5, 2, 6, 37, "annex_lumber"),   // arkada kereste sundurması
             // Irmak kıyısı
-            new TownBuilding("mill", "Değirmen ve fırın (Hatice)", "shop", 40, 4, 7, 6, 'S', 43, FloorType.Wood, "home:mill", (43, 11), (31, 11)),
+            new TownBuilding("mill", "Değirmen ve fırın (Hatice)", "shop", 40, 4, 7, 6, 'S', 43, FloorType.Wood, "home:mill", (43, 11), (31, 11)).WithAnnex(47, 5, 2, 4, 47, 7, "flour_store"),   // ırmak yanında un ambarı
             new TownBuilding("potter", "Çömlekçi (Ayşe)", "shop", 39, 40, 6, 6, 'N', 41, FloorType.Dirt, "home:potter", (41, 39), (32, 39)),
             // Irmağın ötesi
             new TownBuilding("fisher", "Balıkçı", "shop", 55, 18, 6, 5, 'W', 20, FloorType.Wood, "home:fisher", (53, 20), (53, 26)),   // bir karo doğuya: kapı önü 2 karo kuru (belge 44 D)
