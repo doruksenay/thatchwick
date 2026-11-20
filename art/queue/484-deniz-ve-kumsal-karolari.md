@@ -1,7 +1,8 @@
 ---
 id: "484d"
 title: "Deniz ve kumsal karoları (4)"
-status: pending
+status: running
+claimed_at: 2026-11-20T23:54Z
 approved_by: user        # otomatik akış (art/budget.md); kullanıcı 20.11.2026 "üretilecek asset varsa kuyruğa at" (deniz kıyısı, belge 50)
 priority: 10        # oyun dünyası (art/budget.md Öncelik); tester raporu 66
 family: zemin
