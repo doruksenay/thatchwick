@@ -1,7 +1,7 @@
 ---
 id: "378"
 title: Toplama düğümleri devam (fındık, böğürtlen, kestane)
-status: review
+status: accepted
 claimed_at: 2026-11-19T07:32Z
 priority: 10
 approved_by: user        # kullanıcı onayı sohbette 2026-11-18 (onay grubu 1: "Kabul, 3'ü yeniden")
@@ -44,3 +44,4 @@ Yöntem **373 ile aynı** (bitki referansları, açıklama eki, `fit`, `check`).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

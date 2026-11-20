@@ -168,7 +168,23 @@ namespace Thatchwick.Core.World
         // Doğuda kayalık burun: gelgit çukurları (deniz yosunu, karides, keşiş yengeci; kayada tuz kabuğu). Kumsalda
         // denizin bıraktığı kıyı çizgisi (dere odunu, kabuk, ender mercan) ve deniz kumu. Ahşap iskeleden ringa ve uskumru.
         private static int SeaEdge(int x) => 19 + (int)Math.Round(1.5 * Math.Sin(x / 3.2) + 0.8 * Math.Sin(x / 7.0));
-        private static bool CoastRock(int x, int y) => x >= 36 && y >= 11 && y <= SeaEdge(x) + 3 && Hash(x + 264, y + 36) + (x - 36) / 24.0 > 0.55;
+
+        /// <summary>Yumuşak gürültü (3x3 ortalama): kaya kümesi dağınık benek değil, bütün bir burun olsun.</summary>
+        private static double Smooth(int x, int y)
+        {
+            double sum = 0;
+            for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) sum += Hash(x + dx + 264, y + dy + 36);
+            return sum / 9.0;
+        }
+
+        // Kayalık burun: doğuya doğru genişler, kumsalın arkasından denize uzanır; kenarı gürültüyle girintili.
+        private static bool CoastRock(int x, int y)
+        {
+            if (x < 34 || y < 10 || y > SeaEdge(x) + 6) return false;
+            double reach = (x - 34) / 13.0;                      // 0 batı ucu, 1 doğu kenarı
+            double core = reach * 1.1 - Math.Abs(y - (SeaEdge(x) - 1)) / 9.0;
+            return core + (Smooth(x, y) - 0.5) * 0.6 > 0.25;
+        }
 
         private static void CoastMap(Painter p)
         {
@@ -178,25 +194,50 @@ namespace Thatchwick.Core.World
                 {
                     if (CoastRock(x, y)) { p.Floor(x, y, x, y, FloorType.Stone); keep.Add((x, y)); continue; }
                     if (y >= SeaEdge(x)) { p.Water(x, y); keep.Add((x, y)); continue; }
-                    if (y >= SeaEdge(x) - 8) { p.Floor(x, y, x, y, FloorType.Dirt); keep.Add((x, y)); }   // kumsal
+                    // Kumsal: denizden geriye 6-9 karo; çayıra geçişi gürültüyle girintili.
+                    int depth = 6 + (int)Math.Round(Smooth(x, y / 2) * 3);
+                    if (y >= SeaEdge(x) - depth) { p.Floor(x, y, x, y, FloorType.Dirt); keep.Add((x, y)); }
                 }
-            Trail(p, keep, 1, (5, 0), (5, 6), (20, 6), (20, 11));
+            // Patika: gölden iner, kumsalda iskeleye kadar sürer.
+            int pierTop = SeaEdge(20) - 1;
+            Trail(p, keep, 1, (5, 0), (5, 6), (20, 6), (20, pierTop - 1));
             // İskele: kumsaldan denize
-            for (int y = SeaEdge(20) - 1; y <= SeaEdge(20) + 5; y++) for (int x = 20; x <= 21; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
-            p.I("item.barrel", 21, SeaEdge(20) - 1);
+            for (int y = pierTop; y <= SeaEdge(20) + 5; y++) for (int x = 20; x <= 21; x++) { p.Floor(x, y, x, y, FloorType.Wood); keep.Add((x, y)); }
+            // Balıkçı iniş yeri (iskelenin batısında, kumsalda): sepet, fıçı, halat, ateş yeri. Ağ askısı balıkçı dükkânına aittir (şehir).
+            int land = pierTop - 2;
+            var used = new HashSet<(int, int)>();
+            foreach (var (id, x, y) in new[] { ("item.fish_basket", 18, land), ("item.barrel", 22, pierTop - 1), ("item.rope_coil", 19, land + 1), ("item.bonfire", 13, land + 1) })
+            { p.I(id, x, y); used.Add((x, y)); }
             p.PondAt(14, 27, F("item.fish_herring", 12), F("item.fish_mackerel", 8));
             p.PondAt(30, 28, F("item.fish_herring", 8), F("item.fish_mackerel", 6));
 
-            // Kayalıkta gelgit çukurları
-            int pools = 0;
-            for (int y = 12; y < 26 && pools < 4; y += 3)
-                for (int x = 37; x < 47 && pools < 4; x += 3)
-                    if (CoastRock(x, y) && y < SeaEdge(x) + 2) { p.I("item.forage_tidepool", x, y); pools++; }
-            foreach (var x in new[] { 8, 15, 26, 32 }) p.I("item.forage_driftline", x, SeaEdge(x) - 1);
-            foreach (var x in new[] { 11, 24, 29 }) p.I("item.forage_sea_sand", x, SeaEdge(x) - 4);
+            // Gelgit çukurları: denize değen kaya karolarında, aralarında en az 3 karo, gürültüyle seçilir.
+            var pools = new List<(int x, int y)>();
+            for (int y = 10; y < 32 && pools.Count < 4; y++)
+                for (int x = 34; x < 48 && pools.Count < 4; x++)
+                {
+                    if (!CoastRock(x, y)) continue;
+                    bool touchesSea = false;
+                    foreach (var (dx, dy) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+                    {
+                        int nx = x + dx, ny = y + dy;
+                        if (nx >= 0 && nx < 48 && ny < 32 && !CoastRock(nx, ny) && ny >= SeaEdge(nx)) touchesSea = true;
+                    }
+                    if (!touchesSea || Hash(x + 7, y + 11) < 0.45) continue;
+                    bool far = true;
+                    foreach (var q in pools) if (Math.Abs(q.x - x) + Math.Abs(q.y - y) < 5) far = false;
+                    if (!far) continue;
+                    pools.Add((x, y));
+                    p.I("item.forage_tidepool", x, y);
+                    used.Add((x, y));
+                }
+            // Kıyı çizgisi suyun hemen gerisinde, deniz kumsalı biraz daha içeride (kumsal karosu, iskele ve iniş yeri dışında).
+            foreach (var x in new[] { 6, 27, 31 }) { int y = SeaEdge(x) - 1; if (!used.Contains((x, y)) && !CoastRock(x, y) && x != 20 && x != 21) { p.I("item.forage_driftline", x, y); used.Add((x, y)); } }
+            foreach (var x in new[] { 9, 25, 29 }) { int y = SeaEdge(x) - 4; if (!used.Contains((x, y)) && !CoastRock(x, y)) { p.I("item.forage_sea_sand", x, y); used.Add((x, y)); } }
             Node(p, keep, "item.forage_chamomile", 30, 3);
             Node(p, keep, "item.forage_sage", 40, 4);
-            Scatter(p, keep, 48, 32, 60, 300, rng => rng.Next(3) == 0 ? "item.tree_pine" : "item.tree_oak");
+            // Rüzgâra açık kıyı: seyrek çam, birkaç meşe; kumsala ağaç girmez (keep).
+            Scatter(p, keep, 48, 32, 45, 300, rng => rng.Next(4) == 0 ? "item.tree_oak" : "item.tree_pine");
         }
 
         /// <summary>

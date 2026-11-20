@@ -1,7 +1,7 @@
 ---
 id: "004"
 title: Toprak yol seti
-status: review
+status: accepted
 claimed_at: 2026-11-18T13:00Z
 approved_by: user        # otomatik akış: kullanıcı onayı (tools/art/approve_all.py)
 family: zemin
@@ -29,3 +29,4 @@ Köy yolları. Eski plan: 001-003 geçerse ayrı onayla yapılacaktı. `approved
 
 ## Notlar
 Adlar `iso_ground_path_dirt_<nn>.png` (brief'te ad yoktu, öneri). Karoların hangi yol topolojisine denk geldiğini rapora yaz.
+- 2026-11-20: kullanıcı kabul etti (sohbette toplu inceleme).

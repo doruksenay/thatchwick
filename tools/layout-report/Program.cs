@@ -74,6 +74,38 @@ internal static class Program
                 Console.WriteLine("   " + string.Join(", ", legend.OrderBy(k => k.Key).Select(k => $"{k.Key}={k.Value}")));
             }
         }
+        // json=<bölge|bina>: karo, kenar ve eşya dökümü (tools/layout-report/render.py ile PNG; gözle denetim)
+        foreach (var id in args.Where(a => a.StartsWith("json=")).Select(a => a.Substring(5)))
+        {
+            var reg = Regions.All.FirstOrDefault(x => x.Id == id);
+            var bb = reg == null ? Regions.TownBuildingById(id) : null;
+            RectI rr = reg != null ? new RectI(reg.X, reg.Y, reg.W, reg.H) : bb != null ? TownBuilder.Grow(bb.Rect, 3) : new RectI(StarterWorld.HouseX0 - 4, StarterWorld.HouseY0 - 4, 17, 15);
+            var levels = reg != null ? new[] { 0 } : new[] { 0, 1, -1 };
+            var outp = new List<object>();
+            foreach (var z in levels)
+            {
+                if (!Enumerable.Range(rr.X, rr.W).Any(x => Enumerable.Range(rr.Y, rr.H).Any(y => world.Map.HasTile(new GridPos(x, y, z))))) continue;
+                var tiles = new List<object>();
+                for (int y = rr.Y; y < rr.Y + rr.H; y++)
+                    for (int x = rr.X; x < rr.X + rr.W; x++)
+                    {
+                        var p = new GridPos(x, y, z);
+                        if (!world.Map.HasTile(p)) continue;
+                        tiles.Add(new { x = x - rr.X, y = y - rr.Y, f = world.Map.GetFloor(p).ToString(), r = world.Map.GetRoad(p).ToString(), b = world.Map.IsBlocked(p),
+                            eh = world.Map.GetEdge(new Edge(x, y, EdgeAxis.Horizontal, z)).ToString(), ev = world.Map.GetEdge(new Edge(x, y, EdgeAxis.Vertical, z)).ToString() });
+                    }
+                var items = world.Items.Where(it => it.Position.Z == z && it.Position.X >= rr.X && it.Position.X < rr.X + rr.W && it.Position.Y >= rr.Y && it.Position.Y < rr.Y + rr.H)
+                    .Select(it => new { x = it.Position.X - rr.X, y = it.Position.Y - rr.Y, id = it.Def.Id, name = it.Def.DisplayName, pl = it.Def.Placement.ToString(),
+                        occ = PlacementValidator.Occupies(it), tiles = world.Map.HasTile(it.Position) ? FootTiles(world, it, rr) : new List<int[]>() }).ToList();
+                outp.Add(new { z, w = rr.W, h = rr.H, tiles, items });
+            }
+            File.WriteAllText(Path.Combine(Path.GetTempPath(), $"layout_{id}.json"), JsonSerializer.Serialize(outp));
+            Console.WriteLine($"json: {Path.Combine(Path.GetTempPath(), $"layout_{id}.json")}");
+        }
+        // noart: dünyadaki görselsiz (items.json "art" yok) eşyaların kimlik ve adet listesi (bitki ve toplama hariç)
+        if (args.Contains("noart"))
+            foreach (var g in world.Items.Where(it => !it.IsPlant && !it.Def.IsForage && it.Def.Art == null).GroupBy(it => it.Def.Id).OrderByDescending(g => g.Count()))
+                Console.WriteLine($"NOART {g.Key} {g.Count()} {g.First().Def.DisplayName}");
         if (args.Contains("rooms"))
             foreach (var r in res.Reports)
                 Console.WriteLine($"  {r.Room}: {r.Placed.Count} eşya, deneme {r.Attempt + 1}" + (r.Missing.Count > 0 ? $", EKSİK {string.Join(",", r.Missing)}" : "") + (r.Violations.Count > 0 ? $", İHLAL {string.Join(" | ", r.Violations)}" : "") + (r.Dropped.Count > 0 ? $", çıkarılan: {string.Join(" | ", r.Dropped)}" : ""));
@@ -103,6 +135,18 @@ internal static class Program
         }
         Console.Write(sb.ToString());
         return 0;
+    }
+
+    private static List<int[]> FootTiles(WorldState w, Thatchwick.Core.World.ItemInstance it, RectI rr)
+    {
+        var list = new List<int[]>();
+        for (int dy = -3; dy <= 3; dy++)
+            for (int dx = -3; dx <= 3; dx++)
+            {
+                var p = new GridPos(it.Position.X + dx, it.Position.Y + dy, it.Position.Z);
+                if (w.GetItemAt(p) == it) list.Add(new[] { p.X - rr.X, p.Y - rr.Y });
+            }
+        return list;
     }
 
     private static string Local(GridPos p)
