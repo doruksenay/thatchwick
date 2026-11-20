@@ -4,7 +4,7 @@ title: Cam kavanozu suya daldırma
 kind: sfx
 family: foley
 freq: B
-status: ready
+status: review
 approved_by: user
 depends_on: []
 key: jar.scoop
@@ -25,5 +25,11 @@ inceleme_notlari:
   not: su sesi yok
 yeniden_sayisi: 1
 prompt_influence: 0.7
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T16:47:14Z'
+candidates: 8
+passed: 8
+credits_spent: 0
+generated_at: '2026-11-20T16:47:27Z'
 ---
 A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part.

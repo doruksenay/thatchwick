@@ -71,8 +71,10 @@ namespace Thatchwick.Core.Layout
             }
             else
             {
-                var want = even ? art.AlongX : art.AlongY;
-                var other = even ? art.AlongY : art.AlongX;
+                // Dönüşten sonra uzun kenar grid x boyunca mı: 2x1 eşya çift dönüşte, 1x2 eşya (merdiven, ahır bölmesi) tek dönüşte.
+                bool alongX = even == (def.Width > def.Height);
+                var want = alongX ? art.AlongX : art.AlongY;
+                var other = alongX ? art.AlongY : art.AlongX;
                 if (want != null) sprite = want;
                 else if (art.Mirror && other != null) { sprite = other; flip = true; }
                 else return false;

@@ -4,7 +4,7 @@ title: Balık kaçtı
 kind: sfx
 family: foley
 freq: C
-status: ready
+status: review
 approved_by: user
 depends_on: []
 key: fish.escape
@@ -21,5 +21,11 @@ inceleme_notlari:
   not: hiçbiri olmadı, balık sudan çıkma sesine benziyor
 yeniden_sayisi: 1
 prompt_influence: 0.7
+claimed_by: runnervmccnms
+claimed_at: '2026-11-20T16:49:03Z'
+candidates: 4
+passed: 4
+credits_spent: 0
+generated_at: '2026-11-20T16:49:11Z'
 ---
 A taut fishing line suddenly snapping slack with a quick soft whip of the rod, then a tiny tail-flick under the water surface as the fish darts away. No fish leaping out, no big splash.
