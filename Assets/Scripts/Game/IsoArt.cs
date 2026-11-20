@@ -55,6 +55,7 @@ namespace Thatchwick.Game
         public static void Reset()
         {
             LayeredCharacterArt.Reset();
+            V2Missing.Clear();
             _textures = null;
             _art = null;
             Sprites.Clear();
@@ -961,7 +962,29 @@ namespace Thatchwick.Game
         /// <summary>Etkileşim karelerinin çizildiği çapraz yön adı (se, sw, nw, ne).</summary>
         public static string ActionDirection(int direction) => Directions[direction % 2 == 1 ? direction : (direction + 7) % 8];
 
+        /// <summary>
+        /// Düzeltilmiş poz: "&lt;anahtar&gt;_v2" kareleri varsa onlar oynar (kabul edilen setin üzerine yazılmaz; ör. iş 821'de
+        /// halay ve yüzük takma). Karesi olmayan anahtar bir kez denenip hatırlanır.
+        /// </summary>
+        private static readonly HashSet<string> V2Missing = new HashSet<string>();
+
         public static Sprite CharacterAction(Character c, string key, int direction, float cycle, out string prefix, out int frame)
+        {
+            if (!string.IsNullOrEmpty(key) && !key.EndsWith("_v2", StringComparison.Ordinal))
+            {
+                string v2 = key + "_v2";
+                string missKey = v2 + "|" + (AdultR84(c) ?? ChildR64(c));
+                if (!V2Missing.Contains(missKey))
+                {
+                    var f2 = CharacterActionCore(c, v2, direction, cycle, out prefix, out frame);
+                    if (f2 != null) return f2;
+                    V2Missing.Add(missKey);
+                }
+            }
+            return CharacterActionCore(c, key, direction, cycle, out prefix, out frame);
+        }
+
+        private static Sprite CharacterActionCore(Character c, string key, int direction, float cycle, out string prefix, out int frame)
         {
             prefix = null; frame = 0;
             {

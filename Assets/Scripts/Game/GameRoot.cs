@@ -221,6 +221,7 @@ namespace Thatchwick.Game
             ["kiss"] = "love", ["kiss_cheek"] = "love", ["hold_hands"] = "love", ["offer_handkerchief"] = "care", ["serve_coffee"] = "care",
             ["drink_grimace"] = "drink", ["put_ring"] = "love", ["cut_ribbon"] = "craft_hand", ["henna"] = "care", ["halay"] = "fun",
             ["procession"] = "fun", ["throw_jar"] = "work",
+            ["henna_sit"] = "sit",   // kına gecesinde oturan gelin (iş 821); kare gelene kadar genel oturuş (572)
         };
 
         /// <summary>Boşta hareket türü → poz (belge 60b §4.1). Karesi yoksa karakter yalnızca balonla tepki verir.</summary>

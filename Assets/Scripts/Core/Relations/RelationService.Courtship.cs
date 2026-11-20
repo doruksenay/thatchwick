@@ -387,7 +387,7 @@ namespace Thatchwick.Core.Relations
             var mother = bride.BirthMotherId.HasValue ? _population.Find(bride.BirthMotherId.Value) : null;
             switch (step)
             {
-                case 1: Pose(bride, "sit", 4f); Say(mother ?? Elder(bride, bride), "henna_song"); break;
+                case 1: Pose(bride, "henna_sit", 4f); Say(mother ?? Elder(bride, bride), "henna_song"); break;
                 case 2:
                     Pose(mother ?? Elder(bride, bride), "henna");
                     bride.AddMoodlet(RelationMoods.Henna, T("rel.mood.henna"), 6, 1.0);
