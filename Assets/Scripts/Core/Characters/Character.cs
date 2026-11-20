@@ -301,6 +301,8 @@ namespace Thatchwick.Core.Characters
         public double GainSkillXp(SkillType skill, double xp)
         {
             if (IsDead) return 0;
+            // Beceri başına ölçek (süre tablosu, belge 45 bölüm 4); doygunluk gibi yalnızca tempo açıkken (hane üyeleri).
+            if (Skills.PacingEnabled) xp *= SkillPacing.XpScale(skill);
             // Belge 45 karar 4: XP bonusları toplanır (ruh hali ve moodlet'ler, Okuryazarlık, yetiştirme: çocukluk izi,
             // can yoldaşı, çıraklık, aile tarifi; dal ve özellik hızı), toplam en çok +%100. Eksiler (yas, bunalım)
             // çarpan olarak kalır. Yatkınlık ayrı çarpandır.

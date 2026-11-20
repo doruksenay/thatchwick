@@ -168,5 +168,23 @@ namespace Thatchwick.Core.Tests
             }
             Assert.Equal(orders, Mastery.Orders(db, new[] { SkillType.Smithing, SkillType.Weaving }, 9));   // aynı gün aynı sipariş
         }
+
+        // ---------- tempo tablosu (28-A1, 45 bölüm 4) ----------
+
+        [Fact]
+        public void Tempo_HerBecerininKaynagiVar_SureMakul()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var rows = SkillTempo.Analyze(db);
+            var sb = new System.Text.StringBuilder();
+            foreach (var r in rows.OrderBy(r => r.DaysTo10))
+                sb.AppendLine($"{SkillNames.Name(r.Skill),-14} {r.XpPerWorkDay,7:0} XP/iş günü  1→10 {r.DaysTo10,5:0.0} gün (yatkın {r.DaysTo10Apt,5:0.0})  {r.BestSource}");
+            System.IO.File.WriteAllText(System.IO.Path.Combine(AppContext.BaseDirectory, "tempo.txt"), sb.ToString());
+            foreach (var r in rows)
+            {
+                Assert.True(r.XpPerWorkDay > 0, $"{r.Skill}: XP kaynağı yok");
+                Assert.True(r.DaysTo10 >= 17 && r.DaysTo10 <= 26, $"{r.Skill}: {r.DaysTo10:0.0} gün");
+            }
+        }
     }
 }
