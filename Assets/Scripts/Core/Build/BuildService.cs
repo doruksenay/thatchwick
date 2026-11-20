@@ -297,6 +297,11 @@ namespace Thatchwick.Core.Build
         /// Katalog siparişi: parası şimdi ödenir, eşya ertesi sabah marangozla gelir (Household.DeliverOrders).
         /// Depo yeri teslimde aranmaz; sipariş geri alınamaz.
         /// </summary>
+        /// <summary>Katalog siparişi için gereken Ticaret (belge 45 "Tüccara sipariş ver").</summary>
+        public const int OrderLevel = 4;
+        /// <summary>Hanenin en iyi Ticaret seviyesi; null ise sipariş sınırsız (eski davranış, sınamalar).</summary>
+        public Func<int> OrderSkill { get; set; }
+
         public PlacementCheck Order(string itemId)
         {
             if (!_content.Items.TryGet(itemId, out var def)) return PlacementCheck.Fail("Böyle bir eşya yok.");
@@ -304,6 +309,7 @@ namespace Thatchwick.Core.Build
             if (def.IsRetired) return PlacementCheck.Fail(ItemCatalog.RetiredText(def));
             if (ShopOnly(def)) return PlacementCheck.Fail($"{def.StyleSet} takımı yalnızca şehirdeki dükkânlarda satılır.");
             if (!IsUnlocked(def)) return PlacementCheck.Fail(LockText(def));
+            if (OrderSkill != null && OrderSkill() < OrderLevel) return PlacementCheck.Fail($"Tüccara sipariş için Ticaret {OrderLevel} gerekli.");
             if (!_house.TrySpend(PriceFor(def))) return PlacementCheck.Fail("Akçe yetmiyor.");
             _house.AddOrder(itemId);
             return PlacementCheck.Success;

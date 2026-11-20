@@ -114,6 +114,28 @@ namespace Thatchwick.Core.Tests
         }
 
         [Fact]
+        public void Ticaret_TezgahPazarlikToptan()
+        {
+            var db = ContentFilesTests.LoadDb(out _);
+            var house = new Household(500);
+            int trade = 1;
+            var m = new Thatchwick.Core.Economy.Market(db, house) { HouseTradeLevel = () => trade };
+            m.Tick(0, 0.1, Season.Spring);
+            string good = m.Goods().First(g => g.Price >= 10).Id;
+            int before = m.SellPrice(good);
+            Assert.Contains("Ticaret 5", m.SetUpStall());
+            trade = 5;
+            m.SetUpStall();
+            Assert.True(m.StallToday);
+            Assert.True(m.SellPrice(good) > before);
+            Assert.Contains("Ticaret 2", m.Haggle());   // pazarlık komut alanın becerisine bakar (Trader yok: 1)
+            Assert.Null(m.YesterdaySellPrice(good));   // dün yok
+            m.Tick(1, 1.1, Season.Spring);
+            m.Tick(1, 2.1, Season.Spring);
+            Assert.NotNull(m.YesterdaySellPrice(good));
+        }
+
+        [Fact]
         public void HesapDefteri_VeHaftalikPlan_MetinVerir()
         {
             var db = ContentFilesTests.LoadDb(out _);

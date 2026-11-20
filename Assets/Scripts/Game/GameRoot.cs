@@ -510,6 +510,7 @@ namespace Thatchwick.Game
             _animals.SkillLevel = _life.BestSkill;
             _life.Attach(_family);
             _market.SpecialContracts = _life.MasterOrders;   // pazar günü usta siparişi (belge 45)
+            _marketPanel.SouthTrip = _life.SouthTrip;        // Güney Yamaçları seferi (Arabacılık 6)
             _life.Attach(_plants);
             _life.Attach(_heat);
             _life.Attach(_market);
@@ -544,7 +545,7 @@ namespace Thatchwick.Game
 
             _familyPanel = new FamilyPanel(_population, _family, _dynasty, () => Commander?.Character,
                 c => _selected = _actors.Find(a => a.Character == c), c => _actors.Find(a => a.Character == c)?.Runner)
-            { Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays, Upbringing = _life.Upbringing, House = _household };
+            { Duties = _duties, Legacy = _life.Legacy, Today = () => _clock.TotalDays, Upbringing = _life.Upbringing, House = _household, Life = _life, Content = _content };
 
             _appearanceCatalog = ContentLoader.LoadAppearance(out var appearanceErrors);
             foreach (var e in appearanceErrors) Debug.LogError($"Görünüm hatası: {e}");
@@ -1987,6 +1988,7 @@ namespace Thatchwick.Game
             };
             _duties = new DutyPlanner(_world, _animals, _effects, _animalCare)
             {
+                PriorityWeight = d => _life.DutyWeight(d),   // görev öncelikleri (Kâhyalık 2)
                 WorkHours = () => HourOfDay >= 7.0 && HourOfDay < 19.0,
                 Now = () => _clock.TotalDays,
                 TileWork = _farmWork,
@@ -2142,6 +2144,9 @@ namespace Thatchwick.Game
             _automation.EngineeringLevel = () => _life.BestSkill(SkillType.Engineering);
             _storage.CartingLevel = () => _life.BestSkill(SkillType.Carting);
             _storage.ExtraCapacity = _life.CartStorageBonus;
+            _buildMode.FertilityAt = p => _plants.FertilityAt(p);                                       // verim katmanı (Toprak bakımı 8)
+            _buildMode.FertilityOpen = () => _life.BestSkill(SkillType.SoilCare) >= 8;
+            _buildService.OrderSkill = () => _life.BestSkill(SkillType.Trade);                         // tüccara sipariş (Ticaret 4)
             _life.PlantSeed = (seed, tile) => _buildService.Plant(seed, tile, out _).Ok;   // toplu ek (Çiftçilik 5)
             _buildService.GreenhouseSkill = () => _life.BestSkill(SkillType.Farming);
             var mementoRng = new System.Random(Thatchwick.Core.Seeds.Derive(_seed, 455, _rngEpoch));

@@ -84,6 +84,10 @@ namespace Thatchwick.Game
         private GridPos? _conduitStart;                           // su yolu hattının ilk karosu
         private int? _pendingLevel;
         private bool _showRooms;
+        private bool _showFertility;
+        /// <summary>Verim katmanı (belge 45, Toprak bakımı 8): karonun verimi (0-1) ve katmanın açık olup olmadığı.</summary>
+        public System.Func<GridPos, float> FertilityAt { get; set; }
+        public System.Func<bool> FertilityOpen { get; set; }
         private WallView _walls;
         private int _mode = 1;               // 0 İnşa, 1 Eşya (satın al), 2 Envanter (29-menu-yapisi)
         private int _buildGroup;             // İnşa sekmesinde seçili araç grubu
@@ -683,6 +687,20 @@ namespace Thatchwick.Game
                     foreach (var t in room.Tiles) Diamond(t, c, -8000, 1f);
                 }
             }
+            if (_showFertility && FertilityAt != null && FertilityOpen != null && FertilityOpen())
+            {
+                var map = _world.Map;
+                for (int y = 0; y < map.Height; y++)
+                    for (int x = 0; x < map.Width; x++)
+                    {
+                        var t = new GridPos(x, y, _view.ViewLevel);
+                        if (!map.IsOwned(t) || map.GetFloor(t) != FloorType.Dirt) continue;
+                        float f = Mathf.Clamp01(FertilityAt(t));
+                        var c = Color.Lerp(new Color(0.9f, 0.25f, 0.15f), new Color(0.25f, 0.85f, 0.25f), f);
+                        c.a = 0.35f;
+                        Diamond(t, c, -8001, 1f);
+                    }
+            }
             if (_roomCorner.HasValue) Diamond(_roomCorner.Value, new Color(0.3f, 0.7f, 1f, 0.7f), 6000, 1f);
             if (_lineStart.HasValue)
                 DiamondAt(Iso.GridToWorld(_lineStart.Value.X, _lineStart.Value.Y, _lineStart.Value.Z), new Color(0.3f, 0.7f, 1f, 0.9f), 6001, 0.35f);
@@ -860,6 +878,12 @@ namespace Thatchwick.Game
             GUILayout.BeginHorizontal();
             _headerRow = true; ToolButton("Damlalık", Tool.Eyedropper); ToolButton("Balyoz", Tool.Demolish); _headerRow = false;
             if (GUILayout.Toggle(_showRooms, UiSkin.C("Odalar", "top_rooms"), GUI.skin.button, GUILayout.Width(HeaderW)) != _showRooms) { _showRooms = !_showRooms; RefreshOverlay(); }
+            // Verim katmanı düğmesi her karede çizilir; Toprak bakımı 8 yoksa pasif (IMGUI yerleşimi sabit kalsın).
+            bool fertOpen = FertilityAt != null && FertilityOpen != null && FertilityOpen();
+            GUI.enabled = fertOpen;
+            if (GUILayout.Toggle(_showFertility && fertOpen, new GUIContent("Verim", fertOpen ? "Toprağın verimi: kırmızı yorgun, yeşil verimli" : "Toprak bakımı 8 gerekli"), GUI.skin.button, GUILayout.Width(HeaderW)) != (_showFertility && fertOpen))
+            { _showFertility = !_showFertility; RefreshOverlay(); }
+            GUI.enabled = true;
             // Düğme her karede çizilir (koşullu denetim IMGUI yerleşimini bozar); boş yığında pasif.
             GUI.enabled = _svc.CanUndo;
             if (GUILayout.Button(new GUIContent("Geri al", UiSkin.Icon("top_undo"), _svc.CanUndo ? _svc.UndoLabel : null), GUILayout.Width(HeaderW))) _deferred = () => { var u = _svc.Undo(); _status = u.Ok ? "Geri alındı." : u.Reason; RefreshOverlay(); };

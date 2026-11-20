@@ -518,8 +518,9 @@ namespace Thatchwick.Core.Life
                 Upbringing.Reputation.Add(HouseTourBeauty, "ev gezisi");
                 Say("Köylüler evi görmeye geldi; düzeninden söz ettiler (itibar +3).", NoticeLevel.Info);
             }
-            // Irgat (Kâhyalık 3) ve yarıcılık (Kâhyalık 5).
+            // Irgat (Kâhyalık 3) ve yarıcılık (Kâhyalık 5); satış rotası (8).
             DailyHired(day);
+            RunSalesRoute(day);
             // Fırtına çanı (Hava bilgisi 8): yarın fırtınaysa çan çalınır, köy hazırlanır.
             if (tomorrow == WeatherType.Storm && World.Items.Any(x => x.Def.Id == StormBellId))
             {
@@ -649,6 +650,114 @@ namespace Thatchwick.Core.Life
             }
         }
 
+        // ---- ticaret ve arabacılık (belge 45) ----
+        public const double MerchantMarkBonus = 0.05, MarketTripBonus = 0.05;
+        public const int SouthTripEvery = 7, SouthTripLevel = 6, CaravanLevel = 8, FarLandLevel = 9;
+        public static readonly string[] SouthGoods = { "item.olive_oil", "item.coffee_green", "item.pomegranate", "item.saffron", "item.bay_leaf" };
+
+        private bool HasCart() => House.Count(WheelbarrowId) > 0 || House.Count(HorseCartId) > 0 || House.Count(CoveredCartId) > 0 || World.Items.Any(x => x.Def.Id == "item.ox_cart");
+        private bool HasDraftCart() => House.Count(HorseCartId) > 0 || House.Count(CoveredCartId) > 0 || World.Items.Any(x => x.Def.Id == "item.ox_cart");
+
+        /// <summary>Satış eki: Tüccar mührü (Ticaret 10) +%5; pazar seferi (Arabacılık 5, arabayla pazar günü) +%5.</summary>
+        public double TradeCartBonus()
+        {
+            double b = BestSkill(SkillType.Trade) >= Progress.Mastery.MasterLevel ? MerchantMarkBonus : 0.0;
+            if (BestSkill(SkillType.Carting) >= 5 && Festivals.IsMarketDay(Clock.DayIndex) && HasCart()) b += MarketTripBonus;
+            return b;
+        }
+
+        /// <summary>Uzak diyar siparişi (Ticaret 9) ve kervan (Arabacılık 8): haftada bir özel sipariş.</summary>
+        public IEnumerable<(string item, int count, int reward, string label, int reputation)> TradeOrders(long day)
+        {
+            if (BestSkill(SkillType.Trade) >= FarLandLevel)
+            {
+                var far = new[] { "item.silk", "item.tin_brooch", "item.dowry_linen", "item.aged_cheese", "item.glazed_tile" }.Where(Content.Items.Contains).ToList();
+                if (far.Count > 0)
+                {
+                    var id = far[(int)(day / 5 % far.Count)];
+                    yield return (id, 1, (int)Math.Round(Content.Items.Get(id).Price * 2.0), "Uzak diyar siparişi", 3);
+                }
+            }
+            if (BestSkill(SkillType.Carting) >= CaravanLevel && HasDraftCart())
+            {
+                string raw = null; int most = 0;
+                foreach (var kv in House.InventoryList())
+                    if (kv.Value > most && Content.Items.TryGet(kv.Key, out var dd) && dd.HasTag("raw") && dd.Price > 0) { most = kv.Value; raw = kv.Key; }
+                if (raw != null && most >= 6)
+                {
+                    int n = Math.Min(12, most);
+                    yield return (raw, n, (int)Math.Round(Content.Items.Get(raw).Price * n * 0.9), "Kervana mal", 1);
+                }
+            }
+        }
+
+        /// <summary>Güney Yamaçları seferi (Arabacılık 6, çekili araba): haftada bir güney malı ucuza; ertesi sabah gelir. Sonuç metni.</summary>
+        public string SouthTrip()
+        {
+            if (BestSkill(SkillType.Carting) < SouthTripLevel) return $"Güney seferi için Arabacılık {SouthTripLevel} gerekli.";
+            if (!HasDraftCart()) return "Güney seferi için at ya da öküz arabası gerekli.";
+            if (SkillFlag("south") > 0 && Today - SkillFlag("south") < SouthTripEvery) return $"Araba yolda; {SouthTripEvery - (Today - (int)SkillFlag("south"))} gün sonra yeniden.";
+            var goods = SouthGoods.Where(Content.Items.Contains).ToList();
+            int cost = goods.Sum(g => (int)Math.Ceiling(Content.Items.Get(g).Price * 2 * 0.8));
+            if (!House.TrySpend(cost)) return $"Güney malı için {cost} akçe gerekli.";
+            foreach (var g in goods) House.AddOrder(g, 2);
+            SetSkillFlag("south", Today);
+            foreach (var m in Household()) if (m.Skills.GetLevel(SkillType.Carting) >= SouthTripLevel) { m.GainSkillXp(SkillType.Carting, 20); break; }
+            return $"Araba güneye çıktı ({cost} akçe): yarın sabah {string.Join(", ", goods.Select(Name))} gelir.";
+        }
+
+        // ---- kâhyalık: haftalık satış rotası (8) ----
+        private Economy.Market _market;
+        public const int SalesRouteLevel = 8, SalesRouteKeep = 20, SalesRouteMax = 10;
+        public bool SalesRoute { get => SkillFlag("salesroute") > 0; set => SetSkillFlag("salesroute", value ? 1 : 0); }
+
+        /// <summary>Pazar günü kâhya fazlayı satar: ham maddede 20'nin üstünü (her maldan en çok 10). Satılan akçe.</summary>
+        public int RunSalesRoute(long day)
+        {
+            if (_market == null || !SalesRoute || BestSkill(SkillType.Stewardship) < SalesRouteLevel || !Festivals.IsMarketDay(day)) return 0;
+            int earned = 0;
+            foreach (var kv in House.InventoryList().ToList())
+            {
+                if (kv.Value <= SalesRouteKeep || !Content.Items.TryGet(kv.Key, out var dd) || !dd.HasTag("raw") || !_market.IsGood(kv.Key)) continue;
+                earned += _market.Sell(kv.Key, Math.Min(SalesRouteMax, kv.Value - SalesRouteKeep));
+            }
+            if (earned > 0) Say($"Kâhyanın satış rotası: fazla mal pazarda satıldı (+{earned} akçe).", NoticeLevel.Info);
+            return earned;
+        }
+
+        // ---- kâhyalık: görev öncelikleri (2), kiler düzeni (6) ----
+        /// <summary>Görev önceliği (0 düşük, 1 orta, 2 yüksek); kâhya dağıtırken çarpan olarak kullanır.</summary>
+        public int DutyPriority(DutyKind d) => SkillFlag("prio:" + d) == 0 ? 1 : (int)SkillFlag("prio:" + d) - 1;
+        public void SetDutyPriority(DutyKind d, int p) => SetSkillFlag("prio:" + d, Math.Max(0, Math.Min(2, p)) + 1);
+        public double DutyWeight(DutyKind d) => BestSkill(SkillType.Stewardship) >= 2 ? (DutyPriority(d) == 0 ? 0.5 : DutyPriority(d) == 2 ? 2.0 : 1.0) : 1.0;
+
+        // ---- ev düzenleme: oda adları (2) ----
+        private readonly Dictionary<string, string> _roomNames = new Dictionary<string, string>(StringComparer.Ordinal);
+        private static string RoomKey(Room r)
+        {
+            if (r == null || r.Tiles.Count == 0) return null;
+            var t = r.Tiles.OrderBy(p => p.Z).ThenBy(p => p.Y).ThenBy(p => p.X).First();
+            return $"{t.X},{t.Y},{t.Z}";
+        }
+        public string RoomName(Room r) { var k = RoomKey(r); return k != null && _roomNames.TryGetValue(k, out var n) ? n : null; }
+        public string SetRoomName(Room r, string name)
+        {
+            if (BestSkill(SkillType.Decorating) < 2) return "Odaya ad koymak için Ev düzenleme 2 gerekli.";
+            var k = RoomKey(r);
+            if (k == null) return "Oda yok.";
+            name = (name ?? "").Trim();
+            if (name.Length > 24) name = name.Substring(0, 24);
+            if (name.Length == 0) _roomNames.Remove(k); else _roomNames[k] = name;
+            return null;
+        }
+        public string[] ExportRoomNames() => _roomNames.Select(kv => kv.Key + "=" + kv.Value).ToArray();
+        public void ImportRoomNames(string[] names)
+        {
+            _roomNames.Clear();
+            if (names == null) return;
+            foreach (var s in names) { int i = s?.IndexOf('=') ?? -1; if (i > 0) _roomNames[s.Substring(0, i)] = s.Substring(i + 1); }
+        }
+
         // ---- diğer sistemlere verilen pasifler ----
 
         /// <summary>Sözleşme yazıldıysa bugünkü köy işlerinin ödülü x1,15 (Okuryazarlık 7).</summary>
@@ -663,6 +772,7 @@ namespace Thatchwick.Core.Life
             + (House.Count(SledId) > 0 && Clock.Season == Season.Winter ? 20 : 0) + (BestSkill(SkillType.Carting) >= 2 ? 10 : 0);
 
         /// <summary>Bozulma azaltma eki: böcek kovucu ve üstü örtülü araba.</summary>
-        public float SkillSpoilReduction() => (House.Count(RepellentId) > 0 ? 0.05f : 0f) + (House.Count(CoveredCartId) > 0 ? 0.10f : 0f);
+        public float SkillSpoilReduction() => (House.Count(RepellentId) > 0 ? 0.05f : 0f) + (House.Count(CoveredCartId) > 0 ? 0.10f : 0f)
+            + (BestSkill(SkillType.Stewardship) >= 6 ? 0.10f : 0f);   // kiler düzeni (Kâhyalık 6)
     }
 }

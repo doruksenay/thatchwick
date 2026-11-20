@@ -39,6 +39,9 @@ namespace Thatchwick.Game
         public UpbringingSystems Upbringing { get; set; }
         /// <summary>Boş defter ve onarım tahtası için.</summary>
         public Household House { get; set; }
+        /// <summary>Hane beceri panosu, kâhyalık ayarları (belge 45); null ise bölüm görünmez.</summary>
+        public Thatchwick.Core.Life.LifeSystems Life { get; set; }
+        private bool _boardOpen;
 
         public FamilyPanel(Population population, FamilyService family, Dynasty dynasty,
             Func<Character> selected, Action<Character> select, Func<Character, JobRunner> runnerOf)
@@ -86,6 +89,7 @@ namespace Thatchwick.Game
             _scroll = GUILayout.BeginScrollView(_scroll);
             UiSkin.Wrap("— Hane —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (!c.IsVillager) DrawRow(c, actor);
+            DrawSkillBoard();
             DrawRecipes(actor);
             UiSkin.Wrap("— Köylüler (pazar çevresi) —", UiSkin.FamilyTextW);
             foreach (var c in _population.Members) if (c.IsVillager) DrawRow(c, actor);
@@ -320,6 +324,90 @@ namespace Thatchwick.Game
         }
 
         // Beceri seviyesiyle açılan sosyal işler (belge 45): yalnızca açılmış ve bu kişiye uygun olanlar, satır satır.
+        // ---------- hane beceri panosu ve "tek usta" uyarısı (belge 45, 7. bölüm madde 8) ----------
+
+        /// <summary>Bir beceride hanede bu seviyede ve üstünde tek kişi varsa "tek usta" uyarısı verilir.</summary>
+        public const int SoleMasterLevel = 5;
+
+        /// <summary>Hanenin beceri tablosu: her becerinin en iyisi; tek ustası olan beceriler uyarı alır.</summary>
+        public static List<(SkillType skill, Character best, int level, int holders)> SkillTable(IEnumerable<Character> household)
+        {
+            var rows = new List<(SkillType, Character, int, int)>();
+            var members = new List<Character>();
+            foreach (var m in household) if (!m.IsDead && !m.IsVillager) members.Add(m);
+            foreach (SkillType s in Enum.GetValues(typeof(SkillType)))
+            {
+                Character best = null; int lv = 1, holders = 0;
+                foreach (var m in members)
+                {
+                    int l = m.Skills.GetLevel(s);
+                    if (l >= SoleMasterLevel) holders++;
+                    if (l > lv) { lv = l; best = m; }
+                }
+                if (best != null) rows.Add((s, best, lv, holders));
+            }
+            rows.Sort((a, b) => b.Item3.CompareTo(a.Item3));
+            return rows;
+        }
+
+        private void DrawSkillBoard()
+        {
+            if (Life == null) return;
+            if (GUILayout.Button(_boardOpen ? "— Beceri panosu (kapat) —" : "— Beceri panosu —")) _boardOpen = !_boardOpen;
+            var table = SkillTable(_population.Members);
+            // Tek usta uyarısı her zaman görünür: bilgi tek kişide kalırsa ölümüyle kaybolur.
+            foreach (var r in table)
+                if (r.holders == 1 && (r.best.Stage == AgeStage.Elder || r.level >= 7))
+                    UiSkin.Wrap($"⚠ Tek usta: {SkillNames.Name(r.skill)} yalnızca {r.best.Name}'de ({r.level}); bir çırak yetiştir.", UiSkin.FamilyTextW);
+            if (!_boardOpen) return;
+            foreach (var r in table)
+            {
+                string mark = r.holders == 1 ? " ⚠" : "";
+                UiSkin.Wrap(new GUIContent($"{SkillNames.Name(r.skill)} {r.level} · {r.best.Name}{mark}",
+                    Thatchwick.Core.Progress.UnlockGate.LevelSummary(Content, r.skill, Math.Min(10, r.level + 1))), UiSkin.FamilyTextW);
+            }
+            DrawStewardship();
+        }
+
+        /// <summary>İçerik veritabanı (seviye özeti ipucu); null ise ipucu boş.</summary>
+        public Thatchwick.Core.Content.ContentDatabase Content { get; set; }
+
+        private static readonly DutyKind[] PriorityKinds = { DutyKind.Farm, DutyKind.Animals, DutyKind.Mine, DutyKind.House };
+        private static readonly string[] PriorityNames = { "düşük", "orta", "yüksek" };
+
+        // Kâhyalık: öncelik (2), ırgat (3), haftalık plan (4), yarıcılık (5); kiler düzeni (6) ve imece (7) pasif ve kürsüde.
+        private void DrawStewardship()
+        {
+            int lv = Life.BestSkill(SkillType.Stewardship);
+            if (lv < 2) { UiSkin.Wrap("Kâhyalık 2'de görev öncelikleri açılır.", UiSkin.FamilyTextW); return; }
+            UiSkin.Wrap("— Kâhya: görev öncelikleri —", UiSkin.FamilyTextW);
+            foreach (var k in PriorityKinds)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(DutyPlanner.DutyName(k), GUILayout.Width(90f));
+                int p = Life.DutyPriority(k);
+                for (int i = 0; i < 3; i++)
+                    if (GUILayout.Toggle(p == i, PriorityNames[i], GUI.skin.button, GUILayout.Width(60f)) && p != i) Life.SetDutyPriority(k, i);
+                GUILayout.EndHorizontal();
+            }
+            if (lv >= 3)
+            {
+                bool hired = GUILayout.Toggle(Life.HiredHand, $"Irgat tut ({Thatchwick.Core.Life.LifeSystems.HiredWage} akçe/gün{(lv >= 9 ? ", iki ırgat" : "")}: susuz ekini sular)");
+                if (hired != Life.HiredHand) Life.HiredHand = hired;
+            }
+            if (lv >= 4 && GUILayout.Button("Haftalık plan")) _status = Life.WeeklyPlanText();
+            if (lv >= 5)
+            {
+                bool share = GUILayout.Toggle(Life.Sharecrop, "Yarıcılık anlaşması (üç günde bir yarıcı payı)");
+                if (share != Life.Sharecrop) Life.Sharecrop = share;
+            }
+            if (lv >= Thatchwick.Core.Life.LifeSystems.SalesRouteLevel)
+            {
+                bool route = GUILayout.Toggle(Life.SalesRoute, $"Haftalık satış rotası (pazar günü ham maddede {Thatchwick.Core.Life.LifeSystems.SalesRouteKeep}'nin üstü satılır)");
+                if (route != Life.SalesRoute) Life.SalesRoute = route;
+            }
+        }
+
         private void DrawSkillSocials(Character actor, Character target)
         {
             int n = 0;

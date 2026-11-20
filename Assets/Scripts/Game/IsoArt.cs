@@ -235,6 +235,9 @@ namespace Thatchwick.Game
             ["item.crop_pea"] = "iso_crop_pea",
             ["item.crop_pumpkin"] = "iso_crop_pumpkin",
             ["item.crop_turnip"] = "iso_crop_turnip",
+            ["item.crop_herb_bed"] = "iso_crop_herb_bed",   // belge 45 (art/queue 478a)
+            ["item.crop_saffron"] = "iso_crop_saffron",
+            ["item.crop_vetch"] = "iso_crop_vetch",
         };
 
         /// <summary>Ekin evresi (1-3) büyüme oranından.</summary>

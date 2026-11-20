@@ -133,8 +133,10 @@ namespace Thatchwick.Core.Economy
         {
             if (!_content.Items.TryGet(itemId, out var d) || !d.HasTag("raw")) return 1.0;
             int sold = _rawSold.TryGetValue(itemId, out var n) ? n : 0;
-            if (sold <= _cfg.RawWeeklyFree) return 1.0;
-            return Math.Max(_cfg.RawFloor, 1.0 - _cfg.RawDropPerUnit * (sold - _cfg.RawWeeklyFree));
+            // Toptan satış (Ticaret 6): haftalık serbest miktar 1,5 kat.
+            int free = HouseTrade() >= WholesaleLevel ? (int)Math.Round(_cfg.RawWeeklyFree * WholesaleFreeFactor) : _cfg.RawWeeklyFree;
+            if (sold <= free) return 1.0;
+            return Math.Max(_cfg.RawFloor, 1.0 - _cfg.RawDropPerUnit * (sold - free));
         }
 
         public int RawSoldThisWeek(string itemId) => _rawSold.TryGetValue(itemId, out var n) ? n : 0;
@@ -168,14 +170,68 @@ namespace Thatchwick.Core.Economy
         public int BuyPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
-            return Math.Max(1, (int)Math.Ceiling(def.Price * SeasonMultiplier(def) * TradeBuyFactor));
+            return Math.Max(1, (int)Math.Ceiling(def.Price * SeasonMultiplier(def) * TradeBuyFactor * (HaggledToday ? HaggleDiscount : 1.0)));
+        }
+
+        // ---------- Ticaret basamakları (belge 45) ----------
+        public const int HaggleLevel = 2, YesterdayLevel = 3, StallLevel = 5, WholesaleLevel = 6, BarterLevel = 7, FairLevel = 8;
+        public const double HaggleDiscount = 0.9, StallBonus = 0.10, FairBonus = 0.15, WholesaleFreeFactor = 1.5;
+
+        /// <summary>Hanenin en iyi Ticaret seviyesi (tezgâh, toptan, takas); null ise komut alanınki.</summary>
+        public Func<int> HouseTradeLevel { get; set; }
+        /// <summary>Bugün şenlik (panayır) mı; null ise değil.</summary>
+        public Func<bool> IsFairDay { get; set; }
+        private int HouseTrade() => Math.Max(TradeLevel(), HouseTradeLevel != null ? HouseTradeLevel() : 1);
+
+        private long _haggleDay = -1, _stallDay = -1;
+        private bool _haggleWon;
+        public bool HaggledToday => _haggleDay == _offerDay && _haggleWon;
+        public bool StallToday => _stallDay == _offerDay;
+
+        /// <summary>Pazarlık et (Ticaret 2): günde bir; tutarsa bugünkü alışlar %10 ucuz. Sonuç metni.</summary>
+        public string Haggle()
+        {
+            int lv = TradeLevel();
+            if (lv < HaggleLevel) return $"Pazarlık için Ticaret {HaggleLevel} gerekli.";
+            if (_haggleDay == _offerDay) return HaggledToday ? "Bugünkü pazarlık tuttu (alışlar %10 ucuz)." : "Bugün pazarlık edildi; satıcı yumuşamadı.";
+            _haggleDay = _offerDay;
+            var rng = new Random(unchecked(_seed * 31 + (int)_offerDay * 977));
+            _haggleWon = rng.NextDouble() < Math.Min(0.9, 0.35 + 0.05 * lv);
+            TradeXp(4);
+            return _haggleWon ? "Pazarlık tuttu: bugün alışlar %10 ucuz." : "Satıcı inat etti; fiyat aynı kaldı.";
+        }
+
+        /// <summary>Tezgâh kur (Ticaret 5): bugün satışlar %10 pahalı; panayır günü Ticaret 8 ile %15 daha.</summary>
+        public string SetUpStall()
+        {
+            if (HouseTrade() < StallLevel) return $"Tezgâh için Ticaret {StallLevel} gerekli.";
+            if (StallToday) return "Tezgâh bugün kurulu.";
+            _stallDay = _offerDay;
+            TradeXp(6);
+            bool fair = IsFairDay != null && IsFairDay() && HouseTrade() >= FairLevel;
+            return fair ? "Panayırda tezgâh kuruldu: bugün satışlar %25 pahalı." : "Tezgâh kuruldu: bugün satışlar %10 pahalı.";
+        }
+
+        private double StallFactor() => !StallToday ? 1.0 : 1.0 + StallBonus + (IsFairDay != null && IsFairDay() && HouseTrade() >= FairLevel ? FairBonus : 0.0);
+
+        // Dünkü fiyatlar (Ticaret 3): gün değişince bugünkü satış fiyatları dünkü olur.
+        private Dictionary<string, int> _yesterday = new Dictionary<string, int>(), _todayPrices = new Dictionary<string, int>();
+        /// <summary>Dünkü satış fiyatı (Ticaret 3 yoksa ya da bilinmiyorsa null).</summary>
+        public int? YesterdaySellPrice(string itemId) =>
+            HouseTrade() >= YesterdayLevel && _yesterday.TryGetValue(itemId, out var p) ? p : (int?)null;
+
+        private void SnapshotPrices()
+        {
+            _yesterday = _todayPrices;
+            _todayPrices = new Dictionary<string, int>();
+            foreach (var g in Goods()) _todayPrices[g.Id] = SellPrice(g.Id);
         }
 
         public int SellPrice(string itemId)
         {
             var def = _content.Items.Get(itemId);
             double bonus = 1.0 + (SellBonus != null ? Math.Max(0.0, Math.Min(0.75, SellBonus())) : 0.0);
-            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus * TradeSellFactor * RawSaturation(itemId), MidpointRounding.AwayFromZero));
+            return Math.Max(1, (int)Math.Round(def.Price * _cfg.SellRatio * Demand(itemId) * SeasonMultiplier(def) * bonus * TradeSellFactor * RawSaturation(itemId) * StallFactor(), MidpointRounding.AwayFromZero));
         }
 
         /// <summary>Gün ilerledikçe talep toparlanır; yeni günde teklifler yenilenir.</summary>
@@ -189,7 +245,7 @@ namespace Thatchwick.Core.Economy
                     _demand[k] = Math.Min(1.0, _demand[k] + _cfg.DemandRecoveryPerDay * gameDays);
             }
             long day = (long)Math.Floor(totalDays);
-            if (day != _offerDay) RefreshOffers(day);
+            if (day != _offerDay) { RefreshOffers(day); SnapshotPrices(); }
             long week = day / 7;
             if (week != _rawWeek) { _rawWeek = week; _rawSold.Clear(); }
         }
@@ -253,7 +309,7 @@ namespace Thatchwick.Core.Economy
         /// <summary>Pazardan alınabilir mi? "craftonly" etiketli mal (işlenmiş eyer) yalnızca yapılır, satılabilir ama alınmaz.</summary>
         public bool IsBuyable(string id) => IsGood(id) && _content.Items.TryGet(id, out var d) && !d.HasTag("craftonly") && !d.HasTag("merchantonly");   // tüccar malı pazarda alınmaz
 
-        private bool IsGood(string id) => _content.Items.TryGet(id, out var d) && d.Placement == ItemPlacement.Resource && d.Price > 0;
+        public bool IsGood(string id) => _content.Items.TryGet(id, out var d) && d.Placement == ItemPlacement.Resource && d.Price > 0;
         private string Name(string id) => _content.Items.TryGet(id, out var d) ? d.DisplayName : id;
 
         // Gün ve tohuma bağlı, tekrarlanabilir teklifler: yarısı köy işi, yarısı takas.
@@ -265,12 +321,13 @@ namespace Thatchwick.Core.Economy
             if (goods.Count == 0) return;
             var rng = new Random(unchecked(_seed * 7919 + (int)day * 104729));
             int offerCount = _cfg.OffersPerDay + Math.Max(0, ExtraOffers != null ? ExtraOffers() : 0);
-            for (int i = 0; i < offerCount; i++)
+            int barterExtra = HouseTrade() >= BarterLevel ? 1 : 0;   // takas anlaşması (Ticaret 7): bir takas fazla
+            for (int i = 0; i < offerCount + barterExtra; i++)
             {
                 var give = goods[rng.Next(goods.Count)];
                 int giveCount = rng.Next(3, 9);
                 var offer = new TradeOffer { Id = (int)(day * 100 + i), GiveItem = give.Id, GiveCount = giveCount };
-                bool contract = i % 2 == 0 || goods.Count < 2;
+                bool contract = (i % 2 == 0 && i < offerCount) || goods.Count < 2;
                 if (contract)
                 {
                     offer.RewardAkce = Math.Max(1, (int)Math.Ceiling(give.Price * giveCount * _cfg.ContractRewardRatio * SeasonMultiplier(give)));

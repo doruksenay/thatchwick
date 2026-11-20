@@ -18,6 +18,7 @@ namespace Thatchwick.Game
     {
         private readonly HomeLife _home;
         private readonly LifeSystems _life;
+        private readonly System.Collections.Generic.Dictionary<int, string> _nameEdits = new System.Collections.Generic.Dictionary<int, string>();
         private readonly WorldState _world;
         private readonly ContentDatabase _content;
         private readonly Household _house;
@@ -104,7 +105,17 @@ namespace Thatchwick.Game
             foreach (var room in HouseRooms())
             {
                 n++;
-                GUILayout.Label($"— {_home.RoomSummary(room)} ({room.Area} karo, kat {room.Level}) —");
+                string given = _life.RoomName(room);
+                GUILayout.Label($"— {(given != null ? given + ": " : "")}{_home.RoomSummary(room)} ({room.Area} karo, kat {room.Level}) —");
+                // Odaya ad koy (Ev düzenleme 2, belge 45).
+                if (_life.BestSkill(Thatchwick.Core.Characters.SkillType.Decorating) >= 2)
+                {
+                    GUILayout.BeginHorizontal();
+                    if (!_nameEdits.TryGetValue(room.Id, out var edit)) edit = given ?? "";
+                    _nameEdits[room.Id] = GUILayout.TextField(edit, 24, GUILayout.Width(150f));
+                    if (GUILayout.Button("Ad koy", GUILayout.Width(60f))) _status = _life.SetRoomName(room, _nameEdits[room.Id]) ?? "Odanın adı kondu.";
+                    GUILayout.EndHorizontal();
+                }
                 var beauty = _life.Mood.BeautyOf(room);
                 GUILayout.Label($"Güzellik: {beauty.Breakdown()}");
                 var (kind, tidy) = _home.Classify(room);

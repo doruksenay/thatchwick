@@ -183,11 +183,11 @@ res("item.bone", "Kemik", 1, ["raw"])
 res("item.bone_meal", "Kemik unu", 4, ["fertilizer"])
 recipe("bone_meal", "item.mortar_pestle", "item.bone_meal", [("item.bone", 3)], "SoilCare", 4, "Kemik unu döv", count=2)
 res("item.coffee_spent", "Kahve telvesi", 0, ["fertilizer"])
-placeable("item.compost_heap", "Kompost yığını", 15, "farm", 6, "SoilCare", styleSet="Köylü", rooms=["outdoor"], site="outdoor", belongs=["outdoor"],
-          interactions=[{"id": "compost_pomace", "displayName": "Pirinayı komposta göm (3)", "durationDays": 0.05, "skill": "SoilCare", "skillXp": 6, "minLevel": 6,
-                         "materials": [{"item": "item.pomace", "count": 3}], "produce": [{"item": "item.compost", "count": 2}]},
-                        {"id": "compost_grounds", "displayName": "Telveyi komposta göm (3)", "durationDays": 0.04, "skill": "SoilCare", "skillXp": 4, "minLevel": 6,
-                         "materials": [{"item": "item.coffee_spent", "count": 3}], "produce": [{"item": "item.compost", "count": 1}]}])
+# Kompost yığını (var): pirina ve telve girer (Toprak bakımı 6).
+inter("item.compost_heap", {"id": "compost_pomace", "displayName": "Pirinayı komposta göm (3)", "durationDays": 0.05, "skill": "SoilCare", "skillXp": 6, "minLevel": 6,
+                            "materials": [{"item": "item.pomace", "count": 3}], "produce": [{"item": "item.compost", "count": 2}]})
+inter("item.compost_heap", {"id": "compost_grounds", "displayName": "Telveyi komposta göm (3)", "durationDays": 0.04, "skill": "SoilCare", "skillXp": 4, "minLevel": 6,
+                            "materials": [{"item": "item.coffee_spent", "count": 3}], "produce": [{"item": "item.compost", "count": 1}]})
 for cz in ["cezve_brew", "cezve_brew_fine"]:
     x = next((i for i in ids["item.cezve"]["interactions"] if i["id"] == cz), None)
     if x is not None:
@@ -504,7 +504,10 @@ for k, it in ids.items():
     if it.get("category") == "sleep" and k not in ("item.cradle",):
         W(k, "tidy", "Odayı toparla", "Decorating", 3, dur=0.05, xp=5)
         W(k, "guest_room", "Misafir odası hazırla", "Decorating", 8, dur=0.1, xp=12)
-for k, it in ids.items():
+placeable("item.festival_bunting", "Bayram süslemesi", 12, "decor_wall", 9, "Decorating", placement="Wall", wallBands=["üst"], material="cloth", styleSet="Zanaatkâr",
+          rooms=["living", "kitchen", "bedroom"], beauty=6, interactions=[], tags=["craftonly"], site="any", belongs=["living", "kitchen", "bedroom", "inn_room"])
+recipe("festival_bunting", "item.loom", "item.festival_bunting", [("item.cloth", 2), ("item.dye_red", 1), ("item.dye_yellow", 1)], "Decorating", 9, "Bayram süslemesi dik", dur=0.15)
+for k, it in list(ids.items()):
     if it.get("category") == "decor_wall" and int(it.get("width", 1)) >= 2:
         it["level"] = max(int(it.get("level", 1)), 6)
 
@@ -557,6 +560,13 @@ RETEXT = {
     ("Athletics", 4, "Ağaca tırman"): "Ağaca tırman: meyve toplama %25 hızlı",
     ("Woodcutting", 4, "Yönlü devir"): "Yönlü devir: ağaç kesimi %15 hızlı",
     ("Literacy", 1, "Yazıları söker"): "Yazıları söker (kitap oku)",
+    ("Carting", 2, "Çift yük taşıma"): "Çift yük: depo +10",
+    ("Carting", 5, "Pazar seferi"): "Pazar seferi: arabayla pazar günü satış %5 iyi",
+    ("Carting", 8, "Kervana mal götür"): "Kervana mal götür (haftalık toptan sipariş)",
+    ("Stewardship", 6, "Kiler görevi"): "Kiler düzeni: bozulma %10 az",
+    ("Trade", 3, "Dünkü fiyatlar"): "Dünkü fiyatlar görünür (▲▼)",
+    ("Trade", 10, "Ustalık: Tüccar mührü"): "Ustalık: Tüccar mührü (satış +%5)",
+    ("Hunting", 9, "Gözle"): "Gözle (Doğa Defteri'ne yeni tür)",
     ("Hunting", 7, "Kurt avı"): "Kurt avı",
 }
 kept = []

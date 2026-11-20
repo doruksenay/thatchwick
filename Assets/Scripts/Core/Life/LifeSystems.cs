@@ -475,7 +475,7 @@ namespace Thatchwick.Core.Life
         }
 
         public float SpoilReduction() => Math.Min(0.8f, BestOf(m => m.SpoilReduction) + Village.SpoilReduction + SkillSpoilReduction());
-        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus());
+        public double SellBonus() => Math.Min(0.75, BestOf(m => m.SellBonus) + Village.MarketSell + Upbringing.Reputation.SellBonus() + PersuadeBonus() + TradeCartBonus());
 
         /// <summary>Gönül kazanma 8 "İkna et": hanede ikna edici biri varsa o gün satış %5 iyi (belge 45).</summary>
         public const double PersuadeSellBonus = 0.05;
@@ -646,6 +646,7 @@ namespace Thatchwick.Core.Life
                     if (c.Skills.GetLevel(s) >= Progress.Mastery.MasterLevel && !skills.Contains(s)) skills.Add(s);
             foreach (var o in Progress.Mastery.Orders(Content, skills, day))
                 yield return (o.item, o.count, o.reward, $"Usta siparişi: {SkillNames.Name(o.skill)}", Progress.Mastery.OrderReputation);
+            foreach (var o in TradeOrders(day)) yield return o;
         }
 
         /// <summary>Hayvanlar: can yoldaşı bağı (yakınlık, bakım, ölüm), kalite ve binicilik bonusu.</summary>
@@ -736,7 +737,13 @@ namespace Thatchwick.Core.Life
         public ContestBook Contests { get; } = new ContestBook();
         private static Animal FindAnimal(AnimalSystem animals, int id) { foreach (var a in animals.Animals) if (a.Id == id) return a; return null; }
 
-        public void Attach(Market market) { market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor; }
+        public void Attach(Market market)
+        {
+            market.SellBonus = SellBonus; market.ExtraOffers = Festivals.ExtraOffers; Merchant.BuyFactor = () => market.TradeBuyFactor;
+            market.HouseTradeLevel = () => BestSkill(SkillType.Trade);              // tezgâh, toptan, takas (belge 45)
+            _market = market;
+            market.IsFairDay = () => Festivals.TodaysFestival() != null;
+        }
         public void Attach(Thatchwick.Core.Build.BuildService build) { build.Discount = BuildDiscount; Home.Build = build; }
         /// <summary>Depo: sandığa demir kuşak kapasite verir (belge 45).</summary>
         public void Attach(Thatchwick.Core.Build.StorageService storage) { storage.ExtraStorage = Home.ExtraStorage; }
@@ -1110,7 +1117,8 @@ namespace Thatchwick.Core.Life
                 wolfHunted = Wolves != null ? Wolves.HuntedThisSeason : 0,
                 keepsakes = Keepsakes.Export(),
                 home = Home.Export(),
-                skillFlags = ExportSkillFlags()
+                skillFlags = ExportSkillFlags(),
+                roomNames = ExportRoomNames()
             };
             var graves = new List<GraveSave>();
             foreach (var g in Graves.Graves)
@@ -1130,6 +1138,7 @@ namespace Thatchwick.Core.Life
             Festivals.CelebratedDay = data.festivalCelebratedDay;
             Upbringing.Import(data.upbringing);
             ImportSkillFlags(data.skillFlags);
+            ImportRoomNames(data.roomNames);
             Merchant.Import(data.merchant);
             Journal.Import(data.natureJournal);
             Adoptions.Import(data.adoptedWild);

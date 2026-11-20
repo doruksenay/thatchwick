@@ -9039,6 +9039,46 @@
               "count": 2
             }
           ]
+        },
+        {
+          "id": "compost_pomace",
+          "displayName": "Pirinayı komposta göm (3)",
+          "durationDays": 0.05,
+          "skill": "SoilCare",
+          "skillXp": 4,
+          "minLevel": 6,
+          "materials": [
+            {
+              "item": "item.pomace",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.compost",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "compost_grounds",
+          "displayName": "Telveyi komposta göm (3)",
+          "durationDays": 0.04,
+          "skill": "SoilCare",
+          "skillXp": 3,
+          "minLevel": 6,
+          "materials": [
+            {
+              "item": "item.coffee_spent",
+              "count": 3
+            }
+          ],
+          "produce": [
+            {
+              "item": "item.compost",
+              "count": 1
+            }
+          ]
         }
       ],
       "art": {
@@ -30463,6 +30503,37 @@
       ]
     },
     {
+      "id": "item.festival_bunting",
+      "displayName": "Bayram süslemesi",
+      "category": "decor_wall",
+      "price": 12,
+      "level": 9,
+      "lockSkill": "Decorating",
+      "placement": "Wall",
+      "wallBands": [
+        "üst"
+      ],
+      "material": "cloth",
+      "styleSet": "Zanaatkâr",
+      "rooms": [
+        "living",
+        "kitchen",
+        "bedroom"
+      ],
+      "beauty": 6,
+      "interactions": [],
+      "tags": [
+        "craftonly"
+      ],
+      "site": "any",
+      "belongs": [
+        "living",
+        "kitchen",
+        "bedroom",
+        "inn_room"
+      ]
+    },
+    {
       "id": "item.wheelbarrow",
       "displayName": "El arabası",
       "placement": "Resource",
@@ -35299,6 +35370,30 @@
       "skillXp": 8,
       "displayName": "Davul ger",
       "minLevel": 6
+    },
+    {
+      "id": "festival_bunting",
+      "station": "item.loom",
+      "produces": "item.festival_bunting",
+      "materials": [
+        {
+          "item": "item.cloth",
+          "count": 2
+        },
+        {
+          "item": "item.dye_red",
+          "count": 1
+        },
+        {
+          "item": "item.dye_yellow",
+          "count": 1
+        }
+      ],
+      "durationDays": 0.15,
+      "skill": "Decorating",
+      "skillXp": 4,
+      "displayName": "Bayram süslemesi dik",
+      "minLevel": 9
     },
     {
       "id": "wheelbarrow",
