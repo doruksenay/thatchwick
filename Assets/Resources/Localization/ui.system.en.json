@@ -1,0 +1,3 @@
+{
+  "ui.sim.error": "Something went wrong in the simulation ({system}); the game keeps running. Details are in thatchwick_errors.log."
+}

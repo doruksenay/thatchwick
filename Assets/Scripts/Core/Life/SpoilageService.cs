@@ -18,7 +18,19 @@ namespace Thatchwick.Core.Life
     {
         private sealed class Batch { public int Count; public double Age; }
         // Parti anahtarı: kalite 0'da yalnızca kimlik, değilse "kimlik#kalite" (53: bozulma kaliteyle ayrı izlenir).
-        private static string BatchKey(string id, int q) => ItemKey.StockKey(id, q);
+        // Parti anahtarları (kimlik + kalite) bir kez üretilir: her adımda her bozulabilen tanım için metin birleştirmek
+        // adım başına ~35 KB çöp üretiyordu.
+        private static readonly Dictionary<string, string[]> KeyCache = new Dictionary<string, string[]>(StringComparer.Ordinal);
+        private static string BatchKey(string id, int q)
+        {
+            if (id == null || q < 0 || q > ItemQuality.Max) return ItemKey.StockKey(id, q);
+            string[] keys;
+            lock (KeyCache)
+            {
+                if (!KeyCache.TryGetValue(id, out keys)) KeyCache[id] = keys = new string[ItemQuality.Max + 1];
+            }
+            return keys[q] ?? (keys[q] = ItemKey.StockKey(id, q));
+        }
 
         private readonly ContentDatabase _content;
         private readonly Household _house;
@@ -241,9 +253,10 @@ namespace Thatchwick.Core.Life
             _planAge += gameDays;
             if (_plan == null || _planAge >= PlanRefreshDays) { _plan = Plan(); _planAge = 0; }
             var plan = _plan;
+            double extra = Extra();   // adım başına bir kez (eskiden her tanım için yeniden hesaplanıyordu)
             foreach (var def in Spoilable())
             {
-                double rate = plan.RateOf(def.Id) * (plan.Rate.ContainsKey(def.Id) ? 1.0 : Extra());
+                double rate = plan.RateOf(def.Id) * (plan.Rate.ContainsKey(def.Id) ? 1.0 : extra);
                 int removed = 0;
                 for (int q = 0; q <= ItemQuality.Max; q++)
                 {

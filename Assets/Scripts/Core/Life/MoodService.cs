@@ -247,7 +247,7 @@ namespace Thatchwick.Core.Life
                 else if (item.IsDecor) surface = true;
                 else if (item.IsCeiling) ceiling = true;
                 if (item.GivesLight) light = true;
-                if (item.Def.StyleSet == "Tüccar" || item.Def.StyleSet == "Asil") result.FineItems++;
+                if (ItemCatalog.IsFineSet(item.Def.StyleSet)) result.FineItems++;
             }
             double sum = 0;
             foreach (var kv in perCategory) sum += Math.Min(BeautyCategoryCap, kv.Value);

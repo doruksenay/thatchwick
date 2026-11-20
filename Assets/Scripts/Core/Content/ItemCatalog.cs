@@ -25,7 +25,31 @@ namespace Thatchwick.Core.Content
         };
 
         /// <summary>Stil setleri, kalite sırasıyla.</summary>
-        public static readonly string[] StyleSets = { "Köylü", "Zanaatkâr", "Tüccar", "Asil" };
+        public static readonly string[] StyleSets = { StyleVillager, StyleArtisan, StyleMerchant, StyleNoble };
+
+        // Stil seti kimlikleri. items.json'daki "styleSet" değeri bir KİMLİKTİR (tarihsel nedenle Türkçe sözcük), görünen ad
+        // değildir: karşılaştırmalar bu sabitlerle yapılır, ekranda StyleSetKey ile çevrilen ad gösterilir. Çeviri yapılırken
+        // items.json'daki değer değiştirilmez.
+        public const string StyleVillager = "Köylü", StyleArtisan = "Zanaatkâr", StyleMerchant = "Tüccar", StyleNoble = "Asil",
+            StyleCatki = "Çatkı", StyleYoruk = "Yörük";
+
+        /// <summary>Tüccar ve Asil takımları: "iyi eşya" sayılır ve yalnızca şehirdeki dükkânda satılır.</summary>
+        public static bool IsFineSet(string styleSet) => styleSet == StyleMerchant || styleSet == StyleNoble;
+
+        /// <summary>Stil setinin görünen adının arayüz anahtarı (ui.styleset.*); bilinmeyen sette null (kimlik gösterilir).</summary>
+        public static string StyleSetKey(string styleSet)
+        {
+            switch (styleSet)
+            {
+                case StyleVillager: return "ui.styleset.villager";
+                case StyleArtisan: return "ui.styleset.artisan";
+                case StyleMerchant: return "ui.styleset.merchant";
+                case StyleNoble: return "ui.styleset.noble";
+                case StyleCatki: return "ui.styleset.catki";
+                case StyleYoruk: return "ui.styleset.yoruk";
+                default: return null;
+            }
+        }
 
         /// <summary>Satılmayan (retired) eşyanın neden alınamadığı; büyük hayvan barınağı için ahır odasını gösterir.</summary>
         public static string RetiredText(ItemDef d) =>

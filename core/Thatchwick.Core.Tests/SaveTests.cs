@@ -185,7 +185,7 @@ namespace Thatchwick.Core.Tests
             Assert.Equal(s.Account.WorkXpToday(31), loaded.Account.WorkXpToday(31));
 
             var heat = new HeatSystem(loaded.World, loaded.Clock.Config, null, loaded.Clock.TotalDays);
-            heat.RestoreTemperatures(loaded.Temperatures);
+            SaveGame.RestoreHeat(loaded, heat);
             Assert.Equal((double)s.Heat.TemperatureAt(new GridPos(3, 3)), (double)heat.TemperatureAt(new GridPos(3, 3)), 4);
 
             var market = new Market(s.Db, loaded.Household, null, null, seed: 5);

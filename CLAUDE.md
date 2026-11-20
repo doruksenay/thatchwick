@@ -12,7 +12,7 @@ Oyun: Thatchwick: Generations of a Village (Unity 6, 2D URP, izometrik 2:1). Tas
 ## Dil ve yerelleştirme
 Oyun 5 dilde: İngilizce (kaynak dil), Türkçe, sonra İspanyolca, Fransızca, Almanca. Kurallar: `docs/yerellestirme.md`.
 - İçeriğe (items/life/appearance.json) yeni metin ekleyince İngilizcesini `Assets/Resources/Localization/content.en.json`'a aynı turda yaz. Eksikleri `python tools/loc/check.py` listeler; eksik varsa CI'da `LocalizationTests` kırılır.
-- Yeni arayüz metni düz yazılmaz: anahtar `ui.en.json` ve `ui.tr.json`'a girer, kodda `GameLocalization.T("ui....")`. Core metin üretecekse `LocText` döndürür.
+- Yeni arayüz metni düz yazılmaz: anahtar özelliğin kendi alan dosyasına girer (`Assets/Resources/Localization/ui.<alan>.en.json` ve `ui.<alan>.tr.json`, ör. `ui.build.*`; yoksa oluştur), kodda `GameLocalization.T("ui....")`. Ana `ui.en.json` / `ui.tr.json` dosyalarına yeni anahtar ekleme: herkes aynı iki dosyaya yazınca her dalda çakışma çıkıyor. Bir anahtar yalnızca bir dosyada olur (test denetler). Core metin üretecekse `LocText` döndürür.
 - Anahtar ve kimlik karşılaştırmasında `ToUpperInvariant`/`StringComparison.Ordinal` kullan; Türkçe cihazda `ToUpper()` "i"yi "İ" yapar.
 
 ## Asset kuyruğu (PixelLab)

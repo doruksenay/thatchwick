@@ -75,7 +75,27 @@ namespace Thatchwick.Game
                 if (asset == null) continue; // henüz çevrilmemiş tablo: kaynak dile düşülür
                 table.Merge(LocTable.Parse(asset.text, errors, $"{name}.{language}.json"));
             }
+            // Alan dosyaları: ui.<alan>.<dil>.json (ui.build.en.json gibi). Yeni arayüz metinleri kendi alan dosyasına
+            // yazılır; herkesin aynı iki büyük dosyaya satır eklemesi her dalda birleştirme çakışması üretiyordu.
+            var all = Resources.LoadAll<TextAsset>("Localization");
+            if (all != null)
+            {
+                var extras = new List<TextAsset>();
+                foreach (var asset in all)
+                    if (asset != null && UiAreaFile(asset.name, language)) extras.Add(asset);
+                extras.Sort((a, b) => string.CompareOrdinal(a.name, b.name));   // yükleme sırası belirli olsun
+                foreach (var asset in extras) table.Merge(LocTable.Parse(asset.text, errors, asset.name + ".json"));
+            }
             return table;
+        }
+
+        /// <summary>"ui.&lt;alan&gt;.&lt;dil&gt;" adlı alan dosyası mı (ana "ui.&lt;dil&gt;" tablosu değil).</summary>
+        private static bool UiAreaFile(string assetName, string language)
+        {
+            if (string.IsNullOrEmpty(assetName)) return false;
+            string suffix = "." + language;
+            return assetName.StartsWith("ui.", StringComparison.Ordinal) && assetName.EndsWith(suffix, StringComparison.Ordinal)
+                && assetName.Length > 3 + suffix.Length;
         }
 
         private static string SystemLanguageCode()
