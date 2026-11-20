@@ -2,45 +2,42 @@
   "job": "s130",
   "kind": "ambience",
   "family": "ambience",
-  "created": "2026-11-20T16:46:45Z",
+  "created": "2026-11-20T17:08:46Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
           "duration_s": 20.0,
           "lufs": -26.0,
-          "true_peak_db": -12.5,
-          "rms_db": -27.5,
+          "true_peak_db": -4.5,
+          "rms_db": -28.6,
           "flags": [],
           "pass": true,
-          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). A calm, still, sunny spring day near a small medieval farm. Quiet open-air room tone with soft distant birdsong and a faint insect hum. No wind, no gusts, no rustling, no rain, no hiss, no storm; nothing stands out. Details: faint insect hum and a far-off rooster.",
+          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). A bright, cheerful, sunny spring morning on a cozy little medieval farm. Lively, happy birdsong, bees humming over flowers, warm and pleasant, a feeling of a lovely day. Gentle and even. No wind, no rain, no gloom, no drone, no hiss. Details: bees buzzing over flowers and lively bird chatter.",
           "duration": 20,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
           "duration_s": 20.0,
           "lufs": -26.0,
-          "true_peak_db": -11.6,
-          "rms_db": -27.6,
-          "flags": [
-            "c1 ile neredeyse aynı (0.0121)"
-          ],
+          "true_peak_db": -6.4,
+          "rms_db": -28.6,
+          "flags": [],
           "pass": true,
-          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). A calm, still, sunny spring day near a small medieval farm. Quiet open-air room tone with soft distant birdsong and a faint insect hum. No wind, no gusts, no rustling, no rain, no hiss, no storm; nothing stands out. Details: quiet open meadow, a few distant birds.",
+          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). A bright, cheerful, sunny spring morning on a cozy little medieval farm. Lively, happy birdsong, bees humming over flowers, warm and pleasant, a feeling of a lovely day. Gentle and even. No wind, no rain, no gloom, no drone, no hiss. Details: a bright morning chorus with a distant cuckoo.",
           "duration": 20,
-          "model": "eleven_text_to_sound_v3",
-          "similarity_warning": true
+          "model": "eleven_text_to_sound_v3"
         },
         "c3": {
           "duration_s": 20.0,
           "lufs": -26.0,
-          "true_peak_db": -12.3,
-          "rms_db": -28.4,
+          "true_peak_db": -7.3,
+          "rms_db": -29.2,
           "flags": [
-            "c1 ile neredeyse aynı (0.0136)"
+            "c1 ile neredeyse aynı (0.0112)"
           ],
           "pass": true,
-          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). A calm, still, sunny spring day near a small medieval farm. Quiet open-air room tone with soft distant birdsong and a faint insect hum. No wind, no gusts, no rustling, no rain, no hiss, no storm; nothing stands out. Details: soft distant birdsong over still air.",
+          "prompt": "Medieval countryside ambience bed, continuous and even, no music, no voices, no modern sounds (no cars, no engines, no planes). A bright, cheerful, sunny spring morning on a cozy little medieval farm. Lively, happy birdsong, bees humming over flowers, warm and pleasant, a feeling of a lovely day. Gentle and even. No wind, no rain, no gloom, no drone, no hiss. Details: cheerful songbirds close by, a blackbird and finches.",
           "duration": 20,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
@@ -50,19 +47,14 @@
         "pairs_dup": [
           [
             "c1",
-            "c2",
-            0.0121
-          ],
-          [
-            "c1",
             "c3",
-            0.0136
+            0.0112
           ]
         ],
         "nearest": {
-          "c1": 0.0121,
-          "c2": 0.012,
-          "c3": 0.012
+          "c1": 0.0112,
+          "c2": 0.0352,
+          "c3": 0.0112
         },
         "ref_distance": {}
       }

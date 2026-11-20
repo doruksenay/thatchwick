@@ -2,118 +2,122 @@
   "job": "s205",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T16:47:23Z",
+  "created": "2026-11-20T17:09:02Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 0.87,
-          "lufs": -26.2,
+          "duration_s": 0.864,
+          "lufs": -24.3,
           "true_peak_db": -1.0,
-          "rms_db": -25.4,
-          "note": "tepe sınırında, yükseklik -26.2 (hedef -18)",
+          "rms_db": -24.3,
+          "note": "tepe sınırında, yükseklik -24.3 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: still pond water.",
-          "duration": 1.272834207912818,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: clear shallow pond edge.",
+          "duration": 1.0606951732606817,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 0.938,
-          "lufs": -26.7,
+          "duration_s": 0.752,
+          "lufs": -19.5,
           "true_peak_db": -1.0,
-          "rms_db": -23.6,
-          "note": "tepe sınırında, yükseklik -26.7 (hedef -18)",
+          "rms_db": -19.3,
           "flags": [
-            "c1 ile neredeyse aynı (0.0129)"
+            "c1 ile neredeyse aynı (0.0132)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: shallow clear stream water.",
-          "duration": 1.1492385147481063,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: shallow clear stream.",
+          "duration": 0.9576987622900887,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c3": {
-          "duration_s": 0.951,
-          "lufs": -21.3,
+          "duration_s": 0.695,
+          "lufs": -27.2,
           "true_peak_db": -1.0,
-          "rms_db": -23.1,
-          "note": "tepe sınırında, yükseklik -21.3 (hedef -18)",
+          "rms_db": -25.3,
+          "note": "tepe sınırında, yükseklik -27.2 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0095)"
+            "c1 ile neredeyse aynı (0.014)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: still pond water.",
-          "duration": 1.1769949797720585,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: clear shallow pond edge.",
+          "duration": 0.9808291498100488,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c4": {
-          "duration_s": 0.894,
-          "lufs": -18.0,
-          "true_peak_db": -2.4,
-          "rms_db": -18.7,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: shallow clear stream water.",
-          "duration": 1.111728746780375,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c5": {
-          "duration_s": 0.963,
-          "lufs": -25.9,
+          "duration_s": 0.743,
+          "lufs": -20.8,
           "true_peak_db": -1.0,
-          "rms_db": -28.1,
-          "note": "tepe sınırında, yükseklik -25.9 (hedef -18)",
+          "rms_db": -24.7,
           "flags": [
-            "c1 ile neredeyse aynı (0.0244)"
+            "c1 ile neredeyse aynı (0.0324)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: still pond water.",
-          "duration": 1.1611315942694398,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: shallow clear stream.",
+          "duration": 0.9264406223169792,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 0.719,
+          "lufs": -22.2,
+          "true_peak_db": -1.0,
+          "rms_db": -23.2,
+          "note": "tepe sınırında, yükseklik -22.2 (hedef -18)",
+          "flags": [
+            "c1 ile neredeyse aynı (0.0297)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: clear shallow pond edge.",
+          "duration": 0.9676096618911999,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c6": {
-          "duration_s": 0.862,
-          "lufs": -18.0,
-          "true_peak_db": -1.2,
-          "rms_db": -19.0,
+          "duration_s": 0.681,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -23.4,
+          "note": "tepe sınırında, yükseklik -23.7 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0202)"
+            "c1 ile neredeyse aynı (0.0198)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: shallow clear stream water.",
-          "duration": 1.0969219999950968,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: shallow clear stream.",
+          "duration": 0.9141016666625807,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c7": {
-          "duration_s": 1.02,
-          "lufs": -24.6,
+          "duration_s": 0.754,
+          "lufs": -27.8,
           "true_peak_db": -1.0,
-          "rms_db": -25.0,
-          "note": "tepe sınırında, yükseklik -24.6 (hedef -18)",
+          "rms_db": -29.2,
+          "note": "tepe sınırında, yükseklik -27.8 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0157)"
+            "c1 ile neredeyse aynı (0.0262)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: still pond water.",
-          "duration": 1.213371555292428,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: clear shallow pond edge.",
+          "duration": 1.01114296274369,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
         "c8": {
-          "duration_s": 1.1,
-          "lufs": -21.0,
+          "duration_s": 0.868,
+          "lufs": -23.0,
           "true_peak_db": -1.0,
-          "rms_db": -21.8,
+          "rms_db": -23.9,
+          "note": "tepe sınırında, yükseklik -23.0 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0331)"
+            "c1 ile neredeyse aynı (0.0193)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar plunged into water: a clear bubbling gurgle as water rushes into the jar, water sloshing around it, then lifted out with a few drips. The water sound is the main part. Details: shallow clear stream water.",
-          "duration": 1.2631747631899437,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small glass jar dipped just under the surface of shallow water: a light, bright, high bubbly gurgle as it fills, a small and close sound. Not deep, not booming, no big splash, no low rumble. Details: shallow clear stream.",
+          "duration": 1.0526456359916199,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         }
@@ -123,53 +127,58 @@
           [
             "c1",
             "c2",
-            0.0129
+            0.0132
           ],
           [
             "c1",
             "c3",
-            0.0095
+            0.014
+          ],
+          [
+            "c1",
+            "c4",
+            0.0324
           ],
           [
             "c1",
             "c5",
-            0.0244
+            0.0297
           ],
           [
             "c1",
             "c6",
-            0.0202
+            0.0198
           ],
           [
             "c1",
             "c7",
-            0.0157
+            0.0262
           ],
           [
             "c1",
             "c8",
-            0.0331
+            0.0193
           ]
         ],
         "nearest": {
-          "c1": 0.0095,
-          "c2": 0.0129,
-          "c3": 0.0095,
-          "c4": 0.0412,
-          "c5": 0.024,
-          "c6": 0.0149,
-          "c7": 0.0148,
-          "c8": 0.0278
+          "c1": 0.0132,
+          "c2": 0.0132,
+          "c3": 0.0106,
+          "c4": 0.0267,
+          "c5": 0.0193,
+          "c6": 0.0146,
+          "c7": 0.0188,
+          "c8": 0.0106
         },
         "ref_distance": {
-          "c1": 0.0332,
-          "c2": 0.0201,
-          "c3": 0.0379,
-          "c4": 0.0351,
-          "c5": 0.0457,
-          "c6": 0.0644,
-          "c7": 0.0252,
-          "c8": 0.029
+          "c1": 0.0478,
+          "c2": 0.0418,
+          "c3": 0.0536,
+          "c4": 0.059,
+          "c5": 0.0516,
+          "c6": 0.0549,
+          "c7": 0.0789,
+          "c8": 0.0532
         }
       }
     }

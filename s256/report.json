@@ -2,79 +2,88 @@
   "job": "s256",
   "kind": "sfx",
   "family": "foley",
-  "created": "2026-11-20T16:49:36Z",
+  "created": "2026-11-20T17:09:31Z",
   "groups": {
     "main": {
       "candidates": {
         "c1": {
-          "duration_s": 1.212,
-          "lufs": -18.5,
+          "duration_s": 0.952,
+          "lufs": -27.4,
           "true_peak_db": -1.0,
-          "rms_db": -20.9,
+          "rms_db": -27.0,
+          "note": "tepe sınırında, yükseklik -27.4 (hedef -18)",
           "flags": [],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: loose sand.",
-          "duration": 1.3135358669646295,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp. Details: fine loose dirt.",
+          "duration": 1.1258878859696824,
           "model": "eleven_text_to_sound_v3"
         },
         "c2": {
-          "duration_s": 1.311,
-          "lufs": -18.5,
+          "duration_s": 1.013,
+          "lufs": -27.9,
           "true_peak_db": -1.0,
-          "rms_db": -20.0,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: dry garden soil.",
-          "duration": 1.4064590380147939,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c3": {
-          "duration_s": 1.252,
-          "lufs": -18.0,
-          "true_peak_db": -3.2,
-          "rms_db": -20.3,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: loose sand.",
-          "duration": 1.3408317526347848,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c4": {
-          "duration_s": 1.48,
-          "lufs": -18.0,
-          "true_peak_db": -3.8,
-          "rms_db": -21.1,
-          "flags": [],
-          "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: dry garden soil.",
-          "duration": 1.5136930493597143,
-          "model": "eleven_text_to_sound_v3"
-        },
-        "c5": {
-          "duration_s": 1.452,
-          "lufs": -18.0,
-          "true_peak_db": -4.4,
-          "rms_db": -20.0,
+          "rms_db": -27.1,
+          "note": "tepe sınırında, yükseklik -27.9 (hedef -18)",
           "flags": [
-            "c3 ile neredeyse aynı (0.0252)"
+            "c1 ile neredeyse aynı (0.0266)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: loose sand.",
-          "duration": 1.5157311123828872,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp. Details: soft crumbly garden soil.",
+          "duration": 1.205536318298395,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         },
-        "c6": {
-          "duration_s": 1.418,
-          "lufs": -18.0,
-          "true_peak_db": -2.3,
-          "rms_db": -20.1,
+        "c3": {
+          "duration_s": 1.039,
+          "lufs": -23.2,
+          "true_peak_db": -1.0,
+          "rms_db": -19.2,
+          "note": "tepe sınırında, yükseklik -23.2 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp. Details: fine loose dirt.",
+          "duration": 1.149284359401244,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c4": {
+          "duration_s": 1.123,
+          "lufs": -23.7,
+          "true_peak_db": -1.0,
+          "rms_db": -24.6,
+          "note": "tepe sınırında, yükseklik -23.7 (hedef -18)",
           "flags": [
-            "c1 ile neredeyse aynı (0.0323)"
+            "c1 ile neredeyse aynı (0.0328)"
           ],
           "pass": true,
-          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. A small cat calmly pawing at soft garden soil: three or four slow, light, gentle brushing scrapes, quiet and relaxed. Not frantic, not loud, not claws on wood. Details: dry garden soil.",
-          "duration": 1.4700321776489211,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp. Details: soft crumbly garden soil.",
+          "duration": 1.2974511851654695,
+          "model": "eleven_text_to_sound_v3",
+          "similarity_warning": true
+        },
+        "c5": {
+          "duration_s": 1.155,
+          "lufs": -22.5,
+          "true_peak_db": -1.0,
+          "rms_db": -23.5,
+          "note": "tepe sınırında, yükseklik -22.5 (hedef -18)",
+          "flags": [],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp. Details: fine loose dirt.",
+          "duration": 1.299198096328189,
+          "model": "eleven_text_to_sound_v3"
+        },
+        "c6": {
+          "duration_s": 1.076,
+          "lufs": -24.3,
+          "true_peak_db": -1.0,
+          "rms_db": -26.5,
+          "note": "tepe sınırında, yükseklik -24.3 (hedef -18)",
+          "flags": [
+            "c5 ile neredeyse aynı (0.0298)"
+          ],
+          "pass": true,
+          "prompt": "Medieval village foley, dry close-mic recording, no reverb, no music, no voice. Tiny, soft, muffled pitter-patter of small paws gently patting and brushing soft crumbly earth, very quiet and cute, like fingertips softly patting a pillow of dirt. Cozy and calm. No scratching, no claws, no harsh scraping, nothing loud or sharp. Details: soft crumbly garden soil.",
+          "duration": 1.2600275808419326,
           "model": "eleven_text_to_sound_v3",
           "similarity_warning": true
         }
@@ -83,30 +92,35 @@
         "pairs_dup": [
           [
             "c1",
-            "c6",
-            0.0323
+            "c2",
+            0.0266
           ],
           [
-            "c3",
+            "c1",
+            "c4",
+            0.0328
+          ],
+          [
             "c5",
-            0.0252
+            "c6",
+            0.0298
           ]
         ],
         "nearest": {
-          "c1": 0.0323,
-          "c2": 0.0263,
-          "c3": 0.0252,
-          "c4": 0.0551,
-          "c5": 0.0252,
-          "c6": 0.0263
+          "c1": 0.0266,
+          "c2": 0.0231,
+          "c3": 0.0808,
+          "c4": 0.0231,
+          "c5": 0.0283,
+          "c6": 0.0298
         },
         "ref_distance": {
-          "c1": 0.1999,
-          "c2": 0.2048,
-          "c3": 0.2344,
-          "c4": 0.1272,
-          "c5": 0.2392,
-          "c6": 0.2413
+          "c1": 0.0312,
+          "c2": 0.0262,
+          "c3": 0.0668,
+          "c4": 0.0216,
+          "c5": 0.0244,
+          "c6": 0.0262
         }
       }
     }
