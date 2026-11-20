@@ -3,7 +3,7 @@ id: "796"
 title: "Zincir pozu tamamlama: erkek güneybatı yoğurma (1 klip)"
 status: pending
 approved_by: user        # kullanıcı 21.11.2026: 589 "kabul + eksik yoğurma yeniden" (seçmeli liste)
-priority: 40
+priority: 5          # kullanıcı 21.11 02:02: "işçiye ürettir" (mutfak işleri önce)
 family: karakter
 style_gate: false
 cost_est: 1

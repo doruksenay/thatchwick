@@ -3,7 +3,7 @@ id: "797"
 title: "Servis kapları, katmanlı: boş kap ve dört doluluk katmanı (10 birleşim)"
 status: pending
 approved_by: user        # kullanıcı 21.11.2026: 578-580 "4'ü kabul + düz kaplar katmanlı" (seçmeli liste)
-priority: 35
+priority: 5          # kullanıcı 21.11 02:02: "işçiye ürettir" (mutfak işleri önce)
 family: esya
 style_gate: false
 cost_est: 44
