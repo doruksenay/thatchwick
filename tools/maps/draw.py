@@ -490,7 +490,7 @@ def _brush(cv, pts, width, kind, salt, over, mark):
 WILD_OPTS = {
     # band: (derinlik aralığı, kenarlar) listesi; restroke: patikalar yeniden çizilir; shore: kum olasılığı eşiği (düşük = çok kum)
     'forest': {'band': [((2.5, 5.5), 'NEW'), ((1.5, 3.0), 'S')], 'restroke': True, 'shore': 0.62, 'grow': 0.72, 'salt': 211},
-    'lake': {'band': [((1.5, 3.5), 'NEW'), ((1.0, 2.2), 'S')], 'restroke': True, 'shore': 0.42, 'grow': 0.7, 'salt': 223},
+    'lake': {'band': [((1.5, 3.5), 'NEW'), ((1.0, 2.2), 'S')], 'beach': True, 'restroke': True, 'shore': 0.42, 'grow': 0.7, 'salt': 223},
     'marsh': {'band': [((1.0, 2.8), 'NSEW')], 'restroke': False, 'shore': 0.7, 'grow': 0.6, 'salt': 227},
     'hill': {'band': [((2.0, 4.5), 'NW'), ((1.0, 2.5), 'S')], 'rock': [((1.5, 3.5), 'E')], 'restroke': True, 'shore': 1.0, 'grow': 1.0, 'salt': 229},
     'slopes': {'band': [((1.0, 2.5), 'EW')], 'restroke': False, 'shore': 1.0, 'grow': 1.0, 'salt': 233},
@@ -513,6 +513,24 @@ def wild(region):
             for x in range(W):
                 if cv.get(x, y) == 'dirt':
                     cv.set(x, y, 'sand')   # kumsal: eski kod çiziminde toprak (FloorType.Sand sonradan geldi)
+    if region == 'slopes':
+        # Teras setleri taş döşeme şeridi değil, alçak taş duvar (RegionsWild.SlopesMap kenar olarak çizer).
+        for y in range(H):
+            for x in range(W):
+                if cv.get(x, y) == 'stone':
+                    cv.set(x, y, 'grass')
+    if region == 'hill':
+        # Taş ocağı düzlüğü döşeme gibi duruyordu (Unity 20.11): ocak ve maden ağzı çevresi taş kalır, gerisi çakıllı toprak,
+        # aralarda gürültüyle kaya çıkıntıları (EdgeBand iri kaya koyar).
+        for y in range(H):
+            for x in range(W):
+                if cv.get(x, y) != 'stone':
+                    continue
+                near_q = 27 <= x <= 35 and 21 <= y <= 29
+                near_m = 24 <= x <= 32 and 31 <= y <= 39
+                if near_q or near_m:
+                    continue
+                cv.set(x, y, 'rock' if noise(x / 1.9, y / 1.9, 291) > 0.72 else 'dirt')
     trails, ponds = _wild_src(WILD_FN[region])
     roads = {(x, y) for y in range(H) for x in range(W) if cv.get(x, y) in ('path', 'bridge')}
     edge_paths = {(x, y) for (x, y) in roads if x <= 2 or y <= 2 or x >= W - 3 or y >= H - 3}
@@ -556,6 +574,10 @@ def wild(region):
             for x in range(W):
                 if cv.get(x, y) == 'band' and (x, y) not in before:
                     cv.set(x, y, 'rock')
+    # Kaya sırtı patikaya değmez (2x1 devrik kütük yola taşmasın).
+    for (x, y) in near(roads, 2):
+        if cv.get(x, y) == 'rock':
+            cv.set(x, y, 'dirt' if region == 'hill' else 'grass')
     return cv, {'ponds': [], 'items': [], 'keep': []}
 
 

@@ -71,7 +71,22 @@ namespace Thatchwick.Core.World
         {
             var data = MapFiles.Get(r.Id);
             if (data == null) return false;
-            if (p.Map != null) PaintData(p, data);
+            if (p.Map != null)
+            {
+                PaintData(p, data);
+                // Taslaktaki her su kütlesi dolu bir gölet olur (yoksa kaynağı olmayan su kuru çukur çizilir; Unity 20.11 sazlık).
+                // Bölgenin kendi PondAt çağrıları sonra gelir ve balık tablosunu üstüne yazar.
+                var fish = r == Marsh ? new[] { F("item.fish_crayfish", 6), F("item.fish_eel", 4) }
+                    : r == Coast ? new[] { F("item.fish_herring", 8), F("item.fish_mackerel", 6) }
+                    : r == Forest ? new[] { F("item.fish_pike", 2), F("item.fish_crayfish", 4), F("item.fish_trout", 2) }
+                    : new[] { F("item.fish_carp", 4), F("item.fish_perch", 3), F("item.fish_tench", 2) };
+                for (int y = 0; y < data.H; y++)
+                    for (int x = 0; x < data.W; x++)
+                    {
+                        var w = p.P(x, y);
+                        if (p.Map.GetFloor(w) == FloorType.Water && !p.Map.IsFilled(w)) p.PondAt(x, y, fish);
+                    }
+            }
             for (int y = 0; y < data.H; y++)
                 for (int x = 0; x < data.W; x++)
                 {
@@ -392,6 +407,19 @@ namespace Thatchwick.Core.World
                     }
             }
 
+            if (draft && p.Map != null)
+            {
+                // Teras setleri: alçak taş duvar (kuru duvar), patikanın geçtiği yerde açık; her setin ucu gürültüyle kısalır.
+                foreach (int ty in new[] { 17, 11, 5 })
+                    for (int x = 1; x <= 30; x++)
+                    {
+                        var a = p.P(x, ty); var b = p.P(x, ty + 1);
+                        if (p.Map.GetRoad(a) != RoadType.None || p.Map.GetRoad(b) != RoadType.None) continue;
+                        if ((x <= 2 || x >= 29) && Hash(x + 396, ty) < 0.5) continue;
+                        if (Math.Abs(x - 16) <= 1 || Math.Abs(x - 9) <= 1) continue;
+                        p.Map.SetEdge(new Edge(a.X, b.Y, EdgeAxis.Horizontal), EdgeKind.HalfWall);
+                    }
+            }
             // Barınak (4x3), kapısı güneyde, yola bağlı (taslakta patika zaten çizili)
             if (draft) p.Building(22, 1, 4, 3, 'S', 23, FloorType.Wood);
             else p.Building(22, 1, 4, 3, 'S', 23, FloorType.Wood, (16, 14));
