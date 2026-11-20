@@ -1,7 +1,7 @@
 ---
 id: "347"
 title: Buğday, çavdar, yulaf, keten ekin evreleri ve el değirmeni
-status: running
+status: review
 claimed_at: 2026-11-20T10:02Z
 approved_by: user        # kullanıcı onayı 2026-11-20 ("hepsinin üretimini başlat")
 priority: 20
