@@ -1,7 +1,8 @@
 ---
 id: "770"
 title: "Geçiş seti: çim ↔ çayır (koyu çim öbekleri)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:05Z
 approved_by: user        # otomatik akış; kullanıcı 21.11.2026 (Project belgesi 66, 66b)
 priority: 10
 family: zemin
