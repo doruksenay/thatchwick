@@ -1,7 +1,7 @@
 ---
 id: "784"
 title: "At, inek ve eşek: durma görseli ölçek setinde (8 yön)"
-status: running
+status: failed
 claimed_at: 2026-11-21T00:42Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet: "At, inek ve eşek ... ekle"
 priority: 40
