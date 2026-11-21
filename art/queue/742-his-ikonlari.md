@@ -1,7 +1,7 @@
 ---
 id: "742"
 title: "His ikonları (12 adet)"
-status: running
+status: review
 claimed_at: 2026-11-21T01:48Z
 approved_by: user        # kullanıcı 20.11.2026 ("Hisler ... olur", "şimdi alınabilir"); Project belgeleri 67a §4, 67b
 priority: 50
