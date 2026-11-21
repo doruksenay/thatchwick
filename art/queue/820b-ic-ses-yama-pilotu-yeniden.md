@@ -1,7 +1,7 @@
 ---
 id: "820b"
 title: "İç Sesler nakış yaması pilotu, ikinci deneme: üç tam yama, kurdele, dört kanaviçe ikon"
-status: running
+status: review
 claimed_at: 2026-11-21T00:14Z
 approved_by: user        # kullanıcı 21.11.2026 03:04: 820 sonucu gösterildi, "baştan ürettir parçaları" (kodla çizim önerisi reddedildi)
 priority: 1
@@ -69,6 +69,9 @@ Her parça **ayrı çağrı**. Ortak ayarlar: arayüz paleti `art/style/palette_
 ## Notlar
 - Kullanıcı onay isteyen görselleri sohbette görmek istiyor; önizleme sayfası bu yüzden zorunlu.
 - Pilot kabul edilirse sonraki iş: bütün iç ses ikonları bu dille (~310), 60'lık parçalara bölünerek; 791 o dile göre yeniden yazılır.
+
+## Sorular
+- Tek ve çift dikişli yamalar teslim edilemedi (bkz. `art/results/820b-yama-pilotu.md`). Dikişi 24x24'te korumak için 32x32 yama mı, yoksa dikişi koda mı taşıyalım?
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
