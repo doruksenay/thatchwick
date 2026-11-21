@@ -1,7 +1,8 @@
 ---
 id: "572"
 title: "Zincir pozları, sofra ve ihtiyaç: otur, sofrada ye, iç, ellerini ısıt, yüzünü yıka (40)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:15Z
 not_yeniden: "21.11.2026: 20.11 16:10Z sahiplenmesi takıldı (çıktı yok, 0 gen); kullanıcı iptal edip yeniden kuyruğa verdi"
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 ("önerilerini uygula. geliştirmeye başla. assetleri sıraya at"), Project belgeleri 58-58a, 60-60c
 priority: 40
