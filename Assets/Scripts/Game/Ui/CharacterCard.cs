@@ -185,14 +185,25 @@ namespace Thatchwick.Game.Ui
         }
 
         /// <summary>İkonu sırayla dener: kütüphanedeki 32'lik ve 16'lık PixelLab ikonu, sonra Resources/UI/Icons. Hiçbiri yoksa boş.</summary>
-        private static bool SetIcon(VisualElement e, IEnumerable<string> keys)
+        private static bool SetIcon(VisualElement e, IEnumerable<string> keys, bool hudArt = false)
         {
             foreach (var k in keys)
             {
                 if (string.IsNullOrEmpty(k)) continue;
-                // HUD v2 ikonları (812, meşe): ihtiyaç ikonlarında önce onlar ("need_bladder" dosyası "need_toilet").
-                var hud = HudArt.Icon(k == "need_bladder" ? "need_toilet" : k);
-                if (hud.Ok) { e.style.backgroundImage = new StyleBackground(hud.Tex); return true; }
+                // HUD v2 ikonları (812/900, meşe): ihtiyaç satırında önce onlar ("need_bladder" dosyası "need_toilet").
+                // Öğe ikonun kendi boyutunun tam katına ayarlanır (12 px ikon 16'ya gerilip bozulmasın); iç ses karolarında kullanılmaz.
+                if (hudArt)
+                {
+                    var hud = HudArt.Icon(k == "need_bladder" ? "need_toilet" : k);
+                    if (hud.Ok)
+                    {
+                        // 900'ün 12 px ikonları 2×; henüz yenilenmemiş 16 px ikonlar (Sosyal, Tuvalet) 1× kalır.
+                        float side = hud.Tex.width <= 12 ? hud.Width : hud.Tex.width;
+                        e.style.width = side; e.style.height = side;
+                        e.style.backgroundImage = new StyleBackground(hud.Tex);
+                        return true;
+                    }
+                }
                 var sprite = IsoArt.Get("ui_icon_" + k + "_32", 16f, 16f) ?? IsoArt.Get("ui_icon_" + k, 8f, 8f);
                 if (sprite != null) { e.style.backgroundImage = new StyleBackground(sprite); return true; }
                 var tex = UiSkin.Icon(k);
@@ -208,9 +219,10 @@ namespace Thatchwick.Game.Ui
             cell.Root = UiHost.Row();
             cell.Root.style.flexWrap = Wrap.NoWrap;
             cell.Root.style.width = (Width - 16f) / 7f;
-            cell.Root.style.height = 20;
+            cell.Root.style.height = 26;
+            cell.Root.style.alignItems = Align.Center;
             var icon = Icon(IconSize);
-            if (!SetIcon(icon, new[] { InnerVoiceView.NeedIconKey(n) }))
+            if (!SetIcon(icon, new[] { InnerVoiceView.NeedIconKey(n) }, hudArt: true))
             {
                 // İkon gelene dek ilk harf (Tuvalet ikonu henüz yok).
                 var letter = UiHost.Text(NeedKinds.DisplayName(n).Substring(0, 1));
