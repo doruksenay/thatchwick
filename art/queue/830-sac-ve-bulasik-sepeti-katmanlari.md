@@ -1,7 +1,7 @@
 ---
 id: "830"
 title: "Saplı demir sac (_v3) ve bulaşık sepetinin kirli ve temiz katmanları (3)"
-status: running
+status: review
 claimed_at: 2026-11-21T00:05Z
 approved_by: user        # kullanıcı 21.11.2026: 795 "kabul + sac ve sepetler yeniden" (seçmeli liste)
 priority: 5
