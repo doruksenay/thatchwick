@@ -1,7 +1,7 @@
 ---
 id: "783"
 title: "Kedi ve küçük köpek animasyonları ölçek setinde: sinsi yürüyüş, sıçrama, balıkla kaçma, kutu, uluma, yürüme"
-status: running
+status: review
 claimed_at: 2026-11-21T00:57Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet: "kedinin ve küçük köpeğin bütün animasyonları ... bunu yap"
 priority: 40
@@ -53,6 +53,9 @@ Eldeki 126 kedi karesi (587: sinsi yürüyüş, sıçrama, balıkla kaçma; 513:
 - `python tools/art/scale_check.py` her klibin 00 karesinde: kedi 16-24, küçük köpek 18-26 (`box` hariç).
 - `validate_iso.py --kind object`, `style.py check --family hayvan` (KALDI kare teslim edilmez; klibin kalan kareleri de teslim edilmez, raporda yazılır).
 - Klip başına GIF (`art/results/783-<gövde>-<klip>-<yön>.gif`); kimlik (renk, boy) durma karesiyle aynı; ayak satırı kayması ≤1 px.
+
+## Sorular
+- Köpek (`dog_lapdog_v2` howl ve walk, 6 çağrı) yapılmadı: 780 köpek karakteri üretmedi. 780b sonrası 783b işi gerekir. Kedi kısmı teslim edildi (`art/results/783-kedi-kopek-animasyonlari.md`).
 
 ## Notlar
 - Kod hazır: `walk` (yürürken), `box`, `howl` (sahne) önce `_v2` karelerini kullanır. `sneak`, `pounce`, `run_fish` sahneye bağlanınca (koku ve kedi partisi) `IsoArt.AnimalPose` aynı adları bulur.
