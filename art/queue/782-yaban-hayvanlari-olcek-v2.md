@@ -1,7 +1,7 @@
 ---
 id: "782"
 title: "Yaban hayvanları ölçek seti: tilki, kurt, martı (8 yön)"
-status: running
+status: failed
 claimed_at: 2026-11-21T00:57Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet ("(b) hepsi birlikte"); tester raporu 66
 priority: 40
