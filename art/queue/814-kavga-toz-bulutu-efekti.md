@@ -1,7 +1,7 @@
 ---
 id: "814"
 title: "Kavga toz bulutu efekti ve parçaları (Sims tarzı)"
-status: running
+status: review
 claimed_at: 2026-11-21T00:42Z
 approved_by: user        # kullanıcı 20.11.2026 ("simsteki gibi bir karmaşa animasyonu girer. animasyonu da ayarla", "şimdi alınabilir"); Project belgeleri 67a §5.2, 67b
 priority: 40
