@@ -1,7 +1,7 @@
 ---
 id: "738"
 title: "Yaşlı pozları: bastonla tehdit, tartış, küs, gül, anlat, başını salla (48)"
-status: running
+status: review
 claimed_at: 2026-11-21T03:23Z
 approved_by: user        # kullanıcı 20.11.2026 ("şimdi alınabilir"); Project belgeleri 67a, 67b
 priority: 40
