@@ -1,7 +1,8 @@
 ---
 id: "751"
 title: "Gönül yolu ve aile ikonları (10 adet)"
-status: pending
+status: running
+claimed_at: 2026-11-21T01:48Z
 approved_by: user        # kullanıcı 20.11.2026; Project belgeleri 67b, 67c
 priority: 50
 family: arayuz
