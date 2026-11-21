@@ -1,7 +1,7 @@
 ---
 id: "781"
 title: "Küçük çiftlik hayvanları ölçek seti: kedi 2, tavuk (3), kaz (3), ördek, tavşan, güvercin (8 yön)"
-status: running
+status: review
 claimed_at: 2026-11-21T09:21Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet ("(b) hepsi birlikte"); tester raporu 66
 priority: 40
@@ -53,6 +53,9 @@ created: 2026-11-21
 
 ## Doğrulama
 780 doğrulaması. `scale_check` sınıfları: kedi, tavuk, kaz ve ördek, tavşan, küçük kuş. Yan yana sayfası (`art/results/781-yanyana.png`): 84 px yetişkin, 780'in yeni kedisi, bu işin 10 gövdesi (SE), karo konturu.
+
+## Sorular
+- Kısmi sonuç: yalnızca chicken_5 ve goose_1 teslim edildi (bkz. `art/results/781-kucuk-ciftlik-hayvanlari.md`). Kalan 8 gövde için 781b (daha büyük maske, sıkı tek kare kapısı) önerilir; kullanıcı onayı bekleniyor.
 
 ## Notlar
 - Kod hazır: `IsoArt.Animals` tavuk, kaz, ördek, tavşan, güvercini eşler; `_v2` dosyası gelince o çizilir, gelmezse eski görsel (ördek için küp).
