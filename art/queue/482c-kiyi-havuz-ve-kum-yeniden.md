@@ -1,7 +1,7 @@
 ---
 id: "482c"
 title: "Deniz kıyısı: gelgit havuzu (çalısız) ve deniz kumu (dış çizgisiz) yeniden (2)"
-status: running
+status: review
 claimed_at: 2026-11-21T00:15Z
 approved_by: user        # kullanıcı kararı 2026-11-21 (sohbet): 482b havuzu çalılı, kumu dış çizgili; ikisi yeniden
 priority: 20
