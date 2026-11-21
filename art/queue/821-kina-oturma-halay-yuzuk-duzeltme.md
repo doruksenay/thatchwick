@@ -1,7 +1,8 @@
 ---
 id: "821"
 title: "Kına gecesi oturan gelin, halay, yüzük takma ve testi kırma düzeltmesi (24)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:42Z
 approved_by: user        # kullanıcı 21.11.2026: "evet ekle" (748 kabulünden sonra halay ve yüzük düzeltmesi + kına oturuşu)
 priority: 40
 family: karakter
