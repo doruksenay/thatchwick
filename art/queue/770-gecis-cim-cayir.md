@@ -1,7 +1,7 @@
 ---
 id: "770"
 title: "Geçiş seti: çim ↔ çayır (koyu çim öbekleri)"
-status: running
+status: failed
 claimed_at: 2026-11-21T00:05Z
 approved_by: user        # otomatik akış; kullanıcı 21.11.2026 (Project belgesi 66, 66b)
 priority: 10
@@ -30,6 +30,9 @@ tutamları çime dağılarak geçer, düz çizgi ya da simetri yok.
 
 ## Doğrulama
 `validate_iso.py --kind ground`; 8x8 karoluk gürültü lekesi önizlemesi (kenarda basamak görünmemeli).
+
+## Sonuç (işçi, 2026-11-21)
+`create_tiles_pro` (tileset, isometric 64, açı 30, depth 0, segmentation, amplitude 0.3, boundary_seed 51, seed 7701; palet: grass_a 4 renk + meadow_a'dan #6e8d49 #658242 #407437 #628d4c) tek çağrı, tile id `b39a7c03-34ab-42de-9a30-95cbaa8ba5ae`. Çağrı ~40 dk boyunca "processing 5%" durumunda kaldı (ETA ~420 sn'de sabit; aynı hesapta başka işler tamamlandı). Tek deneme kuralı gereği yeniden denenmedi, doğrulama/teslim yapılmadı. Bakiye üretimden önce 9731; ücret kesildiyse 10 gen. Tile tamamlanırsa `get_tiles_pro` ile alınıp işlenebilir; aksi halde işi `pending`'e çekip yeniden kuyruğa almak kullanıcı kararıdır.
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
