@@ -1,7 +1,8 @@
 ---
 id: "780"
 title: "Hayvan ölçeği pilotu: kedi ve küçük köpek, küçük gövde yöntemi (8 yön)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:42Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet: "(b) hepsi birlikte", "küçük tuval: bunu da yap"; tester raporu 66 ölçek tablosu
 priority: 40
 family: hayvan
