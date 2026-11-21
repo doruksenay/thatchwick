@@ -1,7 +1,7 @@
 ---
 id: "485k"
 title: "Kedi gövdeleri: 3 boy × kısa/uzun tüy (6)"
-status: running
+status: review
 claimed_at: 2026-11-21T00:57Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (hayvan genetiği ve tür genişletme, tek PR), Project belgeleri 48 ve 48b
 priority: 30
@@ -43,6 +43,9 @@ Tarif **375 ile aynı** (106 tarifi, yol B, güney kontrolü, zemin kontrolü, `
 | 6 | `cat_slim_long` | ince gövde, uzun tüy | `slim elegant cat with long silky coat and plumed tail` |
 
 - ~~Tuval 32 (kedi).~~ **2026-11-21 ölçek kararı:** 32'lik tuval kediyi 28 px çiziyor (hedef 16-24). Bu iş **780'in küçük gövde yöntemiyle** yapılır (tek kare `create_map_object` + maske, v3 döndürme, boy ölçümü, kırpma kuralı). Maske: orta 22 x 20, iri 24 x 22, ince 20 x 20 (uzun tüylü eşler aynı maske). Dosya adı `iso_animal_<gövde>_v2_<yön>.png` (kod önce bunu arar). Hedef boy: kedi 16-24, iri gövde üst yarıda, ince gövde alt yarıda. Maliyet ≈ 13. `cost_max` 22.
+
+## Sorular
+- 2026-11-21: yalnızca `cat_medium_long` teslim edildi; öteki 5 gövdenin tek karesi yandan çıktı (`art/485-red/`). Yeniden deneme için onay ya da yeni iş (kılavuzu önden bakan çizimle değiştirmek) gerekir. Ayrıntı: `art/results/485k-kedi-govdeleri.md`.
 
 ## Doğrulama
 375 doğrulaması. Yan yana: 6 gövde + kabul edilen `cat_1`. Kısa ve uzun tüylü eşler aynı duruşta olmalı.
