@@ -2,7 +2,7 @@
 id: "606"
 title: "Zincir pozları, zanaat 2/3: çark, cam üfle, rendele, yont, kazı (40)"
 status: running
-claimed_at: 2026-11-21T00:58Z
+claimed_at: 2026-11-21T09:21Z
 approved_by: user        # kullanıcı 21.11.2026 (belge 66g): ikinci dalga beklemeden üretilsin
 priority: 45
 family: karakter
