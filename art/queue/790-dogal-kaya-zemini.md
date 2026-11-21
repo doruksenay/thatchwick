@@ -1,7 +1,8 @@
 ---
 id: "790"
 title: "Doğal kaya zemini: taş ocağı tabanı ve kayalık kıyı (6 karo)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:15Z
 approved_by: user        # kullanıcı onayı 2026-11-21 (sohbet: "ikisini de yap"; belge 65b H2). Eski numarası 740 (diğer oturumun 740'ıyla çakıştığı için 790'a taşındı)
 priority: 15
 family: zemin
