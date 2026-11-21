@@ -1,7 +1,8 @@
 ---
 id: "608"
 title: "Zincir pozları, ev işleri ve bulaşık: süpür, ovala, bulaşık yıka, badana, çiğne (40)"
-status: pending
+status: running
+claimed_at: 2026-11-21T01:22Z
 approved_by: user        # kullanıcı 21.11.2026 (belge 66g): ikinci dalga beklemeden üretilsin
 priority: 45
 family: karakter
