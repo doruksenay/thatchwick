@@ -1,7 +1,7 @@
 ---
 id: "399c"
 title: "Cam zinciri yapıları ve kumsal: cam ocağı, camcı tezgâhı, kalbur, kumsal (4)"
-status: running
+status: review
 claimed_at: 2026-11-21T00:15Z
 approved_by: user        # otomatik akış (art/budget.md); karar: Project belgesi 27 §18 (18.11.2026, "kumsaldan kum alınıp işlensin")
 priority: 20
