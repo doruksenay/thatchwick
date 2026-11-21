@@ -1,7 +1,8 @@
 ---
 id: "820b"
 title: "İç Sesler nakış yaması pilotu, ikinci deneme: üç tam yama, kurdele, dört kanaviçe ikon"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:14Z
 approved_by: user        # kullanıcı 21.11.2026 03:04: 820 sonucu gösterildi, "baştan ürettir parçaları" (kodla çizim önerisi reddedildi)
 priority: 1
 family: arayuz
