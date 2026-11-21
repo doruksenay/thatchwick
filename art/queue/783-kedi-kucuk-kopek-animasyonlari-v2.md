@@ -1,7 +1,8 @@
 ---
 id: "783"
 title: "Kedi ve küçük köpek animasyonları ölçek setinde: sinsi yürüyüş, sıçrama, balıkla kaçma, kutu, uluma, yürüme"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:57Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet: "kedinin ve küçük köpeğin bütün animasyonları ... bunu yap"
 priority: 40
 family: hayvan
