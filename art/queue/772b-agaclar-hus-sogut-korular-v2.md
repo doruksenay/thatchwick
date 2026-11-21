@@ -1,7 +1,7 @@
 ---
 id: "772b"
 title: "Ağaç stil birliği: huş, söğüt (genç, olgun) ve yaprak döken koru (a) (_v2)"
-status: running
+status: review   # kısmi: huş olgun + genç söğüt teslim; genç huş (boy), olgun söğüt ve koru a (zemin karosu) teslim edilmedi, bkz. rapor
 claimed_at: 2026-11-21T00:15Z
 approved_by: user        # kullanıcı 21.11.2026: ağaç stil birliği (kabarık kümeli taç), hepsi tek seferde
 priority: 12
