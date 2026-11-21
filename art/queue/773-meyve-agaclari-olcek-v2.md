@@ -1,7 +1,7 @@
 ---
 id: "773"
 title: "Meyve ağaçları stil ve ölçek (armut, kiraz, erik, zeytin; genç, olgun, meyveli, _v2)"
-status: running
+status: blocked   # kısmi teslim 5/12; bkz. art/results/773-meyve-agaclari-v2.md (## Sorular)
 claimed_at: 2026-11-21T00:05Z
 approved_by: user        # otomatik akış; kullanıcı 21.11.2026: "ağaçları ... yeniden üret" (Project belgesi 66, 66b)
 priority: 10
