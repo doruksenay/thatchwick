@@ -1,7 +1,7 @@
 ---
 id: "752"
 title: "İhtiyar heyeti, söylenti, bilgi ve yıldönümü ikonları (10 adet)"
-status: running
+status: review
 claimed_at: 2026-11-21T01:48Z
 approved_by: user        # kullanıcı 21.11.2026 (heyet, lobi, söylenti, yıldönümü, eşler arası tetikler: "hepsi olsun"); Project belgeleri 67c, 67d
 priority: 50
