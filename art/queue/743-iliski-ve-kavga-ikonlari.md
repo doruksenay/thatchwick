@@ -1,7 +1,8 @@
 ---
 id: "743"
 title: "İlişki, kavga ve muhabbet ikonları (10 adet)"
-status: pending
+status: running
+claimed_at: 2026-11-21T01:48Z
 approved_by: user        # kullanıcı 20.11.2026 ("şimdi alınabilir"); Project belgeleri 67a, 67b
 priority: 50
 family: arayuz
