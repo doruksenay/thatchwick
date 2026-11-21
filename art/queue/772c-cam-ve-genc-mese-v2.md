@@ -1,7 +1,7 @@
 ---
 id: "772c"
 title: "Ağaç stil birliği: çam (genç, olgun), genç meşe ve iğne yapraklı korular (b, d) (_v2)"
-status: running
+status: blocked
 claimed_at: 2026-11-21T00:05Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet: 772 kısmi kabul, "çam yeniden"
 priority: 10
@@ -42,6 +42,9 @@ created: 2026-11-21
 
 ## Doğrulama
 772 doğrulaması. Stil sayfası `art/results/772c-stil.png` (2 kat, çim yeşili zemin, alt hizalı): yeni 5 görsel + çapalar (eski genç çam, koru b, 772'nin olgun meşesi) + reddedilen 772 çamları + 84 px insan (`iso_char_man_r84_idle_se_00`).
+
+## Sorular
+- (işçi, 2026-11-21) Stil görseli alan araç bulundu: `create_object_pro_flash` (`style_image`, 112x160 için 6 gen/çağrı, tek yön). 5 görsel = 30 gen; `cost_est` 8 ve `cost_max` 18'in üstünde (2 katı aşıyor), bu yüzden çağırmadım, harcama yok (get_balance 9734). Seçenekler: (a) `cost_max`'ı 36'ya çıkarmak; (b) işi ikiye bölmek (çamlar + b/d / meşe); (c) pixflux + color_image yedek yolu (stil görseli yok).
 
 <!-- İşçi bundan sonrasına dokunmaz; kullanıcı kararı:
 status: review → accepted ya da rejected yap, rejected ise nedenini buraya yaz. -->
