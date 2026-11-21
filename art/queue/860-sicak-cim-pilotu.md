@@ -1,7 +1,8 @@
 ---
 id: "860"
 title: "Sıcak çim karoları pilotu: cozy ana çim (3 çeşit) ve yumuşak toprak"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:05Z
 approved_by: user        # kullanıcı 21.11.2026 02:29: "daha cozy ağaçlar ve tilelar yaptıralım"
 priority: 10
 family: zemin
