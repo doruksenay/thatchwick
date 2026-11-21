@@ -1,7 +1,8 @@
 ---
 id: "813"
 title: "Kavga ve küslük pozları, yetişkin: tartış, kavgaya hazırlan, kazan, kaybet, küs, özür dile (48)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:42Z
 approved_by: user        # kullanıcı 20.11.2026 ("kavga: dediklerini yapalım", "şimdi alınabilir"); Project belgeleri 67, 67a, 67b
 priority: 40
 family: karakter
