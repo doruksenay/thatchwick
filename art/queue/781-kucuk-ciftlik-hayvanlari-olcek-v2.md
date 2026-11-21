@@ -2,7 +2,7 @@
 id: "781"
 title: "Küçük çiftlik hayvanları ölçek seti: kedi 2, tavuk (3), kaz (3), ördek, tavşan, güvercin (8 yön)"
 status: running
-claimed_at: 2026-11-21T00:57Z
+claimed_at: 2026-11-21T09:21Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet ("(b) hepsi birlikte"); tester raporu 66
 priority: 40
 family: hayvan
