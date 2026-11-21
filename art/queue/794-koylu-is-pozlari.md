@@ -1,7 +1,8 @@
 ---
 id: "794"
 title: "Köylü iş pozları: öğüt, asaya yaslan, ölç, ağ onar, tezgâh sil, çalgı çal (48)"
-status: pending
+status: running
+claimed_at: 2026-11-21T01:22Z
 approved_by: user
 priority: 45
 family: karakter
