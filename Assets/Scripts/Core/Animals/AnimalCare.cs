@@ -5,6 +5,7 @@ using Thatchwick.Core.Build;
 using Thatchwick.Core.Characters;
 using Thatchwick.Core.Content;
 using Thatchwick.Core.Jobs;
+using Thatchwick.Core.Localization;
 using Thatchwick.Core.Time;
 using Thatchwick.Core.World;
 
@@ -719,6 +720,7 @@ namespace Thatchwick.Core.Animals
             // Çocuk yalnız midilli ve eşeğe biner (belge 48 §7.1); bebek binmez.
             var rider = FindCharacter?.Invoke(riderId);
             if (rider != null && rider.Stage == AgeStage.Baby) return "Bebek binemez.";
+            if (rider != null && !LoadRules.CanRun(rider.LoadRatio)) return CoreText.T("ui.carry.cannot_ride");   // aşırı yükte ata binilmez (59 §7.3)
             if (rider != null && rider.Stage == AgeStage.Child && !a.ChildMount) return "Çocuk yalnız midilliye ya da eşeğe biner.";
             return null;
         }

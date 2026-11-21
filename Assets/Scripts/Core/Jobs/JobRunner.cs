@@ -645,6 +645,12 @@ namespace Thatchwick.Core.Jobs
         public void Tick(double gameDays)
         {
             if (gameDays < 0) throw new ArgumentOutOfRangeException(nameof(gameDays));
+            // Bu karakterin işi sırasında depoya giren eşya onun çantasına yönlendirilebilir (CarryContext, belge 59 §4).
+            using (CarryContext.Begin(_character)) TickCore(gameDays);
+        }
+
+        private void TickCore(double gameDays)
+        {
 
             _elapsedDays += gameDays;
             SyncBreakdown();
@@ -1206,6 +1212,7 @@ namespace Thatchwick.Core.Jobs
             }
 
             _useProgress += available;
+            if (Strength.IsHeavySkill(interaction.Skill)) _character.HeavyWorkDays += available;   // güce ömür boyu katkı (58d §1.2)
             // Enerji (uyku, sandalyede dinlenme) süre boyunca azar azar dolar: bölünen uyku da kazandırır (belge 65c).
             if (GivesGradually(interaction))
             {
@@ -1234,7 +1241,8 @@ namespace Thatchwick.Core.Jobs
             IsRunning = ride <= 1.0 && _pathIndex < _path.Count
                 && RunRules.ShouldRun(_character, Queue.Current, _path.Count - 1, RunRules.IsPlayerCommand(Queue.Current, Autonomous));
             double tilesPerDay = TilesPerDayScaled * Math.Max(0.1, ride) * (ride <= 1.0 ? _character.AthleticSpeedFactor * _character.WalkFactor : 1.0)
-                * (IsRunning ? RunRules.RunSpeed : 1.0);
+                * (IsRunning ? RunRules.RunSpeed : 1.0)
+                * (ride <= 1.0 ? LoadRules.WalkFactor(_character.LoadRatio) : 1.0);   // yük (belge 59 §7.3)
             while (_pathIndex < _path.Count && budget - used > 0)
             {
                 // Yol yenileme: sonraki adım (yeni duvar, eşya) kapandıysa yol iptal edilir.

@@ -65,6 +65,7 @@ namespace Thatchwick.Core.Characters
                 Injured = c.Injury != null,
                 Pregnant = c.IsPregnant,
                 Dusty = c.Mood != null && c.Mood.Has(MoodCatalog.Dusty),
+                LoadRatio = c.LoadRatio,
             };
             i.LegInjury = c.Injury != null && AnimStyleRules.IsLegInjury(c.Injury.Kind, c.Injury.Zone);
             return i;

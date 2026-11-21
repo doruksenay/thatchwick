@@ -172,6 +172,21 @@ namespace Thatchwick.Core.Build
         {
             if (string.IsNullOrWhiteSpace(key.Id)) throw new ArgumentException("Eşya kimliği boş.", nameof(key));
             if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (Divert != null && Divert(key, count)) return;
+            Bump(key, count);
+            Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Kişisel çantaya yönlendirme (belge 59 §4): dışarıdaki karakterin aldığı eşya çantaya girer. true dönerse eşya depoya
+        /// eklenmez. Null ise her şey depoya.
+        /// </summary>
+        public Func<ItemKey, int, bool> Divert { get; set; }
+
+        /// <summary>Yönlendirmeden doğrudan depoya ekler (çanta boşaltma).</summary>
+        public void AddStored(ItemKey key, int count)
+        {
+            if (string.IsNullOrWhiteSpace(key.Id) || count <= 0) return;
             Bump(key, count);
             Changed?.Invoke();
         }

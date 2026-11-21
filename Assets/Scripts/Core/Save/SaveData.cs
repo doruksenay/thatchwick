@@ -254,6 +254,8 @@ namespace Thatchwick.Core.Save
         public float fun, hygiene;          // v2
         public float bladder = -1f;         // tuvalet (eski kayıtta -1 = rahat)
         public float wet;                   // ıslaklık (eski kayıtta 0)
+        public StackSave[] bag;             // kişisel çanta (belge 59 §4; eski kayıtta null)
+        public double heavyWorkDays;        // ağır işte geçen ömür (güç katkısı; eski kayıtta 0)
         public KeyFloat[] moodlets;         // v2: (kimlik, kalan gün)
         public KeyFloat[] skills;
         // Beceri temposu (18.11.2026, Project belgesi 28). Eski kayıtta boş/false gelir.

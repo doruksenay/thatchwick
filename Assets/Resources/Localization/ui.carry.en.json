@@ -1,0 +1,5 @@
+{
+  "ui.carry.cannot_ride": "Load too heavy: can't mount.",
+  "ui.carry.emptied": "Emptied my bag ({kg} kg).",
+  "ui.carry.full": "My bag is full; I can't carry any more."
+}

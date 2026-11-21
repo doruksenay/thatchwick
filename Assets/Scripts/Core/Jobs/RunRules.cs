@@ -21,6 +21,7 @@ namespace Thatchwick.Core.Jobs
         {
             if (c == null || c.Stage == AgeStage.Baby || c.Stage == AgeStage.Elder) return false;
             if (c.IsPregnant || c.WalkFactor < 1.0 || c.Needs.Get(NeedType.Energy) < MinEnergy) return false;
+            if (!LoadRules.CanRun(c.LoadRatio)) return false;   // aşırı yükte koşulmaz (59 §7.3)
             if (c.Injury != null && AnimStyleRules.IsLegInjury(c.Injury.Kind, c.Injury.Zone)) return false;
             return true;
         }

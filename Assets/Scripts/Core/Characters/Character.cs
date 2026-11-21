@@ -114,6 +114,7 @@ namespace Thatchwick.Core.Characters
             SetNeedMood(catalog, MoodCatalog.Lonely, comfort && Needs.Get(NeedType.Social) < MoodCatalog.NeedMoodThreshold);
             SetNeedMood(catalog, MoodCatalog.Bursting, comfort && Needs.Get(NeedType.Bladder) < MoodCatalog.NeedMoodThreshold);
             SetNeedMood(catalog, MoodCatalog.Wet, Wetness > 0.05f);
+            SetNeedMood(catalog, MoodCatalog.HeavyLoad, LoadRatio > LoadRules.HeavyFrom);
             UpdateTraitMood();
         }
 
@@ -367,6 +368,15 @@ namespace Thatchwick.Core.Characters
         // ---- ıslaklık ----
 
         /// <summary>Islaklık 0-1: suya giren, dışarıda yıkanan, yağmurda kalan ıslanır; ısı ve havaya göre kurur.</summary>
+        /// <summary>Kişisel çanta (belge 59 §4, karar A): dışarıda toplanan ve alınan eşya; çiftliğe dönünce depoya boşalır.</summary>
+        public CarryBag Bag { get; } = new CarryBag();
+
+        /// <summary>Ağır işte (madencilik, odunculuk, taş, demir) geçen ömür boyu oyun günü; güce en çok +1 (58d §1.2).</summary>
+        public double HeavyWorkDays { get; set; }
+
+        /// <summary>Çantadaki yükün rahat taşıma gücüne oranı (1 = tam, 1,5 = sert sınır).</summary>
+        public float LoadRatio => Bag.TotalKg <= 0f ? 0f : Bag.TotalKg / Strength.CapacityKg(Strength.Of(this));
+
         public float Wetness { get; private set; }
 
         /// <summary>Yatakta uyuyor (JobRunner): tuvalet uykuda yavaş dolar.</summary>
@@ -580,7 +590,7 @@ namespace Thatchwick.Core.Characters
             // Uyurken enerji azalmaz (belge 65c B2): uyku enerjiyi bitişte tek seferde verir; eskiden uyku boyunca azalma
             // sürdüğü için 8 saatlik uyku net ~40 kazandırıyordu ve karakter gündüz yeniden yatıyordu.
             Needs.SetDecayMultiplier(NeedType.Energy, Asleep ? 0f
-                : Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f) * AthleticEnergyFactor);
+                : Modifiers.EnergyDecay * (MoodEnabled ? Mood.EnergyDecayFactor() : 1f) * AthleticEnergyFactor * LoadRules.EnergyFactor(LoadRatio));
             Needs.SetDecayMultiplier(NeedType.Social, Modifiers.SocialDecay);
             Needs.SetDecayMultiplier(NeedType.Fun, Modifiers.FunDecay);
             Needs.SetDecayMultiplier(NeedType.Bladder, (Asleep ? SleepBladderFactor : 1f) * BladderFactor);

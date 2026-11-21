@@ -432,6 +432,7 @@ namespace Thatchwick.Core.Save
                 freezeDays = c.FreezeDays, starveDays = c.StarveDays,
                 hunger = c.Needs.Get(NeedType.Hunger), energy = c.Needs.Get(NeedType.Energy), warmth = c.Needs.Get(NeedType.Warmth),
                 fun = c.Needs.Get(NeedType.Fun), hygiene = c.Needs.Get(NeedType.Hygiene), bladder = c.Needs.Get(NeedType.Bladder), wet = c.Wetness,
+                bag = CaptureBag(c), heavyWorkDays = c.HeavyWorkDays,
                 moodlets = CaptureMoodlets(c),
                 skills = skills.ToArray(),
                 aptitudes = CaptureAptitudes(c), skillToday = CaptureToday(c), skillUsedSeason = CaptureUsed(c),
@@ -793,6 +794,15 @@ namespace Thatchwick.Core.Save
             }
         }
 
+        private static StackSave[] CaptureBag(Character c)
+        {
+            if (c.Bag.IsEmpty) return null;
+            var list = new List<StackSave>();
+            foreach (var kv in c.Bag.Stacks)
+                list.Add(new StackSave { id = kv.Key.Id, q = kv.Key.Quality, c = (int)kv.Key.Condition, b = kv.Key.Bought, m = kv.Key.Maker, n = kv.Value });
+            return list.ToArray();
+        }
+
         private static Character LoadCharacter(CharacterSave s)
         {
             var c = new Character(s.id, string.IsNullOrWhiteSpace(s.name) ? "İsimsiz" : s.name, new GridPos(s.x, s.y, s.z), s.isPlayer)
@@ -810,6 +820,11 @@ namespace Thatchwick.Core.Save
             c.Needs.Set(NeedType.Hygiene, s.hygiene);
             c.Needs.Set(NeedType.Bladder, s.bladder >= 0f ? s.bladder : NeedSet.Max);
             if (s.wet > 0f) c.Soak(s.wet);
+            c.HeavyWorkDays = Math.Max(0, s.heavyWorkDays);
+            if (s.bag != null)   // ağırlık birim başına 1 kg ile girer; LifeSystems içerik tablosuyla yeniden hesaplar
+                foreach (var st in s.bag)
+                    if (st != null && !string.IsNullOrEmpty(st.id) && st.n > 0)
+                        c.Bag.Add(new ItemKey(st.id, st.q, Enum.IsDefined(typeof(ItemCondition), st.c) ? (ItemCondition)st.c : ItemCondition.Sound, st.b, st.m), st.n, ItemMass.Default);
             if (s.moodlets != null)
             {
                 var ms = new List<KeyValuePair<string, double>>();

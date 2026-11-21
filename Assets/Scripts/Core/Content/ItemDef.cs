@@ -518,6 +518,8 @@ namespace Thatchwick.Core.Content
         /// <summary>Dekorun boyut sınıfı (yüzeye konan eşya).</summary>
         public DecorSize DecorSize { get; set; } = DecorSize.Small;
         /// <summary>Dekorun yükü (1-12): rafın taşıması aşılırsa raf çökebilir.</summary>
+        /// <summary>Taşıma ağırlığı (kg, belge 59 §6). 0 = kategori tablosundan (<see cref="Characters.ItemMass"/>). Dekor yükü <see cref="Weight"/> ayrı.</summary>
+        public float Mass { get; set; }
         public int Weight { get; set; } = 1;
         /// <summary>Dekorun konabildiği yuva türleri (Decor.Table ...). Boşsa Decor.DefaultFits.</summary>
         public List<string> FitsOn { get; set; } = new List<string>();

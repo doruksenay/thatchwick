@@ -1,0 +1,5 @@
+{
+  "ui.carry.cannot_ride": "Yükü çok ağır: ata binemez.",
+  "ui.carry.emptied": "Çantayı boşalttım ({kg} kg).",
+  "ui.carry.full": "Çantam doldu, gerisini taşıyamam."
+}
