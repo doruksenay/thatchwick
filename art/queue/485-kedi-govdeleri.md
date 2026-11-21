@@ -1,7 +1,8 @@
 ---
 id: "485k"
 title: "Kedi gövdeleri: 3 boy × kısa/uzun tüy (6)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:57Z
 approved_by: user        # otomatik akış (art/budget.md); karar: kullanıcı 20.11.2026 (hayvan genetiği ve tür genişletme, tek PR), Project belgeleri 48 ve 48b
 priority: 30
 family: hayvan
