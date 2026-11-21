@@ -1,7 +1,8 @@
 ---
 id: "619j"
 title: "Johan Wick: eksik yönler (yürüme güneybatı, sevme üç yön)"
-status: pending
+status: running
+claimed_at: 2026-11-21T01:22Z
 approved_by: user        # otomatik akış (art/budget.md); 510 raporundaki eksikler, Project belgesi 55d
 priority: 50
 family: karakter
