@@ -1,7 +1,8 @@
 ---
 id: "862"
 title: "Zemin leke çıkartmaları: ağaç gölgesi, çiğnenmiş çim, uzun çayır, yonca (doğal zemin çeşitliliği)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:06Z
 approved_by: user        # kullanıcı 21.11.2026 02:41: "bizim haritamız doğal durmuyor"
 priority: 10
 family: zemin
