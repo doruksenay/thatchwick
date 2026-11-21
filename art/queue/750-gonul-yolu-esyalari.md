@@ -1,7 +1,7 @@
 ---
 id: "750"
 title: "Gönül yolu eşyaları: mendil, nişan yüzükleri, kurdele, kına tası, davul, zurna, testi, kahve tepsisi (11)"
-status: running
+status: review
 claimed_at: 2026-11-21T00:42Z
 approved_by: user        # kullanıcı 20.11.2026; Project belgeleri 67b §3, 67c
 priority: 40
