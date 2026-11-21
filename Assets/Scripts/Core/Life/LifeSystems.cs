@@ -163,6 +163,7 @@ namespace Thatchwick.Core.Life
             Weather = new WeatherSystem(clock.Config, seed: 1);
             Festivals = new FestivalService(content, clock) { Village = Village };
             Spoilage = new SpoilageService(content, house, world) { ExtraReduction = SpoilReduction };
+            InitCarrying();   // kişisel çanta (belge 59 §4)
             Aging = new AgingService(content, house, world) { Today = () => Clock.TotalDays };
             Shows = new ProduceShowService(content, house, seed != 0 ? Seeds.Derive(seed, 19) : 57)
             {
@@ -1363,6 +1364,7 @@ namespace Thatchwick.Core.Life
         public void Tick(double gameDays)
         {
             OddScenesTick(gameDays);   // easter egg ziyaretçileri yürür (belge 55)
+            DrainBagsAtHome();   // çiftliğe dönenin çantası depoya (belge 59 §4)
             _moodAccumulator += gameDays;
             if (_moodAccumulator >= MoodUpdateStepDays)
             {

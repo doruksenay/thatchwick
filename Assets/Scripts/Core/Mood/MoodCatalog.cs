@@ -28,7 +28,7 @@ namespace Thatchwick.Core.Mood
             AnimalDied = "animal_died", CropFrozen = "crop_frozen", SharpTools = "sharp_tools", Slaughtered = "slaughtered",
             PotionVigor = "potion_vigor", PotionFocus = "potion_focus", PotionCalm = "potion_calm", NewFoal = "new_foal",
             SameMeal = "same_meal", VariedTable = "varied_table",
-            Bursting = "need_bladder", Accident = "accident", Wet = "wet", Chilled = "chilled", Relieved = "relieved", Ashamed = "ashamed",
+            Bursting = "need_bladder", Accident = "accident", Wet = "wet", HeavyLoad = "heavy_load", Chilled = "chilled", Relieved = "relieved", Ashamed = "ashamed",
             HotBath = "hot_bath", ColdWater = "cold_water", Swim = "swim",
             Catharsis = "catharsis", HarmonyFine = "harmony_fine",
             HarmonyTidy = "harmony_tidy", HarmonyFineTidy = "harmony_fine_tidy",
@@ -174,6 +174,7 @@ namespace Thatchwick.Core.Mood
             c.Register(M(Relieved, "Rahatladı", 3, 0.3, "Tuvalete gitti."));
             c.Register(M(Ashamed, "Utandı", -4, 0.5, "Çalı dibine gitmek zorunda kaldı."));
             c.Register(M(Wet, "Islak", -5, 0, "Islak: soğukta ısıyı iki kat hızlı kaybeder; ocak başında kurur."));
+            c.Register(M(HeavyLoad, "Yükü ağır", -1, 0, "Çantası taşıyabileceğinden ağır: yavaş yürür, çabuk yorulur."));   // loc-yok: MoodCatalog adları henüz anahtara taşınmadı (61b §7.9); belge 59 §7.3
             m = M(Chilled, "Üşüttü", -8, 2.0, "Islak ve soğukta kaldı: soğuktan %30 fazla etkilenir, işler %10 yavaş. Hekim iyileştirir.");
             m.AllSpeed = -0.10f; m.ColdResist = -0.3f; c.Register(m);
             c.Register(M(HotBath, "Sıcak banyo", 8, 1.0, "Ocak yanan odada sıcak suyla yıkandı."));

@@ -135,6 +135,7 @@ namespace Thatchwick.Core.Content
                     else errors.Add($"{dto.id}: bilinmeyen dekor boyutu '{dto.decorSize}'.");
                 }
                 item.Weight = dto.weight <= 0 ? 1 : dto.weight;
+                item.Mass = dto.mass > 0 ? dto.mass : 0f;
                 item.MaxLoad = Math.Max(0, dto.maxLoad);
                 item.WallWidth = dto.wallWidth <= 0 ? 1 : dto.wallWidth;
                 item.Tall = dto.tall;

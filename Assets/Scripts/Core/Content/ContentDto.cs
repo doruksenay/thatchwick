@@ -197,6 +197,7 @@ namespace Thatchwick.Core.Content
         // Ev dekorasyonu (Project belgesi 27, D1)
         public string decorSize;     // dekor boyutu: S/M/L ya da K/O/B (boş = küçük)
         public int weight;           // dekor yükü (0 = 1)
+        public float mass;           // taşıma ağırlığı, kg (0 = kategori tablosu, ItemMass; belge 59 §6)
         public string[] fitsOn;      // konabildiği yuva türleri: masa, raf, kanca, ocak, pencere, kiler, tabak, minder (boş = masa, raf, ocak, pencere)
         public int maxLoad;          // yüzeyin toplam taşıması (0 = sınırsız)
         public string[] wallBands;   // duvar eşyasının bantları: alt, orta, üst (boş = orta)
