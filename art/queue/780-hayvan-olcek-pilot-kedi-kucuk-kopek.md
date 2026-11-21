@@ -1,7 +1,7 @@
 ---
 id: "780"
 title: "Hayvan ölçeği pilotu: kedi ve küçük köpek, küçük gövde yöntemi (8 yön)"
-status: running
+status: review
 claimed_at: 2026-11-21T00:42Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet: "(b) hepsi birlikte", "küçük tuval: bunu da yap"; tester raporu 66 ölçek tablosu
 priority: 40
@@ -64,6 +64,9 @@ Döndürülen iki karakterin PixelLab kimliği rapora yazılır: 783 (animasyonl
 - `python tools/art/validate_iso.py --kind object <dosya>`, `python tools/art/style.py check --family hayvan <dosya>` (KALDI teslim edilmez).
 - Yan yana sayfası (`art/results/780-yanyana.png`, 4 kat): 84 px yetişkin (`iso_char_man_r84_idle_se`), eski kedi ve köpek, yeni kedi ve köpek, 64x32 karo konturu; hepsi aynı zemin çizgisinde.
 - Kimlik: yeni kedi eski kediyle aynı tür ve renkte görünmeli (tekir, beyaz ayak).
+
+## Sorular
+- Küçük köpek tek karesi yandan çıktı, döndürülmedi. Yeniden deneme için kullanıcı onayı ya da 780b işi gerekir (öneri sonuç dosyasında).
 
 ## Notlar
 - Masaüstü kopyası: 106 kuralı (yerelde). Bulutta atlanır.
