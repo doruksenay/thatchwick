@@ -67,13 +67,13 @@ namespace Thatchwick.Game.Ui
             couple.style.flexWrap = Wrap.NoWrap;
             couple.style.alignItems = Align.FlexEnd;
             if (a == null) { a = b; b = null; }
-            couple.Add(PersonColumn(o, a, grandparents));
+            couple.Add(PersonColumn(o, a, grandparents, b != null ? 1 : 0));
             if (b != null)
             {
                 var bar = Bar(MarryBar, Line);
                 bar.style.marginBottom = NodeH / 2f - Line / 2f;
                 couple.Add(bar);
-                couple.Add(PersonColumn(o, b, grandparents));
+                couple.Add(PersonColumn(o, b, grandparents, -1));
             }
             col.Add(couple);
 
@@ -116,7 +116,8 @@ namespace Thatchwick.Game.Ui
         }
 
         /// <summary>Kişi düğümü; anne-baba kuşağında üstünde kendi anne-babası (dede ve nine) küçük düğümlerle durur.</summary>
-        private static VisualElement PersonColumn(Options o, Character c, bool grandparents)
+        /// <param name="spouseSide">eşin tarafı: 1 sağda, -1 solda, 0 yok. Geniş sütunda evlilik çizgisi düğüme kadar uzar.</param>
+        private static VisualElement PersonColumn(Options o, Character c, bool grandparents, int spouseSide)
         {
             var col = new VisualElement();
             col.style.alignItems = Align.Center;
@@ -142,8 +143,36 @@ namespace Thatchwick.Game.Ui
                     col.Add(spacer);
                 }
             }
-            col.Add(Person(o, c, NodeW, NodeH));
+            if (!grandparents || spouseSide == 0) { col.Add(Person(o, c, NodeW, NodeH)); return col; }
+            // Dede-nine sütunu düğümden geniş: düğüm ortada kalır, eş tarafındaki boşluk evlilik çizgisiyle dolar.
+            var row = UiHost.Row();
+            row.style.flexWrap = Wrap.NoWrap;
+            row.style.width = Length.Percent(100);
+            row.Add(Filler(spouseSide < 0));
+            row.Add(Person(o, c, NodeW, NodeH));
+            row.Add(Filler(spouseSide > 0));
+            col.Add(row);
             return col;
+        }
+
+        /// <summary>Düğümün yanındaki boşluk; line ise ortasından evlilik çizgisi geçer.</summary>
+        private static VisualElement Filler(bool line)
+        {
+            var e = new VisualElement();
+            e.style.flexGrow = 1f;
+            e.style.height = NodeH;
+            if (line)
+            {
+                var bar = new VisualElement();
+                bar.style.position = Position.Absolute;
+                bar.style.top = NodeH / 2f - Line / 2f;
+                bar.style.left = 0;
+                bar.style.width = Length.Percent(100);
+                bar.style.height = Line;
+                bar.style.backgroundColor = LineColor;
+                e.Add(bar);
+            }
+            return e;
         }
 
         private static VisualElement Couple(Options o, Character a, Character b)
