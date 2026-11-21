@@ -1,7 +1,8 @@
 ---
 id: "772c"
 title: "Ağaç stil birliği: çam (genç, olgun), genç meşe ve iğne yapraklı korular (b, d) (_v2)"
-status: pending
+status: running
+claimed_at: 2026-11-21T00:05Z
 approved_by: user        # kullanıcı kararı 2026-11-21 sohbet: 772 kısmi kabul, "çam yeniden"
 priority: 10
 family: bitki
